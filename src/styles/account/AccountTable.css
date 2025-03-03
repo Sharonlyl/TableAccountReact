@@ -1,0 +1,110 @@
+.account-table-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* 表单行样式 */
+.form-row {
+  margin-bottom: 16px;
+}
+
+.search-form {
+  width: 100%;
+}
+
+.search-form .ant-form-item {
+  margin-bottom: 16px;
+}
+
+/* 按钮行样式 */
+.buttons-row {
+  margin-bottom: 16px;
+}
+
+.action-buttons-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-buttons-container .ant-space {
+  flex-wrap: wrap;
+}
+
+/* 保留间距但不修改按钮本身样式 */
+.action-buttons-container .ant-btn + .ant-btn {
+  margin-left: 8px;
+}
+
+/* 表格行样式 */
+.table-row {
+  margin-top: 8px;
+}
+
+.table-container {
+  width: 100%;
+}
+
+/* 表头颜色 */
+.optimized-table .ant-table-thead > tr > th {
+  background-color: #f0f7ff !important;
+  /* color: #333; */
+  font-weight: 600;
+}
+
+/* 固定列样式 */
+.optimized-table .ant-table-cell-fix-left,
+.optimized-table .ant-table-cell-fix-right {
+  background-color: #fff;
+}
+
+/* 自定义空状态 */
+.custom-empty {
+  padding: 40px 0;
+}
+
+.custom-empty .ant-empty-image {
+  height: 60px;
+}
+
+.custom-empty .ant-empty-description {
+  color: #999;
+  font-size: 16px;
+}
+
+/* 搜索下拉框样式 */
+.custom-filter-dropdown {
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  min-width: 280px;
+}
+
+/* 操作按钮样式 - 移除可能影响按钮样式的代码 */
+/* 
+.action-link {
+  padding: 0 4px;
+}
+*/
+
+.action-separator {
+  color: #d9d9d9;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .buttons-row {
+    justify-content: flex-start;
+  }
+  
+  .action-buttons-container {
+    justify-content: flex-start;
+  }
+  
+  .action-buttons-container .ant-btn {
+    margin-left: 0;
+    margin-right: 8px;
+  }
+} 
