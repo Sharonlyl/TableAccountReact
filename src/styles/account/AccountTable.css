@@ -1,99 +1,130 @@
-/* 添加展开/收起图标的样式 */
-.account-data-table .ant-table-expand-icon {
-  margin-right: 8px;
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  text-align: center;
-  background: transparent;
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
-  transition: all 0.3s;
+/* 添加展开/收起图标的样式 - 增加选择器优先级 */
+.account-table-container .account-data-table .ant-table-tbody .ant-table-expand-icon {
+  margin-right: 8px !important;
+  cursor: pointer !important;
+  position: relative !important;
+  display: inline-block !important;
+  width: 16px !important;
+  height: 16px !important;
+  text-align: center !important;
+  background: transparent !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 2px !important;
+  transition: all 0.3s !important;
 }
 
-.account-data-table .ant-table-expand-icon::before,
-.account-data-table .ant-table-expand-icon::after {
-  position: absolute;
-  background: currentColor;
-  transition: transform 0.3s ease-out;
-  content: '';
+.account-table-container .account-data-table .ant-table-tbody .ant-table-expand-icon::before,
+.account-table-container .account-data-table .ant-table-tbody .ant-table-expand-icon::after {
+  position: absolute !important;
+  background: currentColor !important;
+  transition: transform 0.3s ease-out !important;
+  content: '' !important;
 }
 
-.account-data-table .ant-table-expand-icon::before {
-  top: 50%;
-  right: 5px;
-  left: 5px;
-  height: 1px;
-  transform: scaleY(0.5);
+.account-table-container .account-data-table .ant-table-tbody .ant-table-expand-icon::before {
+  top: 50% !important;
+  right: 5px !important;
+  left: 5px !important;
+  height: 1px !important;
+  transform: scaleY(0.5) !important;
 }
 
-.account-data-table .ant-table-expand-icon::after {
-  top: 5px;
-  bottom: 5px;
-  left: 50%;
-  width: 1px;
-  transform: scaleX(0.5);
+.account-table-container .account-data-table .ant-table-tbody .ant-table-expand-icon::after {
+  top: 5px !important;
+  bottom: 5px !important;
+  left: 50% !important;
+  width: 1px !important;
+  transform: scaleX(0.5) !important;
 }
 
-.account-data-table .ant-table-expand-icon-expanded::before {
-  transform: rotate(45deg);
+.account-table-container .account-data-table .ant-table-tbody .ant-table-expand-icon-expanded::before {
+  transform: rotate(45deg) !important;
 }
 
-.account-data-table .ant-table-expand-icon-expanded::after {
-  transform: rotate(-45deg);
+.account-table-container .account-data-table .ant-table-tbody .ant-table-expand-icon-expanded::after {
+  transform: rotate(-45deg) !important;
 }
 
-/* 表格过滤下拉框样式 */
-.account-data-table .ant-table-filter-dropdown {
-  padding: 12px;
-  border-radius: 4px;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  position: absolute;
-  top: -180px !important;  /* 强制下拉框位置 */
-  left: 0;
-  z-index: 1000;
+/* 表格过滤下拉框样式 - 增加选择器优先级 */
+.account-table-container .account-data-table .ant-table-thead .ant-table-filter-column .ant-table-filter-dropdown {
+  padding: 12px !important;
+  border-radius: 4px !important;
+  background-color: #fff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  position: absolute !important;
+  top: -180px !important;
+  left: 0 !important;
+  z-index: 1000 !important;
 }
 
-.account-data-table .ant-table-filter-dropdown .ant-space {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-start;
+.account-table-container .account-data-table .ant-table-filter-dropdown .ant-space {
+  margin-top: 12px !important;
+  display: flex !important;
+  justify-content: flex-start !important;
 }
 
-.account-data-table .ant-table-filter-dropdown .ant-btn {
-  margin-right: 8px;
+.account-table-container .account-data-table .ant-table-filter-dropdown .ant-btn {
+  margin-right: 8px !important;
 }
 
-/* 确保下拉框在表格上方显示 */
-.account-data-table .ant-table-filter-trigger-container {
-  position: static;
+/* 确保下拉框在表格上方显示 - 增加选择器优先级 */
+.account-table-container .account-data-table .ant-table-thead .ant-table-filter-trigger-container {
+  position: static !important;
 }
 
-.account-data-table .ant-table-filter-trigger {
-  position: relative;
+.account-table-container .account-data-table .ant-table-thead .ant-table-filter-trigger {
+  position: relative !important;
 }
 
-/* 调整下拉框内部间距和宽度 */
-.account-data-table .ant-table-filter-dropdown .ant-form-item {
-  margin-bottom: 12px;
-  min-width: 200px;
+/* 调整下拉框内部间距和宽度 - 增加选择器优先级 */
+.account-table-container .account-data-table .ant-table-filter-dropdown .ant-form-item {
+  margin-bottom: 12px !important;
+  min-width: 200px !important;
 }
 
-/* 确保下拉框内容不被遮挡 */
-.account-data-table .ant-table-filter-dropdown-btns {
-  border-top: 1px solid #f0f0f0;
-  padding-top: 8px;
+/* 确保下拉框内容不被遮挡 - 增加选择器优先级 */
+.account-table-container .account-data-table .ant-table-filter-dropdown-btns {
+  border-top: 1px solid #f0f0f0 !important;
+  padding-top: 8px !important;
 }
 
 /* 调整按钮组和表格之间的间距 */
-.buttons-row {
+.account-table-container .buttons-row {
   margin-bottom: 16px !important;
 }
 
 /* 确保按钮组容器有足够的间距 */
-.action-buttons-container {
-  padding: 8px 0;
+.account-table-container .action-buttons-container {
+  padding: 8px 0 !important;
+}
+
+/* 添加展开行的样式 */
+.account-table-container .account-data-table .ant-table-expanded-row > td {
+  background-color: #fafafa !important;
+  padding: 16px 24px !important;
+}
+
+/* 确保展开图标可见和可点击 */
+.account-table-container .account-data-table .ant-table-row-expand-icon {
+  background: transparent !important;
+  border: 1px solid #d9d9d9 !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 17px !important;
+  height: 17px !important;
+  margin-right: 8px !important;
+  border-radius: 2px !important;
+  transition: all 0.3s !important;
+  user-select: none !important;
+  position: relative !important;
+}
+
+/* 展开行内容样式 */
+.account-table-container .account-data-table .ant-table-expanded-row-fixed {
+  margin: 0 !important;
+  padding: 16px !important;
+  background: #fafafa !important;
 } 
