@@ -1,110 +1,99 @@
-.account-table-container {
-  padding: 20px;
-  background-color: #fff;
+/* 添加展开/收起图标的样式 */
+.account-data-table .ant-table-expand-icon {
+  margin-right: 8px;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  background: transparent;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.account-data-table .ant-table-expand-icon::before,
+.account-data-table .ant-table-expand-icon::after {
+  position: absolute;
+  background: currentColor;
+  transition: transform 0.3s ease-out;
+  content: '';
+}
+
+.account-data-table .ant-table-expand-icon::before {
+  top: 50%;
+  right: 5px;
+  left: 5px;
+  height: 1px;
+  transform: scaleY(0.5);
+}
+
+.account-data-table .ant-table-expand-icon::after {
+  top: 5px;
+  bottom: 5px;
+  left: 50%;
+  width: 1px;
+  transform: scaleX(0.5);
+}
+
+.account-data-table .ant-table-expand-icon-expanded::before {
+  transform: rotate(45deg);
+}
+
+.account-data-table .ant-table-expand-icon-expanded::after {
+  transform: rotate(-45deg);
+}
+
+/* 表格过滤下拉框样式 */
+.account-data-table .ant-table-filter-dropdown {
+  padding: 12px;
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-/* 表单行样式 */
-.form-row {
-  margin-bottom: 16px;
-}
-
-.search-form {
-  width: 100%;
-}
-
-.search-form .ant-form-item {
-  margin-bottom: 16px;
-}
-
-/* 按钮行样式 */
-.buttons-row {
-  margin-bottom: 16px;
-}
-
-.action-buttons-container {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.action-buttons-container .ant-space {
-  flex-wrap: wrap;
-}
-
-/* 保留间距但不修改按钮本身样式 */
-.action-buttons-container .ant-btn + .ant-btn {
-  margin-left: 8px;
-}
-
-/* 表格行样式 */
-.table-row {
-  margin-top: 8px;
-}
-
-.table-container {
-  width: 100%;
-}
-
-/* 表头颜色 */
-.optimized-table .ant-table-thead > tr > th {
-  background-color: #f0f7ff !important;
-  /* color: #333; */
-  font-weight: 600;
-}
-
-/* 固定列样式 */
-.optimized-table .ant-table-cell-fix-left,
-.optimized-table .ant-table-cell-fix-right {
   background-color: #fff;
-}
-
-/* 自定义空状态 */
-.custom-empty {
-  padding: 40px 0;
-}
-
-.custom-empty .ant-empty-image {
-  height: 60px;
-}
-
-.custom-empty .ant-empty-description {
-  color: #999;
-  font-size: 16px;
-}
-
-/* 搜索下拉框样式 */
-.custom-filter-dropdown {
-  padding: 16px;
-  background-color: #fff;
-  border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  min-width: 280px;
+  position: absolute;
+  top: -180px !important;  /* 强制下拉框位置 */
+  left: 0;
+  z-index: 1000;
 }
 
-/* 操作按钮样式 - 移除可能影响按钮样式的代码 */
-/* 
-.action-link {
-  padding: 0 4px;
-}
-*/
-
-.action-separator {
-  color: #d9d9d9;
+.account-data-table .ant-table-filter-dropdown .ant-space {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-start;
 }
 
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .buttons-row {
-    justify-content: flex-start;
-  }
-  
-  .action-buttons-container {
-    justify-content: flex-start;
-  }
-  
-  .action-buttons-container .ant-btn {
-    margin-left: 0;
-    margin-right: 8px;
-  }
+.account-data-table .ant-table-filter-dropdown .ant-btn {
+  margin-right: 8px;
+}
+
+/* 确保下拉框在表格上方显示 */
+.account-data-table .ant-table-filter-trigger-container {
+  position: static;
+}
+
+.account-data-table .ant-table-filter-trigger {
+  position: relative;
+}
+
+/* 调整下拉框内部间距和宽度 */
+.account-data-table .ant-table-filter-dropdown .ant-form-item {
+  margin-bottom: 12px;
+  min-width: 200px;
+}
+
+/* 确保下拉框内容不被遮挡 */
+.account-data-table .ant-table-filter-dropdown-btns {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 8px;
+}
+
+/* 调整按钮组和表格之间的间距 */
+.buttons-row {
+  margin-bottom: 16px !important;
+}
+
+/* 确保按钮组容器有足够的间距 */
+.action-buttons-container {
+  padding: 8px 0;
 } 

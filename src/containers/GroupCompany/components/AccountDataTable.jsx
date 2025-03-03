@@ -400,6 +400,7 @@ const AccountDataTable = ({
   return (
     <div style={styles.tableContainer}>
       <Table 
+        className="account-data-table"
         rowSelection={rowSelection}
         columns={columns} 
         dataSource={data}
