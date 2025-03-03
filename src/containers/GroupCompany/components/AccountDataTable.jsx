@@ -3,6 +3,7 @@ import { Table, Form, Input, Button, Space, Empty, Row, Col, Typography, Card } 
 import { 
   SearchOutlined, FilterOutlined, CloseOutlined, EditOutlined, DeleteOutlined
 } from '@ant-design/icons';
+import '../../../styles/account/AccountTable.css';
 
 const { Text } = Typography;
 
@@ -18,7 +19,10 @@ const styles = {
     padding: '12px',
     borderRadius: '4px',
     backgroundColor: '#fff',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+    position: 'absolute',
+    bottom: '100%',
+    transform: 'translateY(-40px) translateX(-50%)'
   },
   filterSpace: {
     marginTop: '12px',
@@ -201,7 +205,7 @@ const AccountDataTable = ({
       onFilter: (value, record) => 
         record.headGroup.toString().toLowerCase().includes(value.toLowerCase()),
       filterDropdownProps: {
-        placement: 'top',
+        placement: 'topLeft',
       },
     },
     {
@@ -256,7 +260,7 @@ const AccountDataTable = ({
       onFilter: (value, record) => 
         record.wiGroup.toString().toLowerCase().includes(value.toLowerCase()),
       filterDropdownProps: {
-        placement: 'top',
+        placement: 'topLeft',
       },
     },
     {
@@ -311,7 +315,7 @@ const AccountDataTable = ({
       onFilter: (value, record) => 
         record.wiCustomizedGroup.toString().toLowerCase().includes(value.toLowerCase()),
       filterDropdownProps: {
-        placement: 'top',
+        placement: 'topLeft',
       },
     },
     {

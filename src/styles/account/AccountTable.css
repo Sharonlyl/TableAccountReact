@@ -128,3 +128,7 @@
   padding: 16px !important;
   background: #fafafa !important;
 } 
+
+.ant-form-item {
+  margin-bottom:0!important;
+}
