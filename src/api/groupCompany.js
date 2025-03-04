@@ -1,115 +1,32 @@
-import axios from 'axios';
+import URL_CONS from '../constants/url';
+import { service } from '@/utils/httputil';
 
-// 基础 API URL，可以根据环境配置不同的 URL
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
+export const getProfile = () => service.get(URL_CONS.PROFILE_URL);
+export const getDealDict = () => service.get(URL_CONS.DEAL_DICT_URL);
 
-// 获取账户列表
-export const getAccountList = async (params) => {
-  try {
-    const response = await axios.get(`${BASE_URL}/accounts`, { params });
-    return response.data;
-  } catch (error) {
-    console.error('获取账户列表失败:', error);
-    throw error;
-  }
-};
+export const searchDealList = (params) => service.post(URL_CONS.SEARCH_DEAL_URL, params);
 
-// 获取单个账户详情
-export const getAccountDetail = async (accountId) => {
-  try {
-    const response = await axios.get(`${BASE_URL}/accounts/${accountId}`);
-    return response.data;
-  } catch (error) {
-    console.error('获取账户详情失败:', error);
-    throw error;
-  }
-};
+// export const login = (params) => service.post(URL_CONS.LOGIN_URL, params);
 
-// 创建新账户
-export const createAccount = async (accountData) => {
-  try {
-    const response = await axios.post(`${BASE_URL}/accounts`, accountData);
-    return response.data;
-  } catch (error) {
-    console.error('创建账户失败:', error);
-    throw error;
-  }
-};
+export const getDealDetail = (params) => service.get(URL_CONS.DEAL_DETAIL_URL, { params });
 
-// 更新账户信息
-export const updateAccount = async (accountId, accountData) => {
-  try {
-    const response = await axios.put(`${BASE_URL}/accounts/${accountId}`, accountData);
-    return response.data;
-  } catch (error) {
-    console.error('更新账户失败:', error);
-    throw error;
-  }
-};
+// export const savePaymentVerified = (params) => service.get(URL_CONS.DEAL_PAYMENT_VERIFIED, { params });
 
-// 删除账户
-export const deleteAccount = async (accountId) => {
-  try {
-    const response = await axios.delete(`${BASE_URL}/accounts/${accountId}`);
-    return response.data;
-  } catch (error) {
-    console.error('删除账户失败:', error);
-    throw error;
-  }
-};
+export const resubmitDeal = (params) => service.get(URL_CONS.DEAL_RESUBMIT_URL, { params });
 
-// 批量删除账户
-export const batchDeleteAccounts = async (accountIds) => {
-  try {
-    const response = await axios.post(`${BASE_URL}/accounts/batch-delete`, { accountIds });
-    return response.data;
-  } catch (error) {
-    console.error('批量删除账户失败:', error);
-    throw error;
-  }
-};
+export const closeDeal = (params) => service.get(URL_CONS.DEAL_CLOSE_URL, { params });
 
-// 获取 Head Group 列表（用于下拉选择）
-export const getHeadGroups = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/head-groups`);
-    return response.data;
-  } catch (error) {
-    console.error('获取 Head Group 列表失败:', error);
-    throw error;
-  }
-};
-
-// 获取 WI Group 列表（用于下拉选择）
-export const getWIGroups = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/wi-groups`);
-    return response.data;
-  } catch (error) {
-    console.error('获取 WI Group 列表失败:', error);
-    throw error;
-  }
-};
-
-// 获取 RM 列表（用于下拉选择）
-export const getRMList = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/rm-list`);
-    return response.data;
-  } catch (error) {
-    console.error('获取 RM 列表失败:', error);
-    throw error;
-  }
-};
-
-export default {
-  getAccountList,
-  getAccountDetail,
-  createAccount,
-  updateAccount,
-  deleteAccount,
-  batchDeleteAccounts,
-  getHeadGroups,
-  getWIGroups,
-  getRMList
-}; 
+/**
+ * 查询集团公司名称映射信息
+ * @param {Object} params - 查询参数
+ * @param {string} [params.headGroupName] - 总公司名称
+ * @param {string} [params.gfasAccountNo] - GFAS账号
+ * @param {string} [params.rmName] - RM名称
+ * @param {string} [params.fundClass] - 基金类别
+ * @param {string} [params.wiGroupName] - WI集团名称
+ * @param {string} [params.isGlobalClient] - 是否全球客户 ('Y'/'N')
+ * @param {number} [params.pageSize=20] - 每页记录数
+ * @param {number} [params.pageNum=1] - 页码
+ * @returns {Promise<Object>} 返回查询结果
+ */
+export const searchGroupCompany = (params) => service.get(URL_CONS.GROUP_COMPANY_SEARCH_URL, { params });

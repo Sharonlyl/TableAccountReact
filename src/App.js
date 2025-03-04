@@ -1,6 +1,7 @@
 import React from 'react';
-import { Layout, Typography, ConfigProvider } from 'antd';
-import GroupCompany from './containers/GroupCompany';
+import { ConfigProvider, Layout, Typography } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import GroupCompany from './containers/GroupCompany/GroupCompany';
 import './App.css';
 
 const { Header, Content } = Layout;
@@ -8,13 +9,7 @@ const { Title } = Typography;
 
 function App() {
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          // 自定义主题配置
-        },
-      }}
-    >
+    <ConfigProvider locale={zhCN}>
       <Layout className="app-layout">
         <Header className="app-header">
           <Title level={3} className="app-title">Account Management System</Title>

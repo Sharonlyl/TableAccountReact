@@ -35,6 +35,10 @@ const styles = {
   expandedRowContent: {
     padding: '12px',
     flex: 1
+  },
+  tableCellStyle: {
+    whiteSpace: 'normal',
+    wordBreak: 'break-word'
   }
 };
 
@@ -42,7 +46,9 @@ const styles = {
 const headerStyle = {
   backgroundColor: '#e6f7ff',
   color: 'black',
-  fontWeight: 600
+  fontWeight: 600,
+  whiteSpace: 'normal',
+  wordBreak: 'break-word'
 };
 
 const AccountDataTable = ({ 
@@ -53,7 +59,9 @@ const AccountDataTable = ({
   handleReset, 
   handleFilter, 
   handleCloseFilter,
-  currentUser
+  currentUser,
+  pagination,
+  onChange
 }) => {
   const [searchForm] = Form.useForm();
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
@@ -104,14 +112,14 @@ const AccountDataTable = ({
           <Row gutter={[24, 8]}>
             <Col span={8} style={itemStyle}>
               <div>
-                <Text style={labelStyle}>Alt Id:</Text>
-                <Text style={valueStyle}>{record.altId}</Text>
+                <Text style={labelStyle}>GFAS Account No:</Text>
+                <Text style={valueStyle}>{record.gfasAccountNo}</Text>
               </div>
             </Col>
             <Col span={8} style={itemStyle}>
               <div>
-                <Text style={labelStyle}>Fund Class:</Text>
-                <Text style={valueStyle}>{record.fundClass}</Text>
+                <Text style={labelStyle}>Member Choice:</Text>
+                <Text style={valueStyle}>{record.memberChoice}</Text>
               </div>
             </Col>
             <Col span={8} style={itemStyle}>
@@ -124,8 +132,8 @@ const AccountDataTable = ({
           <Row gutter={[24, 8]}>
             <Col span={8} style={itemStyle}>
               <div>
-                <Text style={labelStyle}>RM:</Text>
-                <Text style={valueStyle}>{record.rm}</Text>
+                <Text style={labelStyle}>Alt Id:</Text>
+                <Text style={valueStyle}>{record.altId}</Text>
               </div>
             </Col>
             <Col span={8} style={itemStyle}>
@@ -136,8 +144,8 @@ const AccountDataTable = ({
             </Col>
             <Col span={8} style={itemStyle}>
               <div>
-                <Text style={labelStyle}>Global Client:</Text>
-                <Text style={valueStyle}>{record.globalClient}</Text>
+                <Text style={labelStyle}>Fund Class:</Text>
+                <Text style={valueStyle}>{record.fundClass}</Text>
               </div>
             </Col>
           </Row>
@@ -148,7 +156,13 @@ const AccountDataTable = ({
 
   // 处理展开/收起行
   const onExpandedRowsChange = (expandedRows) => {
-    setExpandedRowKeys(expandedRows);
+    // 只保留最后一个展开的行，实现单行展开效果
+    if (expandedRows.length > 0) {
+      const lastExpandedRow = expandedRows[expandedRows.length - 1];
+      setExpandedRowKeys([lastExpandedRow]);
+    } else {
+      setExpandedRowKeys([]);
+    }
   };
 
   // 主表格列定义
@@ -157,7 +171,8 @@ const AccountDataTable = ({
       title: 'Head Group',
       dataIndex: 'headGroup',
       key: 'headGroup',
-      ellipsis: true,
+      ellipsis: false,
+      width: 120,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={styles.filterDropdown}>
           <Form form={searchForm} layout="vertical">
@@ -212,7 +227,8 @@ const AccountDataTable = ({
       title: 'WI Group',
       dataIndex: 'wiGroup',
       key: 'wiGroup',
-      ellipsis: true,
+      ellipsis: false,
+      width: 120,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={styles.filterDropdown}>
           <Form form={searchForm} layout="vertical">
@@ -267,7 +283,8 @@ const AccountDataTable = ({
       title: 'WI Customized Group',
       dataIndex: 'wiCustomizedGroup',
       key: 'wiCustomizedGroup',
-      ellipsis: true,
+      ellipsis: false,
+      width: 280,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={styles.filterDropdown}>
           <Form form={searchForm} layout="vertical">
@@ -319,28 +336,32 @@ const AccountDataTable = ({
       },
     },
     {
-      title: 'GFAS Account No',
-      dataIndex: 'gfasAccountNo',
-      key: 'gfasAccountNo',
-      ellipsis: true,
-    },
-    {
       title: 'GFAS Account Name',
       dataIndex: 'gfasAccountName',
       key: 'gfasAccountName',
-      ellipsis: true,
+      ellipsis: false,
+      width: 280,
+    },
+    {
+      title: 'RM',
+      dataIndex: 'rm',
+      key: 'rm',
+      ellipsis: false,
+      width: 100,
+    },
+    {
+      title: 'Global Client',
+      dataIndex: 'globalClient',
+      key: 'globalClient',
+      ellipsis: false,
+      width: 100,
     },
     {
       title: 'Portfolio Nature',
       dataIndex: 'portfolioNature',
       key: 'portfolioNature',
-      ellipsis: true,
-    },
-    {
-      title: 'Member Choice',
-      dataIndex: 'memberChoice',
-      key: 'memberChoice',
-      ellipsis: true,
+      ellipsis: false,
+      width: 120,
     },
     {
       title: 'Action',
@@ -413,20 +434,25 @@ const AccountDataTable = ({
           expandedRowKeys,
           onExpandedRowsChange,
         }}
-        pagination={{ 
+        pagination={pagination || { 
           position: ['bottomRight'],
-          showSizeChanger: false,
+          showSizeChanger: true,
           showQuickJumper: true,
           showTotal: (total, range) => `Prev ${range[0]} to ${range[1]} — ${total} Next`,
-          pageSize: 10
+          pageSize: 20
         }}
+        onChange={onChange}
         size="small"
         bordered
         locale={{ emptyText: customEmpty() }}
         style={styles.table}
+        scroll={undefined}
         components={{
           header: {
             cell: props => <th {...props} style={{...props.style, ...headerStyle}} />
+          },
+          body: {
+            cell: props => <td {...props} style={{...props.style, ...styles.tableCellStyle}} />
           }
         }}
       />

@@ -9,33 +9,40 @@
 }
 
 .app-header {
-  background-color: #001529;
+  background: #001529;
   padding: 0 24px;
   display: flex;
   align-items: center;
-  height: 64px;
 }
 
 .app-title {
-  color: #fff !important;
+  color: white !important;
   margin: 0 !important;
 }
 
 .app-content {
   padding: 24px;
-  background-color: #f0f2f5;
+  background: #f0f2f5;
 }
 
 .page-container {
-  background-color: #fff;
+  background: white;
   padding: 24px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .page-title {
   margin-bottom: 24px !important;
-  color: #333;
+}
+
+/* 覆盖 antd 的一些默认样式 */
+.ant-layout {
+  background: #f0f2f5;
+}
+
+.ant-table {
+  background: white;
 }
 
 /* 覆盖Ant Design的一些默认样式 */
