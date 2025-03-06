@@ -187,11 +187,14 @@ const AccountTable = () => {
     // 根据筛选的字段名添加对应的筛选参数
     const newFilterParams = { ...filterParams };
     if (dataIndex === 'headGroup' && selectedKeys[0]) {
-      newFilterParams.headGroupNameFilter = selectedKeys[0];
+      const [firstSelectedKey] = selectedKeys
+      newFilterParams.headGroupNameFilter = firstSelectedKey;
     } else if (dataIndex === 'wiGroup' && selectedKeys[0]) {
-      newFilterParams.wiGroupNameFilter = selectedKeys[0];
+      const [firstSelectedKey] = selectedKeys
+      newFilterParams.wiGroupNameFilter = firstSelectedKey;
     } else if (dataIndex === 'wiCustomizedGroup' && selectedKeys[0]) {
-      newFilterParams.wiCustomizedGroupName = selectedKeys[0];
+      const [firstSelectedKey] = selectedKeys
+      newFilterParams.wiCustomizedGroupName = firstSelectedKey;
     } else if (dataIndex && !selectedKeys[0]) {
       // 如果清除了某个筛选条件
       if (dataIndex === 'headGroup') delete newFilterParams.headGroupNameFilter;
@@ -224,6 +227,11 @@ const AccountTable = () => {
       fundClass: formValues.fundClass || "",
       wiGroupName: formValues.wiGroup || "",
       isGlobalClient: formValues.globalClient === true ? 'Y' : formValues.globalClient === false ? 'N' : "",
+      isGlobalClient: (() => {
+        if (formValues.globalClient === true) return 'Y'
+        if (formValues.globalClient === false) return 'N'
+        return ''
+      })(),
       pageSize: paginationParams.pageSize,
       pageNum: paginationParams.current,
       // 添加筛选参数
@@ -235,9 +243,9 @@ const AccountTable = () => {
   const formatResponseData = (list) => {
     return list.map(item => ({
       key: item.mappingId,
-      gfasAccountNo: item.gfAsAccountNo,
-      altId: item.afterNativelid,
-      gfasAccountName: item.gfAsAccountName,
+      gfasAccountNo: item.gfasAccountNo,
+      altId: item.alternativeId,
+      gfasAccountName: item.gfasAccountName,
       headGroup: item.headGroupName,
       wiGroup: item.wiGroupName,
       wiCustomizedGroup: item.wiCustomizedGroupName,
@@ -273,8 +281,8 @@ const AccountTable = () => {
         setPagination(prev => ({
           ...prev,
           current: pageNum,
-          pageSize: pageSize,
-          total: total
+          pageSize,
+          total
         }));
         return true;
       } else {
@@ -283,7 +291,6 @@ const AccountTable = () => {
           content: "No data found",
           duration: 3
         });
-        return false;
       }
     } else {
       messageApi.error({
