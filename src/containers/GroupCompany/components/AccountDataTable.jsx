@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Form, Input, Button, Space, Empty, Row, Col, Typography, Card } from 'antd';
 import { 
   SearchOutlined, FilterOutlined, CloseOutlined, EditOutlined, DeleteOutlined
@@ -39,6 +39,9 @@ const styles = {
   tableCellStyle: {
     whiteSpace: 'normal',
     wordBreak: 'break-word'
+  },
+  hiddenForm: {
+    display: 'none'  // 隐藏表单样式
   }
 };
 
@@ -59,23 +62,109 @@ const AccountDataTable = ({
   handleReset, 
   handleFilter, 
   handleCloseFilter,
-  currentUser,
   pagination,
-  onChange
+  onChange,
+  userRoleInfo = {} // 添加用户角色信息参数
 }) => {
   const [searchForm] = Form.useForm();
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
+  // 存储当前活动的筛选条件
+  const [activeFilters, setActiveFilters] = useState({});
+  // 存储表格的筛选状态
+  const [filteredInfo, setFilteredInfo] = useState({});
+  // 添加一个标志，用于标识是否是通过点击Filter按钮触发的筛选
+  const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
+
+  // 在组件挂载时，将清空筛选条件的函数暴露给全局
+  useEffect(() => {
+    // 清空所有筛选条件的函数
+    window.clearTableFilters = () => {
+      setActiveFilters({});
+      setFilteredInfo({});
+      // 重置表单中的筛选字段
+      searchForm.setFieldsValue({
+        headGroupSearch: undefined,
+        wiGroupSearch: undefined,
+        wiCustomizedGroupSearch: undefined
+      });
+    };
+
+    // 组件卸载时清理
+    return () => {
+      window.clearTableFilters = undefined;
+    };
+  }, [searchForm]);
 
   // 增强版的重置函数，确保清空输入框并展示结果
   const handleResetFilter = (clearFilters, fieldName) => {
+    // 设置标志，表示是通过点击Reset按钮触发的筛选重置
+    setIsFilterButtonClicked(true);
+    
     // 清空表单中对应字段的值
     searchForm.setFieldsValue({
       [`${fieldName}Search`]: undefined
     });
-    // 调用原有的handleReset函数
-    handleReset(clearFilters);
+    
+    // 更新筛选状态
+    setFilteredInfo(prev => {
+      const newFilteredInfo = { ...prev };
+      delete newFilteredInfo[fieldName];
+      return newFilteredInfo;
+    });
+    
+    // 清除活动筛选条件
+    setActiveFilters(prev => {
+      const newFilters = { ...prev };
+      delete newFilters[fieldName];
+      return newFilters;
+    });
+    
+    // 只有在数据不为空时才调用父组件的handleReset函数
+    if (data && data.length > 0) {
+      // 调用原有的handleReset函数，传递字段名
+      handleReset(clearFilters, fieldName);
+    } else {
+      // 数据为空，跳过重置请求
+    }
+    
     // 确认筛选器已重置
     clearFilters && clearFilters();
+    
+    // 在下一个事件循环中重置标志
+    setTimeout(() => {
+      setIsFilterButtonClicked(false);
+    }, 0);
+  };
+
+  // 处理筛选应用
+  const handleFilterApply = (selectedKeys, confirm, dataIndex) => {
+    // 设置标志，表示是通过点击Filter按钮触发的筛选
+    setIsFilterButtonClicked(true);
+    
+    // 更新活动筛选条件
+    setActiveFilters(prev => ({
+      ...prev,
+      [dataIndex]: selectedKeys[0]
+    }));
+    
+    // 更新表格筛选状态
+    setFilteredInfo(prev => ({
+      ...prev,
+      [dataIndex]: selectedKeys
+    }));
+    
+    // 只有在数据不为空时才调用父组件的handleFilter函数
+    if (data && data.length > 0) {
+      // 调用父组件的筛选处理函数
+      handleFilter(selectedKeys, confirm, dataIndex);
+    } else {
+      // 数据为空，跳过筛选请求
+    }
+    
+    // 在下一个事件循环中重置标志
+    setTimeout(() => {
+      setIsFilterButtonClicked(false);
+    }, 0);
   };
 
   // 自定义空状态
@@ -104,10 +193,12 @@ const AccountDataTable = ({
       marginBottom: '8px'
     };
 
+    // 计算HeadGroup列的宽度，确保子表格的第一列与主表的HeadGroup列对齐
+    const headGroupColumnWidth = 120; // 与主表中HeadGroup列的宽度保持一致
+
     return (
       <div style={{ display: 'flex' }}>
-        <div style={{ width: '40px' }}></div> {/* 第一列的空白 */}
-        <div style={{ width: '40px' }}></div> {/* 第二列的空白 */}
+        <div style={{ width: `${headGroupColumnWidth}px`, flexShrink: 0 }}></div> {/* 第一列的空白，与HeadGroup列对齐 */}
         <div style={styles.expandedRowContent}>
           <Row gutter={[24, 8]}>
             <Col span={8} style={itemStyle}>
@@ -124,8 +215,8 @@ const AccountDataTable = ({
             </Col>
             <Col span={8} style={itemStyle}>
               <div>
-                <Text style={labelStyle}>Pension Category:</Text>
-                <Text style={valueStyle}>{record.pensionCategory}</Text>
+                <Text style={labelStyle}>Portfolio Nature:</Text>
+                <Text style={valueStyle}>{record.portfolioNature}</Text>
               </div>
             </Col>
           </Row>
@@ -149,6 +240,14 @@ const AccountDataTable = ({
               </div>
             </Col>
           </Row>
+          <Row gutter={[24, 8]}>
+            <Col span={8} style={itemStyle}>
+              <div>
+                <Text style={labelStyle}>Pension Category:</Text>
+                <Text style={valueStyle}>{record.pensionCategory}</Text>
+              </div>
+            </Col>
+          </Row>
         </div>
       </div>
     );
@@ -157,12 +256,57 @@ const AccountDataTable = ({
   // 处理展开/收起行
   const onExpandedRowsChange = (expandedRows) => {
     // 只保留最后一个展开的行，实现单行展开效果
+    //setExpandedRowKeys(expandedRows);
     if (expandedRows.length > 0) {
       const lastExpandedRow = expandedRows[expandedRows.length - 1];
       setExpandedRowKeys([lastExpandedRow]);
     } else {
       setExpandedRowKeys([]);
     }
+  };
+
+  // 检查单行是否可以编辑
+  const canEditRow = (record) => {
+    const { groupCompanyRole, userName } = userRoleInfo || {};
+    
+    // 管理员角色可以编辑所有行
+    if (groupCompanyRole === 'GROUP_COMPANY_ADMIN_ROLE') {
+      return true;
+    }
+    
+    // 只读角色不能编辑任何行
+    if (groupCompanyRole === 'GROUP_COMPANY_READ_ROLE') {
+      return false;
+    }
+    
+    // 写入角色只能编辑rm字段为空或等于当前用户名的行
+    if (groupCompanyRole === 'GROUP_COMPANY_WRITE_ROLE') {
+      return !record.rm || record.rm === userName;
+    }
+    
+    return false;
+  };
+  
+  // 检查单行是否可以删除
+  const canDeleteRow = (record) => {
+    const { groupCompanyRole, userName } = userRoleInfo || {};
+    
+    // 管理员角色可以删除所有行
+    if (groupCompanyRole === 'GROUP_COMPANY_ADMIN_ROLE') {
+      return true;
+    }
+    
+    // 只读角色不能删除任何行
+    if (groupCompanyRole === 'GROUP_COMPANY_READ_ROLE') {
+      return false;
+    }
+    
+    // 写入角色只能删除rm字段为空或等于当前用户名的行
+    if (groupCompanyRole === 'GROUP_COMPANY_WRITE_ROLE') {
+      return !record.rm || record.rm === userName;
+    }
+    
+    return false;
   };
 
   // 主表格列定义
@@ -173,6 +317,7 @@ const AccountDataTable = ({
       key: 'headGroup',
       ellipsis: false,
       width: 120,
+      filteredValue: filteredInfo.headGroup || null,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={styles.filterDropdown}>
           <Form form={searchForm} layout="vertical">
@@ -181,12 +326,13 @@ const AccountDataTable = ({
                 placeholder="Search Head Group" 
                 value={selectedKeys[0]}
                 onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                onPressEnter={() => handleFilterApply(selectedKeys, confirm, 'headGroup')}
               />
             </Form.Item>
             <Space style={styles.filterSpace}>
               <Button 
                 type="primary" 
-                onClick={() => handleFilter(selectedKeys, confirm, 'headGroup')}
+                onClick={() => handleFilterApply(selectedKeys, confirm, 'headGroup')}
                 icon={<FilterOutlined />}
                 size="small"
                 style={styles.filterButton}
@@ -215,7 +361,7 @@ const AccountDataTable = ({
         </div>
       ),
       filterIcon: filtered => (
-        <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+        <SearchOutlined style={{ color: filtered || activeFilters.headGroup ? '#1890ff' : undefined }} />
       ),
       onFilter: (value, record) => 
         record.headGroup.toString().toLowerCase().includes(value.toLowerCase()),
@@ -229,6 +375,7 @@ const AccountDataTable = ({
       key: 'wiGroup',
       ellipsis: false,
       width: 120,
+      filteredValue: filteredInfo.wiGroup || null,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={styles.filterDropdown}>
           <Form form={searchForm} layout="vertical">
@@ -237,12 +384,13 @@ const AccountDataTable = ({
                 placeholder="Search WI Group" 
                 value={selectedKeys[0]}
                 onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                onPressEnter={() => handleFilterApply(selectedKeys, confirm, 'wiGroup')}
               />
             </Form.Item>
             <Space style={styles.filterSpace}>
               <Button 
                 type="primary" 
-                onClick={() => handleFilter(selectedKeys, confirm, 'wiGroup')}
+                onClick={() => handleFilterApply(selectedKeys, confirm, 'wiGroup')}
                 icon={<FilterOutlined />}
                 size="small"
                 style={styles.filterButton}
@@ -271,7 +419,7 @@ const AccountDataTable = ({
         </div>
       ),
       filterIcon: filtered => (
-        <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+        <SearchOutlined style={{ color: filtered || activeFilters.wiGroup ? '#1890ff' : undefined }} />
       ),
       onFilter: (value, record) => 
         record.wiGroup.toString().toLowerCase().includes(value.toLowerCase()),
@@ -285,6 +433,7 @@ const AccountDataTable = ({
       key: 'wiCustomizedGroup',
       ellipsis: false,
       width: 280,
+      filteredValue: filteredInfo.wiCustomizedGroup || null,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={styles.filterDropdown}>
           <Form form={searchForm} layout="vertical">
@@ -293,12 +442,13 @@ const AccountDataTable = ({
                 placeholder="Search WI Customized Group" 
                 value={selectedKeys[0]}
                 onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                onPressEnter={() => handleFilterApply(selectedKeys, confirm, 'wiCustomizedGroup')}
               />
             </Form.Item>
             <Space style={styles.filterSpace}>
               <Button 
                 type="primary" 
-                onClick={() => handleFilter(selectedKeys, confirm, 'wiCustomizedGroup')}
+                onClick={() => handleFilterApply(selectedKeys, confirm, 'wiCustomizedGroup')}
                 icon={<FilterOutlined />}
                 size="small"
                 style={styles.filterButton}
@@ -327,7 +477,7 @@ const AccountDataTable = ({
         </div>
       ),
       filterIcon: filtered => (
-        <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+        <SearchOutlined style={{ color: filtered || activeFilters.wiCustomizedGroup ? '#1890ff' : undefined }} />
       ),
       onFilter: (value, record) => 
         record.wiCustomizedGroup.toString().toLowerCase().includes(value.toLowerCase()),
@@ -354,22 +504,17 @@ const AccountDataTable = ({
       dataIndex: 'globalClient',
       key: 'globalClient',
       ellipsis: false,
-      width: 100,
-    },
-    {
-      title: 'Portfolio Nature',
-      dataIndex: 'portfolioNature',
-      key: 'portfolioNature',
-      ellipsis: false,
-      width: 120,
+      width: 60,
+      align: 'center'
     },
     {
       title: 'Action',
       key: 'action',
       width: 160,
       render: (_, record) => {
-        // 当RM为空或是当前用户时，按钮可用
-        const isEditable = !record.rm || record.rm === currentUser;
+        // 根据权限控制按钮是否可用
+        const isEditable = canEditRow(record);
+        const isDeletable = canDeleteRow(record);
         
         return (
           <Space size={4}>
@@ -378,7 +523,7 @@ const AccountDataTable = ({
               size="small"
               icon={<EditOutlined />}
               disabled={!isEditable}
-              onClick={() => console.log('Edit:', record.key)}
+              onClick={() => {}}
             >
               Edit
             </Button>
@@ -387,8 +532,8 @@ const AccountDataTable = ({
               type="primary"
               size="small"
               icon={<DeleteOutlined />}
-              disabled={!isEditable}
-              onClick={() => console.log('Delete:', record.key)}
+              disabled={!isDeletable}
+              onClick={() => {}}
             >
               Delete
             </Button>
@@ -401,29 +546,47 @@ const AccountDataTable = ({
   // 自定义选择逻辑，处理子表格的选择
   const handleRowSelection = (record, selected) => {
     let newSelectedRowKeys = [...selectedRowKeys];
+    let newSelectedRows = data.filter(item => selectedRowKeys.includes(item.key));
     
     if (selected) {
       // 如果选中，添加到已选择的行中
       if (!newSelectedRowKeys.includes(record.key)) {
         newSelectedRowKeys.push(record.key);
+        newSelectedRows.push(record);
       }
     } else {
       // 如果取消选中，从已选择的行中移除
       newSelectedRowKeys = newSelectedRowKeys.filter(key => key !== record.key);
+      newSelectedRows = newSelectedRows.filter(row => row.key !== record.key);
     }
     
-    onSelectChange(newSelectedRowKeys);
+    onSelectChange(newSelectedRowKeys, newSelectedRows);
   };
 
   // 行选择配置
   const rowSelection = {
     selectedRowKeys,
-    onChange: onSelectChange,
+    onChange: (newSelectedRowKeys, newSelectedRows) => {
+      onSelectChange(newSelectedRowKeys, newSelectedRows);
+    },
     onSelect: handleRowSelection,
   };
 
   return (
     <div style={styles.tableContainer}>
+      {/* 添加隐藏的Form组件，连接searchForm实例 */}
+      <Form form={searchForm} style={styles.hiddenForm}>
+        <Form.Item name="headGroupSearch">
+          <Input />
+        </Form.Item>
+        <Form.Item name="wiGroupSearch">
+          <Input />
+        </Form.Item>
+        <Form.Item name="wiCustomizedGroupSearch">
+          <Input />
+        </Form.Item>
+      </Form>
+      
       <Table 
         className="account-data-table"
         rowSelection={rowSelection}
@@ -441,7 +604,13 @@ const AccountDataTable = ({
           showTotal: (total, range) => `Prev ${range[0]} to ${range[1]} — ${total} Next`,
           pageSize: 20
         }}
-        onChange={onChange}
+        onChange={(pagination, filters) => {
+          setFilteredInfo(filters);
+          // 只有当不是通过点击Filter按钮触发的筛选时，才调用onChange函数
+          if (!isFilterButtonClicked) {
+            onChange(pagination);
+          }
+        }}
         size="small"
         bordered
         locale={{ emptyText: customEmpty() }}

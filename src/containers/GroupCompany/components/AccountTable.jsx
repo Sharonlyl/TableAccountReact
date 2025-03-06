@@ -1,11 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Form, Row, Col, message, ConfigProvider, Spin } from "antd";
 import "../../../styles/account/AccountTable.css";
+import axios from "axios";
 import SearchForm from "./SearchForm";
 import ActionButtons from "./ActionButtons";
 import AccountDataTable from "./AccountDataTable";
-import axios from "axios";
 import URL_CONS from '../../../constants/url';
+import { queryUserByDepartments, queryUserRole } from '../../../api/groupCompany';
+
+// 防抖函数
+const debounce = (func, delay) => {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+};
 
 const AccountTable = () => {
   // 状态管理
@@ -14,14 +26,83 @@ const AccountTable = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
   const [tableData, setTableData] = useState([]);
+  const [rmUsers, setRmUsers] = useState([]);
+  const [userRoleInfo, setUserRoleInfo] = useState(null);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 20,
     total: 0
   });
+  const [filterParams, setFilterParams] = useState({});
+  // 添加选中行数据的状态
+  const [selectedRows, setSelectedRows] = useState([]);
 
-  // 模拟当前用户
-  const currentUser = "Vivian Fung";
+  // 使用useCallback和防抖函数优化搜索函数
+  const debouncedExecuteSearch = useCallback(
+    debounce((formValues, paginationParams, filterParams) => {
+      executeSearchWithFilters(formValues, paginationParams, filterParams);
+    }, 300),
+    []
+  );
+
+  // 在组件挂载时获取用户角色信息
+  useEffect(() => {
+    fetchUserRole();
+    fetchRmUsers();
+  }, []);
+
+  // 获取用户角色信息
+  const fetchUserRole = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await queryUserRole();
+      
+      if (response && response.success) {
+        setUserRoleInfo(response.data);
+        
+      } else {
+        console.error('Failed to fetch user role:', response?.errMessage);
+        messageApi.warning({
+          content: "Failed to fetch user role: " + (response?.errMessage || "Unknown error"),
+          duration: 3
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+      messageApi.error('Error fetching user role');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 获取RM用户列表
+  const fetchRmUsers = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await queryUserByDepartments({
+        departments: 'RM' // 硬编码为RM
+      });
+
+      if (response && response.success) {
+        setRmUsers(response.data || []);
+      } else {
+        console.error('Failed to fetch RM users:', response?.errMessage);
+        messageApi.warning({
+          content: "Failed to load RM users: " + (response?.errMessage || "Unknown error"),
+          duration: 3
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching RM users:', error);
+      showError(error);
+      // 即使API调用失败，也不阻止应用程序的其他功能
+      setRmUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 显示错误信息
   const showError = (error) => {
@@ -62,28 +143,80 @@ const AccountTable = () => {
   // 表格筛选相关函数
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    console.log("Search:", dataIndex, selectedKeys[0]);
   };
 
-  const handleReset = (clearFilters) => {
+  const handleReset = (clearFilters, dataIndex) => {
     clearFilters();
+    
+    // 如果表格数据为空，则不执行搜索
+    if (tableData.length === 0) {
+      return;
+    }
+    
+    // 获取当前表单值
+    const formValues = form.getFieldsValue();
+    
+    // 更新筛选参数，只移除当前重置的筛选条件
+    const newFilterParams = { ...filterParams };
+    if (dataIndex === 'headGroup') {
+      delete newFilterParams.headGroupNameFilter;
+    } else if (dataIndex === 'wiGroup') {
+      delete newFilterParams.wiGroupNameFilter;
+    } else if (dataIndex === 'wiCustomizedGroup') {
+      delete newFilterParams.wiCustomizedGroupName;
+    }
+    
+    // 更新筛选参数状态
+    setFilterParams(newFilterParams);
+    
+    // 使用更新后的筛选参数重新搜索
+    executeSearchWithFilters(formValues, pagination, newFilterParams);
   };
 
   const handleFilter = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    console.log("Filter:", dataIndex, selectedKeys[0]);
+    
+    // 如果表格数据为空，则不执行搜索
+    if (tableData.length === 0) {
+      return;
+    }
+    
+    // 获取当前表单值
+    const formValues = form.getFieldsValue();
+    
+    // 根据筛选的字段名添加对应的筛选参数
+    const newFilterParams = { ...filterParams };
+    if (dataIndex === 'headGroup' && selectedKeys[0]) {
+      newFilterParams.headGroupNameFilter = selectedKeys[0];
+    } else if (dataIndex === 'wiGroup' && selectedKeys[0]) {
+      newFilterParams.wiGroupNameFilter = selectedKeys[0];
+    } else if (dataIndex === 'wiCustomizedGroup' && selectedKeys[0]) {
+      newFilterParams.wiCustomizedGroupName = selectedKeys[0];
+    } else if (dataIndex && !selectedKeys[0]) {
+      // 如果清除了某个筛选条件
+      if (dataIndex === 'headGroup') delete newFilterParams.headGroupNameFilter;
+      if (dataIndex === 'wiGroup') delete newFilterParams.wiGroupNameFilter;
+      if (dataIndex === 'wiCustomizedGroup') delete newFilterParams.wiCustomizedGroupName;
+    }
+    
+    // 更新筛选参数状态
+    setFilterParams(newFilterParams);
+    
+    // 使用防抖函数执行搜索
+    debouncedExecuteSearch(formValues, pagination, newFilterParams);
   };
 
   const handleCloseFilter = (confirm) => {
     confirm();
   };
 
-  const onSelectChange = (newSelectedRowKeys) => {
+  const onSelectChange = (newSelectedRowKeys, newSelectedRows) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    setSelectedRows(newSelectedRows);
   };
 
-  // 将表单值转换为API请求参数
-  const getRequestParams = (formValues, paginationParams) => {
+  // 将表单值转换为API请求参数，包含筛选条件
+  const getRequestParams = (formValues, paginationParams, filterParams = {}) => {
     return {
       headGroupName: formValues.headGroup || "",
       gfasAccountNo: formValues.gfasAccountNo || "",
@@ -92,7 +225,9 @@ const AccountTable = () => {
       wiGroupName: formValues.wiGroup || "",
       isGlobalClient: formValues.globalClient === true ? 'Y' : formValues.globalClient === false ? 'N' : "",
       pageSize: paginationParams.pageSize,
-      pageNum: paginationParams.current
+      pageNum: paginationParams.current,
+      // 添加筛选参数
+      ...filterParams
     };
   };
 
@@ -112,26 +247,14 @@ const AccountTable = () => {
       memberChoice: item.memberChoice,
       rm: item.rmName,
       agent: item.agent,
-      globalClient: item.isGlobalClient === 'Y'
+      globalClient: item.isGlobalClient // 直接使用后端返回的Y或N
     }));
   };
 
   // 调用API进行搜索
   const searchGroupCompany = async (params) => {
     try {
-      const config = {
-        headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      };
-      
-      console.log('Sending request to:', URL_CONS.GROUP_COMPANY_FUZZY_SEARCH_URL);
-      console.log('Request params:', JSON.stringify(params, null, 2));
-      
-      const response = await axios.post(URL_CONS.GROUP_COMPANY_FUZZY_SEARCH_URL, params, config);
-      
-      console.log('Response received:', response.data);
+      const response = await axios.post(URL_CONS.GROUP_COMPANY_FUZZY_SEARCH_URL, params);
       return response.data;
     } catch (error) {
       console.error('API request failed:', error);
@@ -191,11 +314,11 @@ const AccountTable = () => {
     return true;
   };
 
-  // 执行搜索
-  const executeSearch = async (formValues, paginationParams) => {
+  // 执行带筛选条件的搜索
+  const executeSearchWithFilters = async (formValues, paginationParams, filterParams = {}) => {
     try {
       setLoading(true);
-      const params = getRequestParams(formValues, paginationParams);
+      const params = getRequestParams(formValues, paginationParams, filterParams);
       const response = await searchGroupCompany(params);
       return handleApiResponse(response);
     } catch (error) {
@@ -206,15 +329,25 @@ const AccountTable = () => {
     }
   };
 
+  // 执行搜索
+  const executeSearch = async (formValues, paginationParams) => {
+    return executeSearchWithFilters(formValues, paginationParams);
+  };
+
   // 搜索按钮点击处理
   const handleSearchClick = async () => {
-    console.log("Search button clicked");
-    
     const formValues = form.getFieldsValue();
-    console.log('Form values:', formValues);
 
     if (!validateForm(formValues)) {
       return;
+    }
+
+    // 清空所有筛选参数
+    setFilterParams({});
+    
+    // 通知AccountDataTable组件清空筛选条件
+    if (window.clearTableFilters) {
+      window.clearTableFilters();
     }
 
     await executeSearch(formValues, pagination);
@@ -226,15 +359,12 @@ const AccountTable = () => {
   };
 
   const handleAdd = () => {
-    console.log("Add new record");
   };
 
   const handleEdit = () => {
-    console.log("Edit selected records:", selectedRowKeys);
   };
 
   const handleDelete = () => {
-    console.log("Delete selected records:", selectedRowKeys);
   };
 
   // 处理分页变化
@@ -247,9 +377,10 @@ const AccountTable = () => {
     
     setPagination(updatedPagination);
     
-    // 使用新的分页参数重新搜索
+    // 使用新的分页参数和当前的筛选条件重新搜索
     const formValues = form.getFieldsValue();
-    executeSearch(formValues, updatedPagination);
+    // 使用防抖函数执行搜索
+    debouncedExecuteSearch(formValues, updatedPagination, filterParams);
   };
 
   return (
@@ -257,10 +388,16 @@ const AccountTable = () => {
       <Spin spinning={loading} tip="Loading...">
         <div className="account-table-container">
           {contextHolder}
+          {/* 隐藏的 Form 组件，用于连接 form 实例，解决 useForm 警告 */}
+          <Form form={form} style={{ display: 'none' }}></Form>
           {/* 第一行：表单组件 */}
           <Row className="form-row" gutter={[0, 16]}>
             <Col span={24}>
-              <SearchForm form={form} onFormChange={() => {}} />
+              <SearchForm 
+                form={form} 
+                onFormChange={() => {}} 
+                rmUsers={rmUsers}
+              />
             </Col>
           </Row>
 
@@ -274,6 +411,8 @@ const AccountTable = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 selectedRowKeys={selectedRowKeys}
+                userRoleInfo={userRoleInfo}
+                selectedRows={selectedRows}
               />
             </Col>
           </Row>
@@ -289,9 +428,9 @@ const AccountTable = () => {
                 handleReset={handleReset}
                 handleFilter={handleFilter}
                 handleCloseFilter={handleCloseFilter}
-                currentUser={currentUser}
                 pagination={pagination}
                 onChange={handleTableChange}
+                userRoleInfo={userRoleInfo}
               />
             </Col>
           </Row>

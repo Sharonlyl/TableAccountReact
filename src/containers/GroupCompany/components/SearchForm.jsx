@@ -41,7 +41,7 @@ const FormField = ({ label, name, children, valuePropName }) => (
   </div>
 );
 
-const SearchForm = ({ form, onFormChange }) => {
+const SearchForm = ({ form, onFormChange, rmUsers = [] }) => {
   // 统一的onChange处理函数
   const handleChange = () => onFormChange && onFormChange();
   
@@ -62,12 +62,20 @@ const SearchForm = ({ form, onFormChange }) => {
         label: 'RM',
         name: 'rm',
         component: (
-          <Select style={selectStyle} onChange={handleChange}>
-            <Select.Option value="customer">Customer Services Officer</Select.Option>
-            <Select.Option value="vivian">Vivian Fung</Select.Option>
-            <Select.Option value="silvia">Silvia Kong</Select.Option>
-            <Select.Option value="owen">Owen Chu</Select.Option>
-            <Select.Option value="fanny">Fanny Tse</Select.Option>
+          <Select 
+            style={selectStyle} 
+            onChange={handleChange}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+          >
+            {rmUsers.map(user => (
+              <Select.Option key={user.userId} value={user.userName}>
+                {user.userName}
+              </Select.Option>
+            ))}
           </Select>
         )
       }
@@ -90,7 +98,7 @@ const SearchForm = ({ form, onFormChange }) => {
         valuePropName: 'checked'
       }
     ]
-  }), [handleChange]);
+  }), [handleChange, rmUsers]);
 
   return (
     // 不使用search-form类，避免全局样式影响
