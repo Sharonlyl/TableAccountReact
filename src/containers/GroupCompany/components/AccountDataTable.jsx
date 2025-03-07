@@ -224,7 +224,7 @@ const AccountDataTable = ({
             <Col span={8} style={itemStyle}>
               <div>
                 <Text style={labelStyle}>Alt Id:</Text>
-                <Text style={valueStyle}>{record.altId}</Text>
+                <Text style={valueStyle}>{record.alternativeId}</Text>
               </div>
             </Col>
             <Col span={8} style={itemStyle}>
@@ -256,13 +256,7 @@ const AccountDataTable = ({
   // 处理展开/收起行
   const onExpandedRowsChange = (expandedRows) => {
     // 只保留最后一个展开的行，实现单行展开效果
-    //setExpandedRowKeys(expandedRows);
-    if (expandedRows.length > 0) {
-      const lastExpandedRow = expandedRows[expandedRows.length - 1];
-      setExpandedRowKeys([lastExpandedRow]);
-    } else {
-      setExpandedRowKeys([]);
-    }
+    setExpandedRowKeys(expandedRows);
   };
 
   // 检查单行是否可以编辑
@@ -279,9 +273,9 @@ const AccountDataTable = ({
       return false;
     }
     
-    // 写入角色只能编辑rm字段为空或等于当前用户名的行
+    // 写入角色可以编辑：rm字段为空、等于当前用户名或等于CSO的行
     if (groupCompanyRole === 'GROUP_COMPANY_WRITE_ROLE') {
-      return !record.rm || record.rm === userName;
+      return !record.rm || record.rm === userName || record.rm === 'CSO';
     }
     
     return false;
@@ -301,9 +295,9 @@ const AccountDataTable = ({
       return false;
     }
     
-    // 写入角色只能删除rm字段为空或等于当前用户名的行
+    // 写入角色可以删除：rm字段为空、等于当前用户名或等于CSO的行
     if (groupCompanyRole === 'GROUP_COMPANY_WRITE_ROLE') {
-      return !record.rm || record.rm === userName;
+      return !record.rm || record.rm === userName || record.rm === 'CSO';
     }
     
     return false;

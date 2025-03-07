@@ -71,6 +71,9 @@ const SearchForm = ({ form, onFormChange, rmUsers = [] }) => {
               (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
             }
           >
+            <Select.Option key="cso" value="CSO">
+              CSO
+            </Select.Option>
             {rmUsers.map(user => (
               <Select.Option key={user.userId} value={user.userName}>
                 {user.userName}
