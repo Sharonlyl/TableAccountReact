@@ -39,7 +39,7 @@ const ActionButtons = ({
       // 检查所有选中的行是否都可以编辑
       return selectedRows.every(row => {
         // 如果rm字段为空或者等于当前用户名，则可以编辑
-        return !row.rm || row.rm === userName;
+        return !row.rm || row.rm === userName || row.rm === 'Client Service Officer';;
       });
     }
     
@@ -55,7 +55,7 @@ const ActionButtons = ({
       // 检查所有选中的行是否都可以删除
       return selectedRows.every(row => {
         // 如果rm字段为空或者等于当前用户名，则可以删除
-        return !row.rm || row.rm === userName;
+        return !row.rm || row.rm === userName || row.rm === 'Client Service Officer';;
       });
     }
     

@@ -275,7 +275,7 @@ const AccountDataTable = ({
     
     // 写入角色可以编辑：rm字段为空、等于当前用户名或等于CSO的行
     if (groupCompanyRole === 'GROUP_COMPANY_WRITE_ROLE') {
-      return !record.rm || record.rm === userName || record.rm === 'CSO';
+      return !record.rm || record.rm === userName || record.rm === 'Client Service Officer';
     }
     
     return false;
@@ -297,7 +297,7 @@ const AccountDataTable = ({
     
     // 写入角色可以删除：rm字段为空、等于当前用户名或等于CSO的行
     if (groupCompanyRole === 'GROUP_COMPANY_WRITE_ROLE') {
-      return !record.rm || record.rm === userName || record.rm === 'CSO';
+      return !record.rm || record.rm === userName || record.rm === 'Client Service Officer';
     }
     
     return false;
