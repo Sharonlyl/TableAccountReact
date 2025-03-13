@@ -72,7 +72,7 @@ const AccountTable = () => {
       } else {
         console.error('Failed to fetch user role:', response?.errMessage);
         messageApi.warning({
-          content: "Failed to fetch user role: " + (response?.errMessage || "Unknown error"),
+          content: "Failed to fetch user role: ",
           duration: 3
         });
       }
@@ -98,7 +98,7 @@ const AccountTable = () => {
       } else {
         console.error('Failed to fetch RM users:', response?.errMessage);
         messageApi.warning({
-          content: "Failed to load RM users: " + (response?.errMessage || "Unknown error"),
+          content: "Failed to load RM users: ",
           duration: 3
         });
       }
@@ -234,7 +234,6 @@ const AccountTable = () => {
       rmName: formValues.rm || "",
       fundClass: formValues.fundClass || "",
       wiGroupName: formValues.wiGroup || "",
-      isGlobalClient: formValues.globalClient === true ? 'Y' : formValues.globalClient === false ? 'N' : "",
       isGlobalClient: (() => {
         if (formValues.globalClient === true) return 'Y'
         if (formValues.globalClient === false) return 'N'
@@ -305,13 +304,7 @@ const AccountTable = () => {
           total
         }));
         return true;
-      } else {
-        setTableData([]);
-        messageApi.warning({
-          content: "No data found",
-          duration: 3
-        });
-      }
+      } 
     } else {
       messageApi.error({
         content: response.errMessage || "Search failed",

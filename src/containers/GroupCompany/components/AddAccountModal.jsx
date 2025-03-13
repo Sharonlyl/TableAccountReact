@@ -16,6 +16,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
     PENSION_CATEGORY: [],
     MEMBER_CHOICE: []
   });
+  const [originalAccountName, setOriginalAccountName] = useState('');
   const [rmOptions, setRmOptions] = useState([]);
   const [formErrors, setFormErrors] = useState({});
   
@@ -56,6 +57,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
       setFormErrors({});
       // 重置账户名称和GFAS Account No值
       setAccountName('');
+      setOriginalAccountName('');
       setGfasAccountNoValue('');
       // 重置查询标志
       setHasAttemptedNameLookup(false);
@@ -70,6 +72,13 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
       }
     };
   }, []);
+
+  // 监听confirmModalVisible的变化，当它变为false时恢复原始账户名称
+  useEffect(() => {
+    if (!confirmModalVisible && originalAccountName) {
+      setAccountName(originalAccountName);
+    }
+  }, [confirmModalVisible, originalAccountName]);
 
   // 获取下拉框选项数据
   const fetchOptions = async () => {
@@ -142,7 +151,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
   const fetchRmOptions = async () => {
     try {
       const response = await queryUserByDepartments({
-        // 这里可以添加部门参数，如果需要的话
+        departments: 'RM'
       });
       
       if (response && response.data) {
@@ -215,6 +224,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
           // 检查gfAsAccountName是否为空
           if (accountData.gfAsAccountName) {
             setAccountName(accountData.gfAsAccountName);
+            setOriginalAccountName(accountData.gfAsAccountName);
             // 如果账户名称有值，清除错误状态
             setFormErrors(prev => ({
               ...prev,
@@ -223,6 +233,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
           } else {
             // 如果gfAsAccountName为空，清空账户名称
             setAccountName('');
+            setOriginalAccountName('');
             // 显示提示信息
             messageApi.warning('No matching GFAS Account Name found');
           }
@@ -232,6 +243,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         } else {
           // 如果没有找到匹配的账户，清空账户名称
           setAccountName('');
+          setOriginalAccountName('');
           // 检查是否需要显示Alt Id
           setShowAltId(upperCaseValue.trim() === 'CCC 111111');
         }
@@ -239,6 +251,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         console.error('Error fetching account name:', error);
         // 发生错误时，清空账户名称
         setAccountName('');
+        setOriginalAccountName('');
         messageApi.error('Failed to fetch account name');
         // 检查是否需要显示Alt Id
         setShowAltId(upperCaseValue.trim() === 'CCC 111111');
@@ -248,6 +261,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
       setHasAttemptedNameLookup(false);
       // 如果输入为空，清空账户名称
       setAccountName('');
+      setOriginalAccountName('');
       setShowAltId(false);
     }
   };
@@ -551,7 +565,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
       form.setFieldsValue({
         portfolioNature: dcFullService,
         pensionCategory: mpfDirect,
-        memberChoice: memberChoice
+        memberChoice
       });
     }
   };
@@ -658,6 +672,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
     setHasAttemptedNameLookup(false); // 重置查询标志
     setFormErrors({}); // 重置错误状态
     setAccountName(''); // 重置账户名称状态
+    setOriginalAccountName(''); // 重置原始账户名称状态
     setGfasAccountNoValue(''); // 重置GFAS Account No值
     onCancel();
   };
@@ -697,6 +712,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
           setFormErrors({}); // 清空错误状态
           setHasAttemptedNameLookup(false); // 重置查询标志
           setAccountName(''); // 重置账户名称状态
+          setOriginalAccountName(''); // 重置原始账户名称状态
           setGfasAccountNoValue(''); // 重置GFAS Account No值
           onSave(formValues);
           // 添加记录后返回Search页面
@@ -716,7 +732,6 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
   // 处理确认对话框的取消按钮点击
   const handleConfirmCancel = () => {
     setConfirmModalVisible(false);
-    // 返回Add页面，不做其他操作
   };
 
   // 处理清除选择
@@ -930,7 +945,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
                   className={`input-style ${formErrors.gfasAccountNo && (!form.getFieldValue('gfasAccountNo') || form.getFieldValue('gfasAccountNo').trim() === '') ? 'input-error' : ''}`}
                   onBlur={(e) => handleAccountNoChange(e.target.value)}
                   onChange={(e) => {
-                    const value = e.target.value;
+                    const { value } = e.target;
                     // 如果有值，清除错误状态
                     if (value && value.trim() !== '') {
                       setFormErrors(prev => ({
@@ -981,7 +996,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
                 className={`input-style ${formErrors.gfasAccountName && !accountName ? 'input-error' : ''}`}
                 onChange={(e) => {
                   // 虽然这是一个禁用的输入框，但仍然添加onChange处理程序以保持一致性
-                  const value = e.target.value;
+                  const { value } = e.target
                   if (value && value.trim() !== '') {
                     setFormErrors(prev => ({
                       ...prev,
@@ -1124,7 +1139,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
                   placeholder="Please input Agent" 
                   className={`input-style ${formErrors.agent && (!form.getFieldValue('agent') || form.getFieldValue('agent').trim() === '') ? 'input-error' : ''}`}
                   onChange={(e) => {
-                    const value = e.target.value;
+                    const { value } = e.target;
                     // 如果有值，清除错误状态
                     if (value && value.trim() !== '') {
                       setFormErrors(prev => ({
@@ -1198,7 +1213,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         width={550}
         centered
       >
-        <div className="confirm-content">
+        <div className="confirm-content" style={{marginTop:'20px'}}>
           <div style={{ paddingLeft: '60px' }}>
             <Row gutter={[16, 8]}>
               <Col span={24}>

@@ -3,6 +3,74 @@ import { Modal, Form, Input, Select, Checkbox, Radio, Button, Row, Col, Space, m
 import { querylmrReferenceByCategory, queryUserByDepartments, queryHeadGroup, queryWIGroup, queryWICustomizedGroup, updateGroupCompanyMapping } from '../../../api/groupCompany';
 import '../styles/AddAccountModal.css';
 
+// 添加确认对话框的样式
+const confirmModalStyles = `
+  .confirm-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .confirm-table th, .confirm-table td {
+    border: 1px solid #e8e8e8;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  
+  .confirm-table th {
+    background-color: #f5f5f5;
+    font-weight: 500;
+  }
+  
+  .changed-value {
+    color: #f5222d;
+    font-weight: 500;
+  }
+  
+  .confirm-content p {
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+  
+  .field-label {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .old-value {
+    color: #666;
+  }
+  
+  .new-value {
+    color: #f5222d;
+    font-weight: 500;
+  }
+  
+  .field-row {
+    margin-bottom: 10px;
+    display: flex;
+  }
+  
+  .field-name {
+    width: 180px;
+    font-weight: 500;
+  }
+  
+  .field-value {
+    flex: 1;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .modal-footer .ant-btn {
+    margin: 0 10px;
+  }
+`;
+
 const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
@@ -131,7 +199,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
             value: headGroupId.toString(),
             label: headGroupName,
             data: {
-              headGroupId: headGroupId,
+              headGroupId,
               groupName: headGroupName
             }
           };
@@ -165,7 +233,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
             value: wiCustomizedGroupId.toString(),
             label: wiCustomizedGroupName,
             data: {
-              wiCustomizedGroupId: wiCustomizedGroupId,
+              wiCustomizedGroupId,
               groupName: wiCustomizedGroupName
             }
           };
@@ -582,7 +650,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
       form.setFieldsValue({
         portfolioNature: dcFullService,
         pensionCategory: mpfDirect,
-        memberChoice: memberChoice
+        memberChoice
       });
     }
   };
@@ -654,6 +722,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
 
         // 保存表单值并显示确认对话框
         const formValuesWithDetails = {
+          ...record, // 包含原始记录的所有字段
           ...values,
           gfasAccountNo: record.gfasAccountNo || '',
           gfasAccountName: record.gfasAccountName || '',
@@ -721,7 +790,32 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
           setConfirmModalVisible(false);
           form.resetFields();
           setFormErrors({}); // 清空错误状态
-          onSave(formValues);
+          
+          // 将完整的记录传递给onSave回调
+          const updatedRecord = {
+            ...record,
+            ...formValues,
+            // 确保包含所有必要的字段
+            mappingId: formValues.mappingId,
+            gfasAccountNo: formValues.gfasAccountNo,
+            gfasAccountName: formValues.gfasAccountName,
+            alternativeId: formValues.altId,
+            fundClass: formValues.fundClass,
+            pensionCategory: formValues.pensionCategory,
+            portfolioNature: formValues.portfolioNature,
+            memberChoice: formValues.memberChoice,
+            rm: formValues.rm,
+            globalClient: formValues.isGlobalClient,
+            agent: formValues.agent,
+            headGroupId: formValues.headGroup,
+            headGroupName: formValues.headGroupName,
+            wiGroupId: formValues.wiGroup,
+            wiGroupName: formValues.wiGroupName,
+            wiCustomizedGroupId: formValues.wiCustomizedGroup,
+            wiCustomizedGroupName: formValues.wiCustomizedGroupName
+          };
+          
+          onSave(updatedRecord);
           // 更新记录后返回Search页面
           onCancel(); // 关闭Edit页面，返回Search页面
         } else {
@@ -782,31 +876,36 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
 
   // 检查字段是否被修改
   const isFieldChanged = (fieldName) => {
-    const currentValue = formValues[fieldName];
-    const originalValue = originalValues[fieldName];
-    
-    // 对于布尔值和字符串的特殊处理
-    if (fieldName === 'isGlobalClient') {
-      return currentValue !== originalValues.isGlobalClient;
+    // 对于组字段的特殊处理
+    if (fieldName === 'headGroup') {
+      // 比较组名称而不是ID
+      return formValues.headGroupName !== originalValues.headGroupName;
     }
     
+    if (fieldName === 'wiGroup') {
+      // 比较组名称而不是ID
+      return formValues.wiGroupName !== originalValues.wiGroupName;
+    }
+    
+    if (fieldName === 'wiCustomizedGroup') {
+      // 比较组名称而不是ID
+      return formValues.wiCustomizedGroupName !== originalValues.wiCustomizedGroupName;
+    }
+    
+    // 对于布尔值的特殊处理
+    if (fieldName === 'isGlobalClient') {
+      return formValues.isGlobalClient !== originalValues.isGlobalClient;
+    }
+    
+    // 其他字段的比较
+    const currentValue = formValues[fieldName];
+    const originalValue = originalValues[fieldName];
     return currentValue !== originalValue;
   };
 
   // 获取字段的原始值和新值的显示
   const getFieldValueDisplay = (fieldName) => {
-    const currentValue = formValues[fieldName];
-    let originalValue = originalValues[fieldName];
-    
-    // 对于布尔值的特殊处理
-    if (fieldName === 'isGlobalClient') {
-      return {
-        old: originalValue || '',
-        new: currentValue || ''
-      };
-    }
-    
-    // 对于组ID的特殊处理
+    // 对于组字段的特殊处理
     if (fieldName === 'headGroup') {
       return {
         old: originalValues.headGroupName || '',
@@ -828,9 +927,18 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
       };
     }
     
+    // 对于布尔值的特殊处理
+    if (fieldName === 'isGlobalClient') {
+      return {
+        old: originalValues.isGlobalClient || '',
+        new: formValues.isGlobalClient || ''
+      };
+    }
+    
+    // 其他字段的处理
     return {
-      old: originalValue || '',
-      new: currentValue || ''
+      old: originalValues[fieldName] || '',
+      new: formValues[fieldName] || ''
     };
   };
 
@@ -859,6 +967,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
   return (
     <>
       {contextHolder}
+      <style>{confirmModalStyles}</style>
       <Modal
         title="Edit Account"
         open={visible}
@@ -1065,7 +1174,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   className={`input-style ${formErrors.gfasAccountNo && (!form.getFieldValue('gfasAccountNo') || form.getFieldValue('gfasAccountNo').trim() === '') ? 'input-error' : ''}`} 
                   onChange={(e) => {
                     // 即使输入框是禁用的，也确保值变化能够被处理
-                    const value = e.target.value;
+                    const { value } = e.target;
                     handleAccountNoChange(value);
                     
                     // 如果有值，清除错误状态
@@ -1109,7 +1218,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   disabled 
                   className={`input-style ${formErrors.gfasAccountName && (!form.getFieldValue('gfasAccountName') || form.getFieldValue('gfasAccountName').trim() === '') ? 'input-error' : ''}`} 
                   onChange={(e) => {
-                    const value = e.target.value;
+                    const { value } = e.target;
                     // 如果有值，清除错误状态
                     if (value && value.trim() !== '') {
                       setFormErrors(prev => ({
@@ -1270,132 +1379,209 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
 
       {/* 确认对话框 */}
       <Modal
-        title="Confirm Update"
+        title="Please confirm to create the mapping record"
         open={confirmModalVisible}
         onCancel={handleConfirmCancel}
         onOk={handleConfirm}
-        width={800}
+        width={600}
+        okText="Confirm"
+        cancelText="Cancel"
+        footer={
+          <div className="modal-footer">
+            <Button type="primary" onClick={handleConfirm}>
+              Confirm
+            </Button>
+            <Button onClick={handleConfirmCancel}>
+              Cancel
+            </Button>
+          </div>
+        }
       >
         <div className="confirm-content">
-          <p>Please confirm the following changes:</p>
-          
-          <table className="confirm-table">
-            <thead>
-              <tr>
-                <th>Field</th>
-                <th>Original Value</th>
-                <th>New Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* GFAS Account No. 和 GFAS Account Name 不可编辑，所以不显示 */}
-              {/* Alt ID */}
-              {isFieldChanged('altId') && (
-                <tr>
-                  <td>Alt ID</td>
-                  <td>{getFieldValueDisplay('altId').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('altId').new}</td>
-                </tr>
-              )}
-              
-              {/* Fund Class */}
-              {isFieldChanged('fundClass') && (
-                <tr>
-                  <td>Fund Class</td>
-                  <td>{getFieldValueDisplay('fundClass').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('fundClass').new}</td>
-                </tr>
-              )}
-              
-              {/* Pension Category */}
-              {isFieldChanged('pensionCategory') && (
-                <tr>
-                  <td>Pension Category</td>
-                  <td>{getFieldValueDisplay('pensionCategory').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('pensionCategory').new}</td>
-                </tr>
-              )}
-              
-              {/* Portfolio Nature */}
-              {isFieldChanged('portfolioNature') && (
-                <tr>
-                  <td>Portfolio Nature</td>
-                  <td>{getFieldValueDisplay('portfolioNature').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('portfolioNature').new}</td>
-                </tr>
-              )}
-              
-              {/* Member Choice */}
-              {isFieldChanged('memberChoice') && (
-                <tr>
-                  <td>Member Choice</td>
-                  <td>{getFieldValueDisplay('memberChoice').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('memberChoice').new}</td>
-                </tr>
-              )}
-              
-              {/* RM */}
-              {isFieldChanged('rm') && (
-                <tr>
-                  <td>RM</td>
-                  <td>{getFieldValueDisplay('rm').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('rm').new}</td>
-                </tr>
-              )}
-              
-              {/* Global Client */}
-              {isFieldChanged('isGlobalClient') && (
-                <tr>
-                  <td>Global Client</td>
-                  <td>{getFieldValueDisplay('isGlobalClient').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('isGlobalClient').new}</td>
-                </tr>
-              )}
-              
-              {/* Agent */}
-              {isFieldChanged('agent') && (
-                <tr>
-                  <td>Agent</td>
-                  <td>{getFieldValueDisplay('agent').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('agent').new}</td>
-                </tr>
-              )}
-              
-              {/* Head Group */}
-              {isFieldChanged('headGroup') && (
-                <tr>
-                  <td>Head Group</td>
-                  <td>{getFieldValueDisplay('headGroup').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('headGroup').new}</td>
-                </tr>
-              )}
-              
-              {/* WI Group */}
-              {isFieldChanged('wiGroup') && (
-                <tr>
-                  <td>WI Group</td>
-                  <td>{getFieldValueDisplay('wiGroup').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('wiGroup').new}</td>
-                </tr>
-              )}
-              
-              {/* WI Customized Group */}
-              {isFieldChanged('wiCustomizedGroup') && (
-                <tr>
-                  <td>WI Customized Group</td>
-                  <td>{getFieldValueDisplay('wiCustomizedGroup').old}</td>
-                  <td className="changed-value">{getFieldValueDisplay('wiCustomizedGroup').new}</td>
-                </tr>
-              )}
-              
-              {/* 如果没有任何字段被修改，显示提示信息 */}
-              {!Object.keys(formValues).some(key => isFieldChanged(key)) && (
-                <tr>
-                  <td colSpan="3" style={{ textAlign: 'center' }}>No changes detected</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <div>
+            {/* Head Group */}
+            <div className="field-row">
+              <div className="field-name">Head Group</div>
+              <div className="field-value">
+                {isFieldChanged('headGroup') ? (
+                  <>
+                    [O] {getFieldValueDisplay('headGroup').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('headGroup').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('headGroup').new
+                )}
+              </div>
+            </div>
+            
+            {/* WI Group */}
+            <div className="field-row">
+              <div className="field-name" style={{ color: isFieldChanged('wiGroup') ? '#f5222d' : '#333' }}>WI Group</div>
+              <div className="field-value">
+                {isFieldChanged('wiGroup') ? (
+                  <>
+                    [O] {getFieldValueDisplay('wiGroup').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('wiGroup').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('wiGroup').new
+                )}
+              </div>
+            </div>
+            
+            {/* WI Customized Group */}
+            <div className="field-row">
+              <div className="field-name" style={{ color: isFieldChanged('wiCustomizedGroup') ? '#f5222d' : '#333' }}>WI Customized Group</div>
+              <div className="field-value">
+                {isFieldChanged('wiCustomizedGroup') ? (
+                  <>
+                    [O] {getFieldValueDisplay('wiCustomizedGroup').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('wiCustomizedGroup').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('wiCustomizedGroup').new || 'xxx'
+                )}
+              </div>
+            </div>
+            
+            {/* GFAS Account No */}
+            <div className="field-row">
+              <div className="field-name">GFAS Account No</div>
+              <div className="field-value">
+                {formValues.gfasAccountNo || ''}
+              </div>
+            </div>
+            
+            {/* GFAS Account Name */}
+            <div className="field-row">
+              <div className="field-name">GFAS Account Name</div>
+              <div className="field-value">
+                {formValues.gfasAccountName || ''}
+              </div>
+            </div>
+            
+            {/* Alt ID - 只在GFAS Account No为'CCC 111111'时显示 */}
+            {formValues.gfasAccountNo === 'CCC 111111' && (
+              <div className="field-row">
+                <div className="field-name" style={{ color: isFieldChanged('altId') ? '#f5222d' : '#333' }}>Alt ID</div>
+                <div className="field-value">
+                  {isFieldChanged('altId') ? (
+                    <>
+                      [O] {getFieldValueDisplay('altId').old}<br />
+                      <span className="new-value">[N] {getFieldValueDisplay('altId').new}</span>
+                    </>
+                  ) : (
+                    getFieldValueDisplay('altId').new
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {/* Fund Class */}
+            <div className="field-row">
+              <div className="field-name" style={{ color: isFieldChanged('fundClass') ? '#f5222d' : '#333' }}>Fund Class</div>
+              <div className="field-value">
+                {isFieldChanged('fundClass') ? (
+                  <>
+                    [O] {getFieldValueDisplay('fundClass').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('fundClass').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('fundClass').new
+                )}
+              </div>
+            </div>
+            
+            {/* Pension Category */}
+            <div className="field-row">
+              <div className="field-name" style={{ color: isFieldChanged('pensionCategory') ? '#f5222d' : '#333' }}>Pension Category</div>
+              <div className="field-value">
+                {isFieldChanged('pensionCategory') ? (
+                  <>
+                    [O] {getFieldValueDisplay('pensionCategory').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('pensionCategory').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('pensionCategory').new
+                )}
+              </div>
+            </div>
+            
+            {/* Portfolio Nature */}
+            <div className="field-row">
+              <div className="field-name" style={{ color: isFieldChanged('portfolioNature') ? '#f5222d' : '#333' }}>Portfolio Nature</div>
+              <div className="field-value">
+                {isFieldChanged('portfolioNature') ? (
+                  <>
+                    [O] {getFieldValueDisplay('portfolioNature').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('portfolioNature').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('portfolioNature').new
+                )}
+              </div>
+            </div>
+            
+            {/* Member Choice */}
+            <div className="field-row">
+              <div className="field-name" style={{ color: isFieldChanged('memberChoice') ? '#f5222d' : '#333' }}>Member Choice</div>
+              <div className="field-value">
+                {isFieldChanged('memberChoice') ? (
+                  <>
+                    [O] {getFieldValueDisplay('memberChoice').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('memberChoice').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('memberChoice').new
+                )}
+              </div>
+            </div>
+            
+            {/* RM */}
+            <div className="field-row">
+              <div className="field-name">RM</div>
+              <div className="field-value">
+                {isFieldChanged('rm') ? (
+                  <>
+                    [O] {getFieldValueDisplay('rm').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('rm').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('rm').new
+                )}
+              </div>
+            </div>
+            
+            {/* Global Client */}
+            <div className="field-row">
+              <div className="field-name" style={{ color: isFieldChanged('isGlobalClient') ? '#f5222d' : '#333' }}>Global Client</div>
+              <div className="field-value">
+                {isFieldChanged('isGlobalClient') ? (
+                  <>
+                    [O] {getFieldValueDisplay('isGlobalClient').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('isGlobalClient').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('isGlobalClient').new
+                )}
+              </div>
+            </div>
+            
+            {/* Agent */}
+            <div className="field-row">
+              <div className="field-name">Agent</div>
+              <div className="field-value">
+                {isFieldChanged('agent') ? (
+                  <>
+                    [O] {getFieldValueDisplay('agent').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('agent').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('agent').new
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </Modal>
     </>
