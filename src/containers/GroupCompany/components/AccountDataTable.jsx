@@ -64,7 +64,9 @@ const AccountDataTable = ({
   handleCloseFilter,
   pagination,
   onChange,
-  userRoleInfo = {} // 添加用户角色信息参数
+  userRoleInfo = {},
+  onEditRow, // 添加编辑行的回调函数
+  onDeleteRow // 添加删除行的回调函数
 }) => {
   const [searchForm] = Form.useForm();
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
@@ -517,7 +519,9 @@ const AccountDataTable = ({
               size="small"
               icon={<EditOutlined />}
               disabled={!isEditable}
-              onClick={() => {}}
+              onClick={() => {
+                onEditRow && onEditRow(record);
+              }}
             >
               Edit
             </Button>
@@ -527,7 +531,7 @@ const AccountDataTable = ({
               size="small"
               icon={<DeleteOutlined />}
               disabled={!isDeletable}
-              onClick={() => {}}
+              onClick={() => onDeleteRow && onDeleteRow(record)}
             >
               Delete
             </Button>

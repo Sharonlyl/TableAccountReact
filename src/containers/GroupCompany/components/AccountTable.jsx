@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Form, Row, Col, message, ConfigProvider, Spin } from "antd";
+import { Form, Row, Col, message, ConfigProvider, Spin, Modal } from "antd";
 import "../../../styles/account/AccountTable.css";
 import axios from "axios";
 import SearchForm from "./SearchForm";
 import ActionButtons from "./ActionButtons";
 import AccountDataTable from "./AccountDataTable";
+import AddAccountModal from "./AddAccountModal";
+import EditAccountModal from "./EditAccountModal";
 import URL_CONS from '../../../constants/url';
 import { queryUserByDepartments, queryUserRole } from '../../../api/groupCompany';
 
@@ -36,6 +38,12 @@ const AccountTable = () => {
   const [filterParams, setFilterParams] = useState({});
   // 添加选中行数据的状态
   const [selectedRows, setSelectedRows] = useState([]);
+  // 添加弹窗可见性状态
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  // 添加编辑弹窗可见性状态
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  // 添加当前编辑的记录
+  const [currentRecord, setCurrentRecord] = useState(null);
 
   // 使用useCallback和防抖函数优化搜索函数
   const debouncedExecuteSearch = useCallback(
@@ -243,19 +251,31 @@ const AccountTable = () => {
   const formatResponseData = (list) => {
     return list.map(item => ({
       key: item.mappingId,
+      mappingId: item.mappingId,
       gfasAccountNo: item.gfasAccountNo,
-      altId: item.alternativeId,
+      alternativeId: item.alternativeId,
+      altId: item.alternativeId, // 为了兼容性添加altId字段
       gfasAccountName: item.gfasAccountName,
       headGroup: item.headGroupName,
+      headGroupId: item.headGroupId,
+      headGroupName: item.headGroupName,
       wiGroup: item.wiGroupName,
+      wiGroupId: item.wiGroupId,
+      wiGroupName: item.wiGroupName,
       wiCustomizedGroup: item.wiCustomizedGroupName,
+      wiCustomizedGroupId: item.wiCustomizedGroupId,
+      wiCustomizedGroupName: item.wiCustomizedGroupName,
       fundClass: item.fundClass,
       pensionCategory: item.pensionCategory,
       portfolioNature: item.portfolioNature,
       memberChoice: item.memberChoice,
       rm: item.rmName,
       agent: item.agent,
-      globalClient: item.isGlobalClient // 直接使用后端返回的Y或N
+      globalClient: item.isGlobalClient,
+      lastUpdatedBy: item.lastUpdatedBy,
+      lastUpdatedDate: item.lastUpdatedDate,
+      createdBy: item.createdBy,
+      createdDate: item.createdDate
     }));
   };
 
@@ -366,12 +386,91 @@ const AccountTable = () => {
   };
 
   const handleAdd = () => {
+    setAddModalVisible(true);
   };
 
+  // 处理保存新账户
+  const handleSaveAccount = (values) => {
+    // 刷新表格数据
+    executeSearch(form.getFieldsValue(), pagination);
+  };
+
+  // 处理取消添加
+  const handleCancelAdd = () => {
+    setAddModalVisible(false);
+  };
+
+  // 处理编辑按钮点击
   const handleEdit = () => {
+    if (selectedRows.length === 1) {
+      setCurrentRecord(selectedRows[0]);
+      setEditModalVisible(true);
+    } else {
+      messageApi.warning('Please select one record to edit');
+    }
   };
 
+  // 处理取消编辑
+  const handleCancelEdit = () => {
+    setEditModalVisible(false);
+    setCurrentRecord(null);
+  };
+
+  // 处理保存编辑
+  const handleSaveEdit = (values) => {
+    // 刷新表格数据
+    executeSearch(form.getFieldsValue(), pagination);
+  };
+
+  // 处理行内编辑按钮点击
+  const handleEditRow = (record) => {
+    console.log('AccountTable接收到的编辑记录:', record);
+    setCurrentRecord(record);
+    console.log('设置currentRecord后的值:', record);
+    setEditModalVisible(true);
+  };
+
+  // 处理行内删除按钮点击
+  const handleDeleteRow = (record) => {
+    Modal.confirm({
+      title: 'Confirm Delete',
+      content: `Are you sure you want to delete the record for ${record.gfasAccountNo}?`,
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        // 这里应该调用删除API
+        console.log('Delete record:', record);
+        messageApi.success('Record deleted successfully');
+        // 刷新表格数据
+        executeSearch(form.getFieldsValue(), pagination);
+      }
+    });
+  };
+
+  // 处理删除按钮点击
   const handleDelete = () => {
+    if (selectedRows.length > 0) {
+      Modal.confirm({
+        title: 'Confirm Delete',
+        content: `Are you sure you want to delete ${selectedRows.length} selected record(s)?`,
+        okText: 'Yes',
+        okType: 'danger',
+        cancelText: 'No',
+        onOk() {
+          // 这里应该调用批量删除API
+          console.log('Delete records:', selectedRows);
+          messageApi.success('Records deleted successfully');
+          // 清空选中状态
+          setSelectedRowKeys([]);
+          setSelectedRows([]);
+          // 刷新表格数据
+          executeSearch(form.getFieldsValue(), pagination);
+        }
+      });
+    } else {
+      messageApi.warning('Please select at least one record to delete');
+    }
   };
 
   // 处理分页变化
@@ -438,9 +537,26 @@ const AccountTable = () => {
                 pagination={pagination}
                 onChange={handleTableChange}
                 userRoleInfo={userRoleInfo}
+                onEditRow={handleEditRow}
+                onDeleteRow={handleDeleteRow}
               />
             </Col>
           </Row>
+
+          {/* 添加账户弹窗 */}
+          <AddAccountModal
+            visible={addModalVisible}
+            onCancel={handleCancelAdd}
+            onSave={handleSaveAccount}
+          />
+
+          {/* 编辑账户弹窗 */}
+          <EditAccountModal
+            visible={editModalVisible}
+            onCancel={handleCancelEdit}
+            onSave={handleSaveEdit}
+            record={currentRecord}
+          />
         </div>
       </Spin>
     </ConfigProvider>

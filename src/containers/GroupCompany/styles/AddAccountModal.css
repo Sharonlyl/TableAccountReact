@@ -1,0 +1,201 @@
+/* 表单项样式 - 水平排列标签和输入框 */
+.form-item {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 标签样式 */
+.label {
+  font-weight: 600;
+  width: 180px;
+  text-align: left;
+  margin-right: 10px;
+}
+
+/* 必填项星号样式 */
+.required-mark {
+  color: #ff4d4f;
+  margin-left: 4px;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+}
+
+/* 输入框和下拉框的宽度样式 */
+.input-style {
+  width: 300px;
+}
+
+/* 覆盖 Ant Design 输入框失去焦点时的蓝色边框 */
+.input-style.ant-input:focus,
+.input-style .ant-input:focus,
+.input-style.ant-select-focused .ant-select-selector,
+.input-style .ant-select-focused .ant-select-selector {
+  border-color: #d9d9d9 !important;
+  box-shadow: none !important;
+}
+
+/* 覆盖浏览器自动填充的样式 */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.85) !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* 保持placeholder的原始样式 */
+input::-webkit-input-placeholder {
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.25) !important;
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+input:-moz-placeholder {
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+input::-moz-placeholder {
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+input:-ms-input-placeholder {
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 输入框错误状态 */
+.input-error {
+  border-color: #ff4d4f !important;
+}
+
+/* Radio组错误状态 */
+.radio-error .ant-radio-wrapper .ant-radio-inner {
+  border-color: #ff4d4f !important;
+}
+
+.radio-error .ant-radio-wrapper:hover .ant-radio-inner {
+  border-color: #ff4d4f !important;
+}
+
+/* 按钮容器样式 */
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* 按钮样式 */
+.button {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* 输入框旁边的加号按钮样式 */
+.add-button {
+  margin-left: 8px;
+}
+
+/* 表单容器样式 */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Checkbox错误样式 */
+.checkbox-error .ant-checkbox .ant-checkbox-inner {
+  border-color: #ff4d4f !important;
+}
+
+.checkbox-error .ant-checkbox:hover .ant-checkbox-inner {
+  border-color: #ff4d4f !important;
+}
+
+/* 确认对话框样式 */
+.confirm-content {
+  margin: 16px 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.confirm-content .ant-row {
+  max-width: 450px;
+  width: 100%;
+  margin-left: 0;
+}
+
+.confirm-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 8px;
+  justify-content: flex-start;
+}
+
+.confirm-label {
+  font-weight: 600;
+  min-width: 180px;
+  text-align: left;
+  padding-right: 12px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.confirm-value {
+  text-align: left;
+  color: rgba(0, 0, 0, 0.65);
+  flex: 1;
+}
+
+/* 确认对话框按钮容器样式 */
+.confirm-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirm-button-container .ant-btn {
+  margin: 0 10px;
+}
+
+/* 确认对话框按钮样式 */
+.ant-modal-footer .ant-btn {
+  margin-left: 10px;
+}
+
+/* 编辑对话框样式 */
+.edit-account-form .has-error .ant-input,
+.edit-account-form .has-error .ant-select-selector,
+.edit-account-form .has-error .ant-radio-group {
+  border-color: #ff4d4f !important;
+}
+
+/* 添加对has-error类的Radio组支持 */
+.has-error .ant-radio-wrapper .ant-radio-inner {
+  border-color: #ff4d4f !important;
+}
+
+.has-error .ant-radio-wrapper:hover .ant-radio-inner {
+  border-color: #ff4d4f !important;
+}
+
+.confirm-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.confirm-table th,
+.confirm-table td {
+  border: 1px solid #f0f0f0;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.confirm-table th {
+  background-color: #fafafa;
+  font-weight: 500;
+}
+
+.changed-value {
+  color: #ff4d4f;
+  font-weight: 500;
+} 
