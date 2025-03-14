@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Form, Input, Select, Checkbox, Radio, Button, Row, Col, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { querylmrReferenceByCategory, queryUserByDepartments, queryHeadGroup, queryWIGroup, queryWICustomizedGroup, queryGroupCompanyByCondition, addGroupCompanyMapping } from '../../../api/groupCompany';
+import { queryImrReferenceByCategory, queryUserByDepartments, queryHeadGroup, queryWIGroup, queryWICustomizedGroup, queryGroupCompanyByCondition, addGroupCompanyMapping } from '../../../api/groupCompany';
 import axios from 'axios';
 import '../styles/AddAccountModal.css';
 
@@ -83,7 +83,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
   // 获取下拉框选项数据
   const fetchOptions = async () => {
     try {
-      const response = await querylmrReferenceByCategory({
+      const response = await queryImrReferenceByCategory({
         categoryList: 'FUND_CLASS,PORTFOLIO_NATURE,PENSION_CATEGORY,MEMBER_CHOICE'
       });
       

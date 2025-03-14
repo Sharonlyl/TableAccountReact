@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Form, Input, Select, Checkbox, Radio, Button, Row, Col, Space, message } from 'antd';
-import { querylmrReferenceByCategory, queryUserByDepartments, queryHeadGroup, queryWIGroup, queryWICustomizedGroup, updateGroupCompanyMapping } from '../../../api/groupCompany';
+import { PlusOutlined } from '@ant-design/icons';
+import { queryImrReferenceByCategory, queryUserByDepartments, queryHeadGroup, queryWIGroup, queryWICustomizedGroup, saveGroupMapping } from '../../../api/groupCompany';
 import '../styles/AddAccountModal.css';
 
 // 添加确认对话框的样式
@@ -96,6 +97,13 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
     wiCustomizedGroup: null
   });
   const [isSearching, setIsSearching] = useState({
+    headGroup: false,
+    wiGroup: false,
+    wiCustomizedGroup: false
+  });
+
+  // 添加状态来跟踪是否已经显示过搜索提示信息
+  const [hasShownSearchTip, setHasShownSearchTip] = useState({
     headGroup: false,
     wiGroup: false,
     wiCustomizedGroup: false
@@ -257,6 +265,13 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
           } : null
         });
       }
+      
+      // 重置搜索提示状态
+      setHasShownSearchTip({
+        headGroup: false,
+        wiGroup: false,
+        wiCustomizedGroup: false
+      });
     }
   }, [visible, record, form]);
 
@@ -272,7 +287,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
   // 获取下拉框选项数据
   const fetchOptions = async () => {
     try {
-      const response = await querylmrReferenceByCategory({
+      const response = await queryImrReferenceByCategory({
         categoryList: 'FUND_CLASS,PORTFOLIO_NATURE,PENSION_CATEGORY,MEMBER_CHOICE'
       });
       
@@ -395,9 +410,6 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
   const searchGroup = async (value, groupType) => {
     if (!value || value.trim() === '' || value.length < 4) {
       // 如果输入少于4个字符，不执行搜索
-      if (value && value.length > 0 && value.length < 4) {
-        messageApi.info('Please input at least 4 characters to search');
-      }
       return;
     }
     
@@ -618,16 +630,49 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
     }
   };
 
-  // 添加监听GFAS Account No值变化的函数
-  const handleAccountNoChange = (value) => {
-    setShowAltId(value === 'CCC 111111');
+  // 处理字母数字输入校验
+  const handleAlphanumericInput = (e) => {
+    // 只允许字母、数字和空格
+    const { value } = e.target;
+    const reg = /^[a-zA-Z0-9\s]*$/;
     
-    // 当GFAS Account No被清空时，也清空GFAS Account Name的值
-    if (!value || value.trim() === '') {
-      form.setFieldsValue({
-        gfasAccountName: ''
-      });
+    if (!reg.test(value)) {
+      e.preventDefault();
+      messageApi.warning('只允许输入字母、数字和空格');
     }
+  };
+
+  // 处理账号输入并转换为大写
+  const handleAccountNoChange = (value) => {
+    // 转换为大写
+    const upperCaseValue = value ? value.toUpperCase() : '';
+    
+    // 更新表单字段值为大写
+    form.setFieldsValue({
+      gfasAccountNo: upperCaseValue
+    });
+    
+    // 如果有值，清除错误状态
+    if (upperCaseValue && upperCaseValue.trim() !== '') {
+      setFormErrors(prev => ({
+        ...prev,
+        gfasAccountNo: false
+      }));
+    }
+    
+    // 检查是否需要显示Alt Id
+    setShowAltId(upperCaseValue === 'CCC 111111');
+  };
+  
+  // 处理Alt ID输入并转换为大写
+  const handleAltIdChange = (value) => {
+    // 转换为大写
+    const upperCaseValue = value ? value.toUpperCase() : '';
+    
+    // 更新表单字段值为大写
+    form.setFieldsValue({
+      altId: upperCaseValue
+    });
   };
 
   // 处理Fund Class变更
@@ -779,11 +824,14 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
       agent: formValues.agent || '',
       headGroupId: formValues.headGroup || '',
       wiGroupId: formValues.wiGroup || '',
-      wiCustomizedGroupId: formValues.wiCustomizedGroup || null
+      wiCustomizedGroupId: formValues.wiCustomizedGroup || null,
+      headGroupName: formValues.headGroupName || '',
+      wiGroupName: formValues.wiGroupName || '',
+      wiCustomizedGroupName: formValues.wiCustomizedGroupName || ''
     };
     
     // 调用API
-    updateGroupCompanyMapping(params)
+    saveGroupMapping(params)
       .then(response => {
         if (response.success) {
           messageApi.success('Record updated successfully');
@@ -872,6 +920,11 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
       default:
         break;
     }
+  };
+
+  // 处理跳转到其他页面的按钮点击（暂未实现）
+  const handleNavigate = (type) => {
+    // 这里将来会实现跳转功能
   };
 
   // 检查字段是否被修改
@@ -969,7 +1022,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
       {contextHolder}
       <style>{confirmModalStyles}</style>
       <Modal
-        title="Edit Account"
+        title="Edit Group Company Mapping"
         open={visible}
         onCancel={handleCancel}
         width={600}
@@ -1053,6 +1106,14 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   defaultOpen={false}
                   labelInValue
                   optionLabelProp="children"
+                  suffixIcon={
+                    <Button 
+                      type="text" 
+                      icon={<PlusOutlined />} 
+                      className="add-button"
+                      onClick={() => handleNavigate('headGroup')}
+                    />
+                  }
                 >
                   {headGroupOptions.map((option, index) => (
                     <Select.Option 
@@ -1100,6 +1161,14 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   defaultOpen={false}
                   labelInValue
                   optionLabelProp="children"
+                  suffixIcon={
+                    <Button 
+                      type="text" 
+                      icon={<PlusOutlined />} 
+                      className="add-button"
+                      onClick={() => handleNavigate('wiGroup')}
+                    />
+                  }
                 >
                   {wiGroupOptions.map((option, index) => (
                     <Select.Option 
@@ -1143,6 +1212,14 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   defaultOpen={false}
                   labelInValue
                   optionLabelProp="children"
+                  suffixIcon={
+                    <Button 
+                      type="text" 
+                      icon={<PlusOutlined />} 
+                      className="add-button"
+                      onClick={() => handleNavigate('wiCustomizedGroup')}
+                    />
+                  }
                 >
                   {wiCustomizedGroupOptions.map((option, index) => (
                     <Select.Option 
@@ -1168,6 +1245,13 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                 name="gfasAccountNo"
                 noStyle
                 className={formErrors.gfasAccountNo ? 'has-error' : ''}
+                rules={[
+                  { required: true },
+                  { 
+                    pattern: /^[a-zA-Z0-9\s]*$/, 
+                    message: '只允许字母、数字和空格' 
+                  }
+                ]}
               >
                 <Input 
                   disabled 
@@ -1176,15 +1260,8 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                     // 即使输入框是禁用的，也确保值变化能够被处理
                     const { value } = e.target;
                     handleAccountNoChange(value);
-                    
-                    // 如果有值，清除错误状态
-                    if (value && value.trim() !== '') {
-                      setFormErrors(prev => ({
-                        ...prev,
-                        gfasAccountNo: false
-                      }));
-                    }
                   }}
+                  onKeyPress={handleAlphanumericInput}
                 />
               </Form.Item>
             </div>
@@ -1197,8 +1274,24 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   name="altId"
                   noStyle
                   className={formErrors.altId ? 'has-error' : ''}
+                  rules={[
+                    { 
+                      pattern: /^[a-zA-Z0-9\s]*$/, 
+                      message: '只允许字母、数字和空格' 
+                    }
+                  ]}
                 >
-                  <Input className="input-style" />
+                  <Input 
+                    className="input-style" 
+                    placeholder="Letters, numbers and spaces only"
+                    onChange={(e) => {
+                      // 将输入值转换为大写并更新表单
+                      const upperCaseValue = e.target.value.toUpperCase();
+                      form.setFieldsValue({ altId: upperCaseValue });
+                    }}
+                    onBlur={(e) => handleAltIdChange(e.target.value)}
+                    onKeyPress={handleAlphanumericInput}
+                  />
                 </Form.Item>
               </div>
             )}
@@ -1339,9 +1432,9 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                 name="agent"
                 noStyle
                 className={formErrors.agent ? 'has-error' : ''}
-                rules={[{ required: true, message: 'Please enter Agent' }]}
+                rules={[{ required: true, message: 'Please input Agent' }]}
               >
-                <Input placeholder="Enter Agent" className="input-style" />
+                <Input placeholder="Please input Agent" className="input-style" />
               </Form.Item>
             </div>
 
@@ -1401,7 +1494,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
           <div>
             {/* Head Group */}
             <div className="field-row">
-              <div className="field-name">Head Group</div>
+              <div className="field-name" style={{ color: isFieldChanged('headGroup') ? '#f5222d' : '#333' }}>Head Group</div>
               <div className="field-value">
                 {isFieldChanged('headGroup') ? (
                   <>
@@ -1539,7 +1632,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
             
             {/* RM */}
             <div className="field-row">
-              <div className="field-name">RM</div>
+              <div className="field-name" style={{ color: isFieldChanged('rm') ? '#f5222d' : '#333' }}>RM</div>
               <div className="field-value">
                 {isFieldChanged('rm') ? (
                   <>
@@ -1548,6 +1641,21 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   </>
                 ) : (
                   getFieldValueDisplay('rm').new
+                )}
+              </div>
+            </div>
+            
+            {/* Agent */}
+            <div className="field-row">
+              <div className="field-name" style={{ color: isFieldChanged('agent') ? '#f5222d' : '#333' }}>Agent</div>
+              <div className="field-value">
+                {isFieldChanged('agent') ? (
+                  <>
+                    [O] {getFieldValueDisplay('agent').old}<br />
+                    <span className="new-value">[N] {getFieldValueDisplay('agent').new}</span>
+                  </>
+                ) : (
+                  getFieldValueDisplay('agent').new
                 )}
               </div>
             </div>
@@ -1563,21 +1671,6 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   </>
                 ) : (
                   getFieldValueDisplay('isGlobalClient').new
-                )}
-              </div>
-            </div>
-            
-            {/* Agent */}
-            <div className="field-row">
-              <div className="field-name">Agent</div>
-              <div className="field-value">
-                {isFieldChanged('agent') ? (
-                  <>
-                    [O] {getFieldValueDisplay('agent').old}<br />
-                    <span className="new-value">[N] {getFieldValueDisplay('agent').new}</span>
-                  </>
-                ) : (
-                  getFieldValueDisplay('agent').new
                 )}
               </div>
             </div>

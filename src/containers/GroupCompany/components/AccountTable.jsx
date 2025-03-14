@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Form, Row, Col, message, ConfigProvider, Spin, Modal } from "antd";
+import { Form, Row, Col, message, ConfigProvider, Spin, Modal, Button, Space } from "antd";
 import "../../../styles/account/AccountTable.css";
+import "../styles/GroupCompany.css";
 import axios from "axios";
 import SearchForm from "./SearchForm";
 import ActionButtons from "./ActionButtons";
@@ -8,7 +9,7 @@ import AccountDataTable from "./AccountDataTable";
 import AddAccountModal from "./AddAccountModal";
 import EditAccountModal from "./EditAccountModal";
 import URL_CONS from '../../../constants/url';
-import { queryUserByDepartments, queryUserRole } from '../../../api/groupCompany';
+import { queryUserByDepartments, queryUserRole, searchGroupCompany, removeGroupMapping } from '../../../api/groupCompany';
 
 // 防抖函数
 const debounce = (func, delay) => {
@@ -44,6 +45,10 @@ const AccountTable = () => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   // 添加当前编辑的记录
   const [currentRecord, setCurrentRecord] = useState(null);
+  // 添加删除确认对话框状态
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  // 添加要删除的记录状态
+  const [recordToDelete, setRecordToDelete] = useState(null);
 
   // 使用useCallback和防抖函数优化搜索函数
   const debouncedExecuteSearch = useCallback(
@@ -279,15 +284,7 @@ const AccountTable = () => {
   };
 
   // 调用API进行搜索
-  const searchGroupCompany = async (params) => {
-    try {
-      const response = await axios.post(URL_CONS.GROUP_COMPANY_FUZZY_SEARCH_URL, params);
-      return response.data;
-    } catch (error) {
-      console.error('API request failed:', error);
-      throw error;
-    }
-  };
+  // 删除内部定义的searchGroupCompany函数，使用导入的函数
 
   // 处理API响应
   const handleApiResponse = (response) => {
@@ -425,42 +422,59 @@ const AccountTable = () => {
 
   // 处理行内删除按钮点击
   const handleDeleteRow = (record) => {
-    Modal.confirm({
-      title: 'Confirm Delete',
-      content: `Are you sure you want to delete the record for ${record.gfasAccountNo}?`,
-      okText: 'Yes',
-      okType: 'danger',
-      cancelText: 'No',
-      onOk() {
-        // 这里应该调用删除API
-        console.log('Delete record:', record);
-        messageApi.success('Record deleted successfully');
-        // 刷新表格数据
-        executeSearch(form.getFieldsValue(), pagination);
+    // 设置要删除的记录
+    setRecordToDelete(record);
+    // 显示删除确认对话框
+    setDeleteModalVisible(true);
+  };
+
+  // 处理确认删除
+  const handleConfirmDelete = async () => {
+    if (recordToDelete) {
+      try {
+        setLoading(true);
+        const response = await removeGroupMapping(recordToDelete.mappingId);
+        if (response.success) {
+          messageApi.success('Record deleted successfully');
+          // 关闭确认对话框
+          setDeleteModalVisible(false);
+          // 清空要删除的记录
+          setRecordToDelete(null);
+          // 刷新表格数据
+          executeSearch(form.getFieldsValue(), pagination);
+        } else {
+          messageApi.error({
+            content: response.errMessage || "Failed to delete record",
+            duration: 3
+          });
+        }
+      } catch (error) {
+        showError(error);
+      } finally {
+        setLoading(false);
       }
-    });
+    }
+  };
+
+  // 处理取消删除
+  const handleCancelDelete = () => {
+    // 关闭确认对话框
+    setDeleteModalVisible(false);
+    // 清空要删除的记录
+    setRecordToDelete(null);
   };
 
   // 处理删除按钮点击
   const handleDelete = () => {
     if (selectedRows.length > 0) {
-      Modal.confirm({
-        title: 'Confirm Delete',
-        content: `Are you sure you want to delete ${selectedRows.length} selected record(s)?`,
-        okText: 'Yes',
-        okType: 'danger',
-        cancelText: 'No',
-        onOk() {
-          // 这里应该调用批量删除API
-          console.log('Delete records:', selectedRows);
-          messageApi.success('Records deleted successfully');
-          // 清空选中状态
-          setSelectedRowKeys([]);
-          setSelectedRows([]);
-          // 刷新表格数据
-          executeSearch(form.getFieldsValue(), pagination);
-        }
-      });
+      // 这里应该调用批量删除API
+      console.log('Delete records:', selectedRows);
+      messageApi.success('Records deleted successfully');
+      // 清空选中状态
+      setSelectedRowKeys([]);
+      setSelectedRows([]);
+      // 刷新表格数据
+      executeSearch(form.getFieldsValue(), pagination);
     } else {
       messageApi.warning('Please select at least one record to delete');
     }
@@ -550,6 +564,126 @@ const AccountTable = () => {
             onSave={handleSaveEdit}
             record={currentRecord}
           />
+
+          {/* 删除确认对话框 */}
+          <Modal
+            title="Delete Group Company Mapping"
+            open={deleteModalVisible}
+            onCancel={handleCancelDelete}
+            footer={
+              <div className="confirm-button-container">
+                <Button key="cancel" onClick={handleCancelDelete}>
+                  Cancel
+                </Button>
+                <Button key="confirm" type="primary" danger onClick={handleConfirmDelete}>
+                  Delete
+                </Button>
+              </div>
+            }
+            width={550}
+            centered
+          >
+            {recordToDelete && (
+              <div style={{ marginTop: '20px' }}>
+                <div style={{ paddingLeft: '60px' }}>
+                  <Row gutter={[16, 8]}>
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">Head Group:</span>
+                        <span className="confirm-value">{recordToDelete.headGroupName || recordToDelete.headGroup}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">WI Group:</span>
+                        <span className="confirm-value">{recordToDelete.wiGroupName || recordToDelete.wiGroup}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">WI Customized Group:</span>
+                        <span className="confirm-value">{recordToDelete.wiCustomizedGroupName || recordToDelete.wiCustomizedGroup || 'xxx'}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">GFAS Account No:</span>
+                        <span className="confirm-value">{recordToDelete.gfasAccountNo}</span>
+                      </div>
+                    </Col>
+                    
+                    {recordToDelete.gfasAccountNo === 'CCC 111111' && (
+                      <Col span={24}>
+                        <div className="confirm-item">
+                          <span className="confirm-label">Alt ID:</span>
+                          <span className="confirm-value">{recordToDelete.alternativeId || recordToDelete.altId}</span>
+                        </div>
+                      </Col>
+                    )}
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">GFAS Account Name:</span>
+                        <span className="confirm-value">{recordToDelete.gfasAccountName}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">Fund Class:</span>
+                        <span className="confirm-value">{recordToDelete.fundClass}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">Pension Category:</span>
+                        <span className="confirm-value">{recordToDelete.pensionCategory}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">Portfolio Nature:</span>
+                        <span className="confirm-value">{recordToDelete.portfolioNature}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">Member Choice:</span>
+                        <span className="confirm-value">{recordToDelete.memberChoice}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">RM:</span>
+                        <span className="confirm-value">{recordToDelete.rm}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">Agent:</span>
+                        <span className="confirm-value">{recordToDelete.agent}</span>
+                      </div>
+                    </Col>
+                    
+                    <Col span={24}>
+                      <div className="confirm-item">
+                        <span className="confirm-label">Global Client:</span>
+                        <span className="confirm-value">{recordToDelete.globalClient}</span>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+              </div>
+            )}
+          </Modal>
         </div>
       </Spin>
     </ConfigProvider>

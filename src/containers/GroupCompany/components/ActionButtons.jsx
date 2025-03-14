@@ -1,11 +1,13 @@
 import React from "react";
-import { Button, Space } from "antd";
+import { Button, Space, Popconfirm } from "antd";
 import {
   SearchOutlined,
   ClearOutlined,
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
+  QuestionCircleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
 const ActionButtons = ({
@@ -128,13 +130,22 @@ const ActionButtons = ({
         </Button>
         
         {/* Delete Selected按钮：根据角色和选中行的情况决定是否可用 */}
-        <Button
-          icon={<DeleteOutlined />}
-          onClick={onDelete}
+        <Popconfirm
+          title="Are you sure to delete this item?"
+          icon={<ExclamationCircleOutlined style={{ color: '#faad14' }} />}
+          onConfirm={onDelete}
+          okText="OK"
+          cancelText="Cancel"
+          okButtonProps={{ type: 'primary' }}
           disabled={isDeleteSelectedDisabled()}
         >
-          Delete Selected
-        </Button>
+          <Button
+            icon={<DeleteOutlined />}
+            disabled={isDeleteSelectedDisabled()}
+          >
+            Delete Selected
+          </Button>
+        </Popconfirm>
       </Space>
     </div>
   );

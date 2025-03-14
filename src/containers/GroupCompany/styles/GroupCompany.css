@@ -22,4 +22,30 @@
 
 .group-company-tabs .ant-tabs-tab-active {
   font-weight: 500;
+}
+
+/* 确认对话框样式 */
+.confirm-item {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.confirm-label {
+  width: 180px;
+  font-weight: 500;
+  color: #333;
+}
+
+.confirm-value {
+  flex: 1;
+}
+
+.confirm-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.confirm-button-container .ant-btn {
+  margin: 0 10px;
 } 
