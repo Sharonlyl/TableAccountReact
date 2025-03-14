@@ -507,13 +507,15 @@ const AccountDataTable = ({
       title: 'Action',
       key: 'action',
       width: 160,
+      align: 'center',
+      className: 'action-column',
       render: (_, record) => {
         // 根据权限控制按钮是否可用
         const isEditable = canEditRow(record);
         const isDeletable = canDeleteRow(record);
         
         return (
-          <Space size={4}>
+          <Space size={4} style={{ display: 'flex', justifyContent: 'center' }}>
             <Button 
               type="primary" 
               size="small"
