@@ -58,7 +58,6 @@ const AccountDataTable = ({
   data, 
   selectedRowKeys, 
   onSelectChange, 
-  handleSearch, 
   handleReset, 
   handleFilter, 
   handleCloseFilter,
@@ -486,7 +485,7 @@ const AccountDataTable = ({
       dataIndex: 'gfasAccountName',
       key: 'gfasAccountName',
       ellipsis: false,
-      width: 280,
+      width: 320,
     },
     {
       title: 'RM',
@@ -506,7 +505,7 @@ const AccountDataTable = ({
     {
       title: 'Action',
       key: 'action',
-      width: 160,
+      width: 120,
       align: 'center',
       className: 'action-column',
       render: (_, record) => {
@@ -515,7 +514,7 @@ const AccountDataTable = ({
         const isDeletable = canDeleteRow(record);
         
         return (
-          <Space size={4} style={{ display: 'flex', justifyContent: 'center' }}>
+          <Space size={16} style={{ display: 'flex', justifyContent: 'center' }}>
             <Button 
               type="primary" 
               size="small"

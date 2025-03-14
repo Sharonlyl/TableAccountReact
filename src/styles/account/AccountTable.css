@@ -136,10 +136,14 @@
 /* Action列样式 */
 .account-table-container .account-data-table .action-column .ant-table-cell {
   text-align: center !important;
+  width: 160px !important; /* 设置固定宽度 */
+  max-width: 160px !important; /* 设置最大宽度 */
 }
 
 .account-table-container .account-data-table th.action-column {
   text-align: center !important;
+  width: 160px !important; /* 设置固定宽度 */
+  max-width: 160px !important; /* 设置最大宽度 */
 }
 
 .account-table-container .account-data-table .action-column .ant-space {
@@ -151,5 +155,4 @@
 .account-table-container .account-data-table .action-column .ant-btn {
   min-width: 76px !important; /* 设置最小宽度，使Edit按钮与Delete按钮宽度一致 */
   text-align: center !important;
-  font-weight: 500 !important; /* 调整字体粗度为500 */
 }
