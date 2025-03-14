@@ -240,8 +240,8 @@ const AccountTable = () => {
       fundClass: formValues.fundClass || "",
       wiGroupName: formValues.wiGroup || "",
       isGlobalClient: (() => {
-        if (formValues.globalClient === true) return 'Y'
-        if (formValues.globalClient === false) return 'N'
+        if (formValues.globalClientY === true) return 'Y'
+        if (formValues.globalClientN === true) return 'N'
         return ''
       })(),
       pageSize: paginationParams.pageSize,
@@ -313,12 +313,12 @@ const AccountTable = () => {
 
   // 验证表单至少有一个字段有值
   const validateForm = (formValues) => {
-    const requiredFields = ['headGroup', 'gfasAccountNo', 'rm', 'wiGroup', 'fundClass', 'globalClient'];
+    const requiredFields = ['headGroup', 'gfasAccountNo', 'rm', 'wiGroup', 'fundClass'];
     
     const hasAtLeastOneField = requiredFields.some(field => {
       const value = formValues[field];
       return value !== undefined && value !== null && value !== "";
-    });
+    }) || formValues.globalClientY === true || formValues.globalClientN === true;
     
     if (!hasAtLeastOneField) {
       messageApi.error({

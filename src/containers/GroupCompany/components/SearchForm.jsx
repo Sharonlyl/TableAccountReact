@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Form, Input, Checkbox, Select, Row, Col } from 'antd';
+import { Form, Input, Checkbox, Select, Row, Col, Space } from 'antd';
 
 // 自定义表单项样式
 const formItemStyle = {
@@ -44,6 +44,24 @@ const FormField = ({ label, name, children, valuePropName }) => (
 const SearchForm = ({ form, onFormChange, rmUsers = [] }) => {
   // 统一的onChange处理函数
   const handleChange = () => onFormChange && onFormChange();
+  
+  // 处理Global Client Y选项变化
+  const handleGlobalClientYChange = (e) => {
+    // 如果选中Y，则取消选中N
+    if (e.target.checked) {
+      form.setFieldsValue({ globalClientN: false });
+    }
+    handleChange();
+  };
+  
+  // 处理Global Client N选项变化
+  const handleGlobalClientNChange = (e) => {
+    // 如果选中N，则取消选中Y
+    if (e.target.checked) {
+      form.setFieldsValue({ globalClientY: false });
+    }
+    handleChange();
+  };
   
   // 使用useMemo缓存表单配置，避免重复创建
   const formConfig = useMemo(() => ({
@@ -96,17 +114,25 @@ const SearchForm = ({ form, onFormChange, rmUsers = [] }) => {
       },
       {
         label: 'Global Client',
-        name: 'globalClient',
-        component: <Checkbox onChange={handleChange} />,
-        valuePropName: 'checked'
+        name: 'globalClientOptions',
+        component: (
+          <Space>
+            <Form.Item name="globalClientY" valuePropName="checked" noStyle>
+              <Checkbox onChange={handleGlobalClientYChange}>Y</Checkbox>
+            </Form.Item>
+            <Form.Item name="globalClientN" valuePropName="checked" noStyle>
+              <Checkbox onChange={handleGlobalClientNChange}>N</Checkbox>
+            </Form.Item>
+          </Space>
+        )
       }
     ]
-  }), [handleChange, rmUsers]);
+  }), [handleChange, handleGlobalClientYChange, handleGlobalClientNChange, rmUsers]);
 
   return (
     // 不使用search-form类，避免全局样式影响
     <div>
-      <Form form={form} layout="horizontal">
+      <Form form={form} layout="horizontal" initialValues={{ globalClientY: false, globalClientN: false }}>
         <Row gutter={24}>
           {formConfig.firstRow.map((field, index) => (
             <Col xs={24} md={8} key={`first-row-${index}`}>
