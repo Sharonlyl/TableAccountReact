@@ -224,7 +224,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
             value: wiGroupId.toString(),
             label: wiGroupName,
             data: {
-              wiGroupId: wiGroupId,
+              wiGroupId,
               groupName: wiGroupName
             }
           };
@@ -786,7 +786,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
         
         // 从验证错误信息中提取字段错误
         if (info && info.errorFields) {
-          info.errorFields.forEach(({ name, errors: fieldErrors }) => {
+          info.errorFields.forEach(({ name }) => {
             if (name && name.length > 0) {
               errors[name[0]] = true;
             }
@@ -824,7 +824,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
       agent: formValues.agent || '',
       headGroupId: formValues.headGroup || '',
       wiGroupId: formValues.wiGroup || '',
-      wiCustomizedGroupId: formValues.wiCustomizedGroup || null,
+      wiCustomizedGroupId: formValues.wiCustomizedGroup || '',
       headGroupName: formValues.headGroupName || '',
       wiGroupName: formValues.wiGroupName || '',
       wiCustomizedGroupName: formValues.wiCustomizedGroupName || ''
@@ -1062,15 +1062,15 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
               
               // 如果组值发生变化，输出更详细的信息
               if (changedValues.headGroup !== undefined) {
-                const label = headGroupOptions.find(option => option.value === changedValues.headGroup)?.label;
+                headGroupOptions.find(option => option.value === changedValues.headGroup)?.label;
               }
               
               if (changedValues.wiGroup !== undefined) {
-                const label = wiGroupOptions.find(option => option.value === changedValues.wiGroup)?.label;
+                 wiGroupOptions.find(option => option.value === changedValues.wiGroup)?.label;
               }
               
               if (changedValues.wiCustomizedGroup !== undefined) {
-                const label = wiCustomizedGroupOptions.find(option => option.value === changedValues.wiCustomizedGroup)?.label;
+                 wiCustomizedGroupOptions.find(option => option.value === changedValues.wiCustomizedGroup)?.label;
               }
             }}
           >
@@ -1249,7 +1249,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   { required: true },
                   { 
                     pattern: /^[a-zA-Z0-9\s]*$/, 
-                    message: '只允许字母、数字和空格' 
+                    message: 'Only letters, numbers and spaces' 
                   }
                 ]}
               >
@@ -1277,7 +1277,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   rules={[
                     { 
                       pattern: /^[a-zA-Z0-9\s]*$/, 
-                      message: '只允许字母、数字和空格' 
+                      message: 'Only letters, numbers and spaces' 
                     }
                   ]}
                 >

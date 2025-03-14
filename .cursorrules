@@ -33,6 +33,8 @@
     - 不要在jsx中直接调用axios，而是使用src/api/groupCompany.js目录下的api文件夹中的文件来调用。
     - 在新增api时，请在src/api/groupCompany.js文件中新增api，并确保api的参数和返回值与后端接口一致。
     - 新增api时，具体的url要写在src/constants/url.js文件中
+    - 表达式结果必须被使用，当使用诸如find()、filter()等方法查找数据并访问其属性时，必须将结果存储在变量中或直接使用（如在返回语句中），而不能仅执行表达式而丢弃结果。
+
 
     ### 解决问题时：
     - 全面阅读相关代码文件，理解所有代码的功能和逻辑。

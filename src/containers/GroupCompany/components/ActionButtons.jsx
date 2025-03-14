@@ -6,7 +6,6 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  QuestionCircleOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Form, Input, Button, Space, Empty, Row, Col, Typography, Card, Popconfirm } from 'antd';
+import { Table, Form, Input, Button, Space, Empty, Row, Col, Typography } from 'antd';
 import { 
-  SearchOutlined, FilterOutlined, CloseOutlined, EditOutlined, DeleteOutlined, 
-  QuestionCircleOutlined, ExclamationCircleOutlined
+  SearchOutlined, FilterOutlined, CloseOutlined, EditOutlined, DeleteOutlined
 } from '@ant-design/icons';
 import '../../../styles/account/AccountTable.css';
 
