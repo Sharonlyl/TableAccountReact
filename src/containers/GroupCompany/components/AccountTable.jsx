@@ -367,7 +367,18 @@ const AccountTable = () => {
       window.clearTableFilters();
     }
 
-    await executeSearch(formValues, pagination);
+    // 重置分页到第一页
+    const resetPagination = {
+      ...pagination,
+      current: 1,
+      pageSize: 20
+    };
+    
+    // 更新分页状态
+    setPagination(resetPagination);
+
+    // 使用重置后的分页参数执行搜索
+    await executeSearch(formValues, resetPagination);
   };
 
   // 表单操作函数
