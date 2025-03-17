@@ -367,21 +367,7 @@ const AccountTable = () => {
       window.clearTableFilters();
     }
 
-    // 设置固定的分页参数
-    const searchPagination = {
-      current: 1,
-      pageSize: 20
-    };
-    
-    // 更新分页状态
-    setPagination(prev => ({
-      ...prev,
-      current: 1,
-      pageSize: 20
-    }));
-
-    // 使用固定的分页参数进行搜索
-    await executeSearch(formValues, searchPagination);
+    await executeSearch(formValues, pagination);
   };
 
   // 表单操作函数
