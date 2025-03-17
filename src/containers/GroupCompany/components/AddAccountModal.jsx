@@ -285,7 +285,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
     
     if (!reg.test(value)) {
       e.preventDefault();
-      messageApi.warning('Only letters, numbers and spaces');
+      // 移除提示信息，但保留输入限制
     }
   };
 

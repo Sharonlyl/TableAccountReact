@@ -638,7 +638,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
     
     if (!reg.test(value)) {
       e.preventDefault();
-      messageApi.warning('只允许输入字母、数字和空格');
+      // 移除提示信息，但保留输入限制
     }
   };
 
