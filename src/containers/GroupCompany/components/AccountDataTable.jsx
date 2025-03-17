@@ -596,12 +596,13 @@ const AccountDataTable = ({
           expandedRowKeys,
           onExpandedRowsChange,
         }}
-        pagination={pagination || { 
+        pagination={{
+          ...pagination,
           position: ['bottomRight'],
           showSizeChanger: true,
           showQuickJumper: true,
           showTotal: (total, range) => `Prev ${range[0]} to ${range[1]} — ${total} Next`,
-          pageSize: 20
+          pageSize: pagination?.pageSize || 20
         }}
         onChange={(pagination, filters) => {
           setFilteredInfo(filters);
