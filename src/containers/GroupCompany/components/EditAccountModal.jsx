@@ -77,7 +77,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [options, setOptions] = useState({
     FUND_CLASS: [],
-    PORTFOLIO_NATURE: [],
+    PORTOFOLIO_NATURE: [],
     PENSION_CATEGORY: [],
     MEMBER_CHOICE: []
   });
@@ -288,7 +288,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
   const fetchOptions = async () => {
     try {
       const response = await queryImrReferenceByCategory({
-        categoryList: 'FUND_CLASS,PORTFOLIO_NATURE,PENSION_CATEGORY,MEMBER_CHOICE'
+        categoryList: 'FUND_CLASS,PORTOFOLIO_NATURE,PENSION_CATEGORY,MEMBER_CHOICE'
       });
       
       // 检查返回的数据结构
@@ -299,7 +299,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
         // 按category分类整理数据
         const newOptions = {
           FUND_CLASS: [],
-          PORTFOLIO_NATURE: [],
+          PORTOFOLIO_NATURE: [],
           PENSION_CATEGORY: [],
           MEMBER_CHOICE: []
         };
@@ -332,7 +332,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
         // 按category分类整理数据
         const newOptions = {
           FUND_CLASS: [],
-          PORTFOLIO_NATURE: [],
+          PORTOFOLIO_NATURE: [],
           PENSION_CATEGORY: [],
           MEMBER_CHOICE: []
         };
@@ -680,7 +680,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
     if (value === 'FRMT') {
       // 当选择FRMT时，自动设置相关字段
       // 从options中查找对应的值
-      const dcFullService = options.PORTFOLIO_NATURE.find(option => 
+      const dcFullService = options.PORTOFOLIO_NATURE.find(option => 
         option.value === 'DC(full service)'
       )?.value || '';
       
@@ -812,9 +812,9 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
     // 准备API请求参数
     const params = {
       mappingId: formValues.mappingId || '',
-      gfAsAccountNo: formValues.gfasAccountNo || '',
-      alternateId: formValues.altId || '',
-      gfAsAccountName: formValues.gfasAccountName || '',
+      gfasAccountNo: formValues.gfasAccountNo || '',
+      alternativeId: formValues.altId || '',
+      gfasAccountName: formValues.gfasAccountName || '',
       fundClass: formValues.fundClass || '',
       pensionCategory: formValues.pensionCategory || '',
       portfolioNature: formValues.portfolioNature || '',
@@ -1379,7 +1379,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
               >
                 <Select
                   placeholder="Select Portfolio Nature"
-                  options={options.PORTFOLIO_NATURE}
+                  options={options.PORTOFOLIO_NATURE}
                   className="input-style"
                 />
               </Form.Item>

@@ -12,7 +12,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
   const [showAltId, setShowAltId] = useState(false);
   const [options, setOptions] = useState({
     FUND_CLASS: [],
-    PORTFOLIO_NATURE: [],
+    PORTOFOLIO_NATURE: [],
     PENSION_CATEGORY: [],
     MEMBER_CHOICE: []
   });
@@ -84,7 +84,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
   const fetchOptions = async () => {
     try {
       const response = await queryImrReferenceByCategory({
-        categoryList: 'FUND_CLASS,PORTFOLIO_NATURE,PENSION_CATEGORY,MEMBER_CHOICE'
+        categoryList: 'FUND_CLASS,PORTOFOLIO_NATURE,PENSION_CATEGORY,MEMBER_CHOICE'
       });
       
       // 检查返回的数据结构
@@ -95,7 +95,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         // 按category分类整理数据
         const newOptions = {
           FUND_CLASS: [],
-          PORTFOLIO_NATURE: [],
+          PORTOFOLIO_NATURE: [],
           PENSION_CATEGORY: [],
           MEMBER_CHOICE: []
         };
@@ -126,7 +126,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         // 按category分类整理数据
         const newOptions = {
           FUND_CLASS: [],
-          PORTFOLIO_NATURE: [],
+          PORTOFOLIO_NATURE: [],
           PENSION_CATEGORY: [],
           MEMBER_CHOICE: []
         };
@@ -213,7 +213,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         const response = await queryGroupCompanyByCondition({
           pageSize: 0,
           pageNum: 0,
-          gfAsAccountNo: upperCaseValue
+          gfasAccountNo: upperCaseValue
         });
         
         // 检查API响应
@@ -221,17 +221,17 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
           // 获取第一个匹配的账户名称
           const accountData = response.data[0];
           
-          // 检查gfAsAccountName是否为空
-          if (accountData.gfAsAccountName) {
-            setAccountName(accountData.gfAsAccountName);
-            setOriginalAccountName(accountData.gfAsAccountName);
+          // 检查gfasAccountName是否为空
+          if (accountData.gfasAccountName) {
+            setAccountName(accountData.gfasAccountName);
+            setOriginalAccountName(accountData.gfasAccountName);
             // 如果账户名称有值，清除错误状态
             setFormErrors(prev => ({
               ...prev,
               gfasAccountName: false
             }));
           } else {
-            // 如果gfAsAccountName为空，清空账户名称
+            // 如果gfasAccountName为空，清空账户名称
             setAccountName('');
             setOriginalAccountName('');
             // 显示提示信息
@@ -550,7 +550,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
     if (value === 'FRMT') {
       // 当选择FRMT时，自动设置相关字段
       // 从options中查找对应的值
-      const dcFullService = options.PORTFOLIO_NATURE.find(option => 
+      const dcFullService = options.PORTOFOLIO_NATURE.find(option => 
         option.value === 'DC(full service)'
       )?.value || '';
       
@@ -687,9 +687,9 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
   const handleConfirm = () => {
     // 准备API请求参数
     const params = {
-      gfAsAccountNo: formValues.gfasAccountNo,
-      alternateId: formValues.altId || '',
-      gfAsAccountName: formValues.gfasAccountName,
+      gfasAccountNo: formValues.gfasAccountNo,
+      alternativeId: formValues.altId || '',
+      gfasAccountName: formValues.gfasAccountName,
       fundClass: formValues.fundClass,
       pensionCategory: formValues.pensionCategory,
       portfolioNature: formValues.portfolioNature,
@@ -1071,7 +1071,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
                   placeholder="Please select Portfolio Nature"
                   className={`input-style ${formErrors.portfolioNature ? 'input-error' : ''}`}
                 >
-                  {options.PORTFOLIO_NATURE.map(option => (
+                  {options.PORTOFOLIO_NATURE.map(option => (
                     <Select.Option key={option.value} value={option.value}>
                       {option.label}
                     </Select.Option>
