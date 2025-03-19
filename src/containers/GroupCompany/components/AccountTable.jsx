@@ -313,14 +313,19 @@ const AccountTable = () => {
     }
   };
 
-  // 验证表单至少有一个字段有值
-  const validateForm = (formValues) => {
-    const requiredFields = ['headGroup', 'gfasAccountNo', 'rm', 'wiGroup', 'fundClass'];
+  // 添加一个辅助函数来检查搜索条件是否全部为空
+  const hasAnySearchCriteria = (formValues) => {
+    const fields = ['headGroup', 'gfasAccountNo', 'rm', 'wiGroup', 'fundClass'];
     
-    const hasAtLeastOneField = requiredFields.some(field => {
+    return fields.some(field => {
       const value = formValues[field];
       return value !== undefined && value !== null && value !== "";
     }) || formValues.globalClientY === true || formValues.globalClientN === true;
+  };
+
+  // 验证表单至少有一个字段有值
+  const validateForm = (formValues) => {
+    const hasAtLeastOneField = hasAnySearchCriteria(formValues);
     
     if (!hasAtLeastOneField) {
       messageApi.error({
@@ -331,6 +336,19 @@ const AccountTable = () => {
     }
     
     return true;
+  };
+
+  // 刷新表格数据前检查搜索条件
+  const refreshDataIfHasCriteria = () => {
+    const formValues = form.getFieldsValue();
+    
+    // 只有当搜索条件不全为空时才调用查询接口
+    if (hasAnySearchCriteria(formValues)) {
+      executeSearch(formValues, pagination);
+    } else {
+      // 如果搜索条件全部为空，则不调用查询接口，只显示成功消息
+      console.log('No search criteria, skipping data refresh');
+    }
   };
 
   // 执行带筛选条件的搜索
@@ -394,8 +412,8 @@ const AccountTable = () => {
 
   // 处理保存新账户
   const handleSaveAccount = (values) => {
-    // 刷新表格数据
-    executeSearch(form.getFieldsValue(), pagination);
+    // 刷新表格数据前检查搜索条件
+    refreshDataIfHasCriteria();
   };
 
   // 处理取消添加
@@ -421,8 +439,8 @@ const AccountTable = () => {
 
   // 处理保存编辑
   const handleSaveEdit = (values) => {
-    // 刷新表格数据
-    executeSearch(form.getFieldsValue(), pagination);
+    // 刷新表格数据前检查搜索条件
+    refreshDataIfHasCriteria();
   };
 
   // 处理行内编辑按钮点击
@@ -455,8 +473,9 @@ const AccountTable = () => {
           setDeleteModalVisible(false);
           // 清空要删除的记录
           setRecordToDelete(null);
-          // 刷新表格数据
-          executeSearch(form.getFieldsValue(), pagination);
+          
+          // 刷新表格数据前检查搜索条件
+          refreshDataIfHasCriteria();
         } else {
           messageApi.error({
             content: response.errMessage || "Failed to delete record",
@@ -490,8 +509,9 @@ const AccountTable = () => {
       // 清空选中状态
       setSelectedRowKeys([]);
       setSelectedRows([]);
-      // 刷新表格数据
-      executeSearch(form.getFieldsValue(), pagination);
+      
+      // 刷新表格数据前检查搜索条件
+      refreshDataIfHasCriteria();
     } else {
       messageApi.warning('Please select at least one record to delete');
     }

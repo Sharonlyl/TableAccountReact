@@ -629,7 +629,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
       )?.value || '';
       
       const mpfDirect = options.PENSION_CATEGORY.find(option => 
-        option.value === 'MPF-Direct'
+        option.value === 'MPF- Direct'
       )?.value || '';
       
       const memberChoice = options.MEMBER_CHOICE.find(option => 

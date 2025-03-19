@@ -665,17 +665,6 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
     // 检查是否需要显示Alt Id
     setShowAltId(upperCaseValue === 'CCC 111111');
   };
-  
-  // 简化Alt ID处理函数，仅保留转换为大写的功能，因为字段已设为禁用
-  const handleAltIdChange = (value) => {
-    // 转换为大写
-    const upperCaseValue = value ? value.toUpperCase() : '';
-    
-    // 更新表单字段值为大写
-    form.setFieldsValue({
-      altId: upperCaseValue
-    });
-  };
 
   // 处理Fund Class变更
   const handleFundClassChange = (value) => {
@@ -687,7 +676,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
       )?.value || '';
       
       const mpfDirect = options.PENSION_CATEGORY.find(option => 
-        option.value === 'MPF-Direct'
+        option.value === 'MPF- Direct'
       )?.value || '';
       
       const memberChoice = options.MEMBER_CHOICE.find(option => 
