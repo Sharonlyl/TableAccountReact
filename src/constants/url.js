@@ -12,7 +12,7 @@ const URL_CONS = {
     QUERY_IMR_REFERENCE_BY_CATEGORY_URL: '/api/groupCompany/queryImrReferenceByCategory',
     QUERY_WI_GROUP_URL: '/api/groupCompany/wiGroup/queryWIGroupFuzzy',
     QUERY_WI_CUSTOMIZED_GROUP_URL: '/api/groupCompany/wiCustomizedGroup/queryWICustomizedGroupFuzzy',
-    QUERY_GROUP_COMPANY_BY_CONDITION_URL: '/api/groupCompany/queryGroupCompanyNameMappingByCondition',
+    QUERY_GFAS_ACCOUNT_NAME_URL: '/api/groupCompany/queryGfasAccountName',
     ADD_GROUP_COMPANY_MAPPING_URL: '/api/groupCompany/addGroupCompanyMapping',
     SAVE_GROUP_MAPPING_URL: '/api/groupCompany/saveGroupMapping',
     REMOVE_GROUP_MAPPING_URL: '/api/groupCompany/removeGroupMapping'

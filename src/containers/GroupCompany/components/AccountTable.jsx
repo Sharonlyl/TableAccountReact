@@ -49,6 +49,8 @@ const AccountTable = () => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   // 添加要删除的记录状态
   const [recordToDelete, setRecordToDelete] = useState(null);
+  // 添加删除确认按钮loading状态
+  const [deleteConfirmLoading, setDeleteConfirmLoading] = useState(false);
 
   // 使用useCallback和防抖函数优化搜索函数
   const debouncedExecuteSearch = useCallback(
@@ -444,6 +446,8 @@ const AccountTable = () => {
     if (recordToDelete) {
       try {
         setLoading(true);
+        // 设置删除确认按钮的loading状态为true
+        setDeleteConfirmLoading(true);
         const response = await removeGroupMapping(recordToDelete.mappingId);
         if (response.success) {
           messageApi.success('Record deleted successfully');
@@ -463,6 +467,8 @@ const AccountTable = () => {
         showError(error);
       } finally {
         setLoading(false);
+        // 设置删除确认按钮的loading状态为false
+        setDeleteConfirmLoading(false);
       }
     }
   };
@@ -583,11 +589,11 @@ const AccountTable = () => {
             onCancel={handleCancelDelete}
             footer={
               <div className="confirm-button-container">
-                <Button key="cancel" onClick={handleCancelDelete}>
-                  Cancel
-                </Button>
-                <Button key="confirm" type="primary" danger onClick={handleConfirmDelete}>
+                <Button key="confirm" type="primary" danger onClick={handleConfirmDelete} loading={deleteConfirmLoading}>
                   Delete
+                </Button>
+                <Button key="cancel" onClick={handleCancelDelete} disabled={deleteConfirmLoading}>
+                  Cancel
                 </Button>
               </div>
             }

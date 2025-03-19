@@ -116,6 +116,8 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [formValues, setFormValues] = useState({});
   const [originalValues, setOriginalValues] = useState({});
+  // 添加一个状态来控制确认按钮的loading状态
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   // 在组件挂载和visible变化时获取下拉框选项数据
   useEffect(() => {
@@ -642,7 +644,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
     }
   };
 
-  // 处理账号输入并转换为大写
+  // 处理账号输入并转换为大写 - 这个函数在编辑模式下仍然保留，但实际上不会被用户触发，因为字段已禁用
   const handleAccountNoChange = (value) => {
     // 转换为大写
     const upperCaseValue = value ? value.toUpperCase() : '';
@@ -664,7 +666,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
     setShowAltId(upperCaseValue === 'CCC 111111');
   };
   
-  // 处理Alt ID输入并转换为大写
+  // 简化Alt ID处理函数，仅保留转换为大写的功能，因为字段已设为禁用
   const handleAltIdChange = (value) => {
     // 转换为大写
     const upperCaseValue = value ? value.toUpperCase() : '';
@@ -738,6 +740,11 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
           'isGlobalClient'
         ];
 
+        // 如果Alt Id显示，则添加到必填字段列表
+        if (showAltId) {
+          mandatoryFields.push('altId');
+        }
+
         const emptyFields = mandatoryFields.filter(field => {
           const value = values[field];
           if (field === 'isGlobalClient') {
@@ -804,11 +811,15 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
   // 处理取消按钮点击
   const handleCancel = () => {
     form.resetFields();
+    setShowAltId(false); // 重置Alt Id显示状态
     onCancel();
   };
 
   // 处理确认对话框的确认按钮点击
   const handleConfirm = () => {
+    // 设置loading状态为true
+    setConfirmLoading(true);
+    
     // 准备API请求参数
     const params = {
       mappingId: formValues.mappingId || '',
@@ -875,6 +886,10 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
         console.error('API error:', error);
         messageApi.error('An error occurred while updating the record');
         setConfirmModalVisible(false);
+      })
+      .finally(() => {
+        // 无论API调用成功还是失败，都重置loading状态
+        setConfirmLoading(false);
       });
   };
 
@@ -1269,12 +1284,16 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
             {/* Alt ID */}
             {showAltId && (
               <div className="form-item">
-                <div className="label">Alt Id:</div>
+                <div className="label">
+                  Alt Id
+                  <span className="required-mark">*</span>
+                </div>
                 <Form.Item
                   name="altId"
                   noStyle
                   className={formErrors.altId ? 'has-error' : ''}
                   rules={[
+                    { required: true, message: 'Please input Alt Id' },
                     { 
                       pattern: /^[a-zA-Z0-9\s]*$/, 
                       message: 'Only letters, numbers and spaces' 
@@ -1282,14 +1301,14 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
                   ]}
                 >
                   <Input 
-                    className="input-style" 
+                    disabled
+                    className={`input-style ${formErrors.altId ? 'input-error' : ''}`}
                     placeholder="Letters, numbers and spaces only"
                     onChange={(e) => {
-                      // 将输入值转换为大写并更新表单
+                      // 将输入值转换为大写并更新表单，实际上由于禁用不会被触发
                       const upperCaseValue = e.target.value.toUpperCase();
                       form.setFieldsValue({ altId: upperCaseValue });
                     }}
-                    onBlur={(e) => handleAltIdChange(e.target.value)}
                     onKeyPress={handleAlphanumericInput}
                   />
                 </Form.Item>
@@ -1481,10 +1500,10 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
         cancelText="Cancel"
         footer={
           <div className="modal-footer">
-            <Button type="primary" onClick={handleConfirm}>
+            <Button type="primary" onClick={handleConfirm} loading={confirmLoading}>
               Confirm
             </Button>
-            <Button onClick={handleConfirmCancel}>
+            <Button onClick={handleConfirmCancel} disabled={confirmLoading}>
               Cancel
             </Button>
           </div>

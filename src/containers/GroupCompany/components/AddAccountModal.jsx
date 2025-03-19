@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Form, Input, Select, Checkbox, Radio, Button, Row, Col, Space, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { queryImrReferenceByCategory, queryUserByDepartments, queryHeadGroup, queryWIGroup, queryWICustomizedGroup, queryGroupCompanyByCondition, addGroupCompanyMapping } from '../../../api/groupCompany';
+import { queryImrReferenceByCategory, queryUserByDepartments, queryHeadGroup, queryWIGroup, queryWICustomizedGroup, queryGfasAccountName, addGroupCompanyMapping } from '../../../api/groupCompany';
 import axios from 'axios';
 import '../styles/AddAccountModal.css';
 
@@ -41,6 +41,8 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
   // 添加确认对话框相关状态
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [formValues, setFormValues] = useState({});
+  // 添加一个状态来控制确认按钮的loading状态
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   // 添加状态来跟踪GFAS Account No的值
   const [gfasAccountNoValue, setGfasAccountNoValue] = useState('');
@@ -61,6 +63,8 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
       setGfasAccountNoValue('');
       // 重置查询标志
       setHasAttemptedNameLookup(false);
+      // 重置Alt Id显示状态
+      setShowAltId(false);
     }
   }, [visible]);
 
@@ -204,27 +208,39 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
       }));
     }
     
+    // 检查是否为特殊账号CCC 111111
+    const isCCC111111 = upperCaseValue === 'CCC 111111';
+    
+    // 设置是否显示Alt Id字段
+    setShowAltId(isCCC111111);
+    
+    // 如果是CCC 111111，需要等待Alt Id输入后再查询
+    if (isCCC111111) {
+      // 清空账户名称
+      setAccountName('');
+      setOriginalAccountName('');
+      return;
+    }
+    
     if (upperCaseValue) {
       try {
         // 设置已尝试查询账户名称的标志
         setHasAttemptedNameLookup(true);
         
-        // 调用API获取账户名称
-        const response = await queryGroupCompanyByCondition({
-          pageSize: 0,
-          pageNum: 0,
+        // 调用新的API获取账户名称
+        const response = await queryGfasAccountName({
           gfasAccountNo: upperCaseValue
         });
         
         // 检查API响应
-        if (response && response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
-          // 获取第一个匹配的账户名称
-          const accountData = response.data[0];
+        if (response && response.success && response.data) {
+          // 获取账户名称 - 现在从data字段获取
+          const accountNameValue = response.data;
           
           // 检查gfasAccountName是否为空
-          if (accountData.gfasAccountName) {
-            setAccountName(accountData.gfasAccountName);
-            setOriginalAccountName(accountData.gfasAccountName);
+          if (accountNameValue) {
+            setAccountName(accountNameValue);
+            setOriginalAccountName(accountNameValue);
             // 如果账户名称有值，清除错误状态
             setFormErrors(prev => ({
               ...prev,
@@ -237,15 +253,15 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
             // 显示提示信息
             messageApi.warning('No matching GFAS Account Name found');
           }
-          
-          // 检查是否需要显示Alt Id
-          setShowAltId(upperCaseValue.trim() === 'CCC 111111');
         } else {
           // 如果没有找到匹配的账户，清空账户名称
           setAccountName('');
           setOriginalAccountName('');
-          // 检查是否需要显示Alt Id
-          setShowAltId(upperCaseValue.trim() === 'CCC 111111');
+          if (response && response.errMessage) {
+            messageApi.warning(response.errMessage);
+          } else {
+            messageApi.warning('No matching GFAS Account Name found');
+          }
         }
       } catch (error) {
         console.error('Error fetching account name:', error);
@@ -253,8 +269,6 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         setAccountName('');
         setOriginalAccountName('');
         messageApi.error('Failed to fetch account name');
-        // 检查是否需要显示Alt Id
-        setShowAltId(upperCaseValue.trim() === 'CCC 111111');
       }
     } else {
       // 如果账号为空，重置查询标志
@@ -267,7 +281,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
   };
   
   // 处理Alt ID输入并转换为大写
-  const handleAltIdChange = (value) => {
+  const handleAltIdChange = async (value) => {
     // 转换为大写
     const upperCaseValue = value ? value.toUpperCase() : '';
     
@@ -275,6 +289,66 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
     form.setFieldsValue({
       altId: upperCaseValue
     });
+    
+    // 如果有值，清除错误状态
+    if (upperCaseValue && upperCaseValue.trim() !== '') {
+      setFormErrors(prev => ({
+        ...prev,
+        altId: false
+      }));
+      
+      // 如果GFAS Account No是CCC 111111并且Alt Id有值，则调用API查询账户名称
+      if (gfasAccountNoValue === 'CCC 111111') {
+        try {
+          // 设置已尝试查询账户名称的标志
+          setHasAttemptedNameLookup(true);
+          
+          // 调用新的API获取账户名称，同时传入alternativeId
+          const response = await queryGfasAccountName({
+            gfasAccountNo: gfasAccountNoValue,
+            alternativeId: upperCaseValue
+          });
+          
+          // 检查API响应
+          if (response && response.success && response.data) {
+            // 获取账户名称 - 现在从data字段获取
+            const accountNameValue = response.data;
+            
+            // 检查返回的账户名称是否为空
+            if (accountNameValue) {
+              setAccountName(accountNameValue);
+              setOriginalAccountName(accountNameValue);
+              // 如果账户名称有值，清除错误状态
+              setFormErrors(prev => ({
+                ...prev,
+                gfasAccountName: false
+              }));
+            } else {
+              // 如果账户名称为空，清空账户名称
+              setAccountName('');
+              setOriginalAccountName('');
+              // 显示提示信息
+              messageApi.warning('No matching GFAS Account Name found');
+            }
+          } else {
+            // 如果没有找到匹配的账户，清空账户名称
+            setAccountName('');
+            setOriginalAccountName('');
+            if (response && response.errMessage) {
+              messageApi.warning(response.errMessage);
+            } else {
+              messageApi.warning('No matching GFAS Account Name found');
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching account name with Alt Id:', error);
+          // 发生错误时，清空账户名称
+          setAccountName('');
+          setOriginalAccountName('');
+          messageApi.error('Failed to fetch account name');
+        }
+      }
+    }
   };
   
   // 处理字母数字输入校验
@@ -598,6 +672,11 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
           'isGlobalClient'
         ];
 
+        // 如果Alt Id显示，则添加到必填字段列表
+        if (showAltId) {
+          mandatoryFields.push('altId');
+        }
+
         const emptyFields = mandatoryFields.filter(field => {
           const value = values[field];
           if (field === 'isGlobalClient') {
@@ -674,6 +753,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
     setAccountName(''); // 重置账户名称状态
     setOriginalAccountName(''); // 重置原始账户名称状态
     setGfasAccountNoValue(''); // 重置GFAS Account No值
+    setShowAltId(false); // 重置Alt Id显示状态
     onCancel();
   };
 
@@ -685,6 +765,9 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
 
   // 处理确认对话框的确认按钮点击
   const handleConfirm = () => {
+    // 设置loading状态为true
+    setConfirmLoading(true);
+    
     // 准备API请求参数
     const params = {
       gfasAccountNo: formValues.gfasAccountNo,
@@ -726,6 +809,10 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         console.error('API error:', error);
         messageApi.error('An error occurred while adding the record');
         setConfirmModalVisible(false);
+      })
+      .finally(() => {
+        // 无论API调用成功还是失败，都重置loading状态
+        setConfirmLoading(false);
       });
   };
 
@@ -962,11 +1049,15 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
             {/* Alt Id */}
             {showAltId && (
               <div className="form-item">
-                <div className="label">Alt Id:</div>
+                <div className="label">
+                  Alt Id
+                  <span className="required-mark">*</span>
+                </div>
                 <Form.Item
                   name="altId"
                   noStyle
                   rules={[
+                    { required: true, message: 'Please input Alt Id' },
                     { 
                       pattern: /^[a-zA-Z0-9\s]*$/, 
                       message: 'Only letters, numbers and spaces' 
@@ -975,7 +1066,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
                 >
                   <Input 
                     placeholder="Letters, numbers and spaces only" 
-                    className="input-style"
+                    className={`input-style ${formErrors.altId ? 'input-error' : ''}`}
                     onBlur={(e) => handleAltIdChange(e.target.value)}
                     onKeyPress={handleAlphanumericInput}
                   />
@@ -1202,11 +1293,11 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         onCancel={handleConfirmCancel}
         footer={
           <div className="confirm-button-container">
-            <Button key="cancel" onClick={handleConfirmCancel}>
-              Cancel
-            </Button>
-            <Button key="confirm" type="primary" onClick={handleConfirm}>
+            <Button key="confirm" type="primary" onClick={handleConfirm} loading={confirmLoading}>
               Confirm
+            </Button>
+            <Button key="cancel" onClick={handleConfirmCancel} disabled={confirmLoading}>
+              Cancel
             </Button>
           </div>
         }

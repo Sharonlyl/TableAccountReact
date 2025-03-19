@@ -18,7 +18,7 @@ export const queryWIGroup = (params) => service.post(URL_CONS.QUERY_WI_GROUP_URL
 
 export const queryWICustomizedGroup = (params) => service.post(URL_CONS.QUERY_WI_CUSTOMIZED_GROUP_URL, params);
 
-export const queryGroupCompanyByCondition = (params) => service.post(URL_CONS.QUERY_GROUP_COMPANY_BY_CONDITION_URL, params);
+export const queryGfasAccountName = (params) => service.post(URL_CONS.QUERY_GFAS_ACCOUNT_NAME_URL, params);
 
 export const addGroupCompanyMapping = (params) => service.post(URL_CONS.ADD_GROUP_COMPANY_MAPPING_URL, params);
 
