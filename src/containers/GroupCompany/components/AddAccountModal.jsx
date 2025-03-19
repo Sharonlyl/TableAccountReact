@@ -973,7 +973,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
 
             {/* WI Customized Group */}
             <div className="form-item">
-              <div className="label">WI Customized Group:</div>
+              <div className="label">WI Customized Group</div>
               <Form.Item
                 name="wiCustomizedGroup"
                 noStyle
@@ -1197,7 +1197,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
 
             {/* RM */}
             <div className="form-item">
-              <div className="label">RM:</div>
+              <div className="label">RM</div>
               <Form.Item
                 name="rm"
                 noStyle
@@ -1309,28 +1309,28 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
             <Row gutter={[16, 8]}>
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">Head Group:</span>
+                  <span className="confirm-label">Head Group</span>
                   <span className="confirm-value">{formValues.headGroupName}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">WI Group:</span>
+                  <span className="confirm-label">WI Group</span>
                   <span className="confirm-value">{formValues.wiGroupName}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">WI Customized Group:</span>
+                  <span className="confirm-label">WI Customized Group</span>
                   <span className="confirm-value">{formValues.wiCustomizedGroupName || 'xxx'}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">GFAS Account No:</span>
+                  <span className="confirm-label">GFAS Account No</span>
                   <span className="confirm-value">{formValues.gfasAccountNo}</span>
                 </div>
               </Col>
@@ -1339,7 +1339,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
               {formValues.gfasAccountNo === 'CCC 111111' && (
                 <Col span={24}>
                   <div className="confirm-item">
-                    <span className="confirm-label">Alt Id:</span>
+                    <span className="confirm-label">Alt Id</span>
                     <span className="confirm-value">{formValues.altId || ''}</span>
                   </div>
                 </Col>
@@ -1347,56 +1347,56 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">GFAS Account Name:</span>
+                  <span className="confirm-label">GFAS Account Name</span>
                   <span className="confirm-value">{formValues.gfasAccountName}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">Fund Class:</span>
+                  <span className="confirm-label">Fund Class</span>
                   <span className="confirm-value">{formValues.fundClass}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">Pension Category:</span>
+                  <span className="confirm-label">Pension Category</span>
                   <span className="confirm-value">{formValues.pensionCategory}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">Portfolio Nature:</span>
+                  <span className="confirm-label">Portfolio Nature</span>
                   <span className="confirm-value">{formValues.portfolioNature}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">Member Choice:</span>
+                  <span className="confirm-label">Member Choice</span>
                   <span className="confirm-value">{formValues.memberChoice}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">RM:</span>
+                  <span className="confirm-label">RM</span>
                   <span className="confirm-value">{formValues.rm}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">Agent:</span>
+                  <span className="confirm-label">Agent</span>
                   <span className="confirm-value">{formValues.agent}</span>
                 </div>
               </Col>
               
               <Col span={24}>
                 <div className="confirm-item">
-                  <span className="confirm-label">Global Client:</span>
+                  <span className="confirm-label">Global Client</span>
                   <span className="confirm-value">{formValues.isGlobalClient}</span>
                 </div>
               </Col>

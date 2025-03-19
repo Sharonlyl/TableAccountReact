@@ -6,59 +6,41 @@ import '../styles/AddAccountModal.css';
 
 // 添加确认对话框的样式
 const confirmModalStyles = `
-  .confirm-table {
+  .confirm-content {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .confirm-fields-container {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-  }
-  
-  .confirm-table th, .confirm-table td {
-    border: 1px solid #e8e8e8;
-    padding: 8px 12px;
-    text-align: left;
-  }
-  
-  .confirm-table th {
-    background-color: #f5f5f5;
-    font-weight: 500;
-  }
-  
-  .changed-value {
-    color: #f5222d;
-    font-weight: 500;
-  }
-  
-  .confirm-content p {
-    margin-bottom: 15px;
-    font-size: 14px;
-  }
-  
-  .field-label {
-    font-weight: 500;
-    color: #333;
-  }
-  
-  .old-value {
-    color: #666;
-  }
-  
-  .new-value {
-    color: #f5222d;
-    font-weight: 500;
+    padding-left: 60px;
   }
   
   .field-row {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     display: flex;
+    width: 100%;
   }
   
   .field-name {
     width: 180px;
     font-weight: 500;
+    text-align: left;
+    flex-shrink: 0;
   }
   
   .field-value {
     flex: 1;
+    word-break: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+  
+  .new-value {
+    color: #f5222d;
+    font-weight: 500;
   }
   
   .modal-footer {
@@ -1190,7 +1172,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
 
             {/* WI Customized Group */}
             <div className="form-item">
-              <div className="label">WI Customized Group:</div>
+              <div className="label">WI Customized Group</div>
               <Form.Item
                 name="wiCustomizedGroup"
                 noStyle
@@ -1415,7 +1397,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
 
             {/* RM */}
             <div className="form-item">
-              <div className="label">RM:</div>
+              <div className="label">RM</div>
               <Form.Item
                 name="rm"
                 noStyle
@@ -1497,9 +1479,11 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
             </Button>
           </div>
         }
+        centered
       >
+        <style>{confirmModalStyles}</style>
         <div className="confirm-content">
-          <div>
+          <div className="confirm-fields-container">
             {/* Head Group */}
             <div className="field-row">
               <div className="field-name" style={{ color: isFieldChanged('headGroup') ? '#f5222d' : '#333' }}>Head Group</div>
