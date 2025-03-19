@@ -25,3 +25,20 @@ export const addGroupCompanyMapping = (params) => service.post(URL_CONS.ADD_GROU
 export const saveGroupMapping = (params) => service.put(URL_CONS.SAVE_GROUP_MAPPING_URL, params);
 
 export const removeGroupMapping = (mappingId) => service.delete(`${URL_CONS.REMOVE_GROUP_MAPPING_URL}?mappingId=${mappingId}`);
+
+// FeeLetterUpload 相关API
+export const searchFeeLetter = (params) => service.post(URL_CONS.FEE_LETTER_SEARCH_URL, params);
+
+export const uploadFeeLetter = (formData) => service.post(URL_CONS.FEE_LETTER_UPLOAD_URL, formData, {
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+});
+
+export const downloadFeeLetter = (fileId) => service.get(`${URL_CONS.FEE_LETTER_DOWNLOAD_URL}/${fileId}`, {
+  responseType: 'blob'
+});
+
+export const deleteFeeLetter = (fileId) => service.delete(`${URL_CONS.FEE_LETTER_DELETE_URL}/${fileId}`);
+
+export const updateFeeLetter = (fileId, params) => service.put(`${URL_CONS.FEE_LETTER_UPDATE_URL}/${fileId}`, params);

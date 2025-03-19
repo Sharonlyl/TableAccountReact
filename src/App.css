@@ -9,31 +9,52 @@
 }
 
 .app-header {
-  background: #001529;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   padding: 0 24px;
   display: flex;
   align-items: center;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .app-title {
-  color: white !important;
-  margin: 0 !important;
+  margin: 16px 0 !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.app-sider {
+  background: #fff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  z-index: 10;
+}
+
+/* 修改折叠按钮的样式 */
+.app-sider .ant-layout-sider-trigger {
+  background: #e6f7ff !important;
+  color: #1890ff !important;
+}
+
+.app-sider .ant-layout-sider-trigger:hover {
+  background: #bae7ff !important;
 }
 
 .app-content {
   padding: 24px;
-  background: #f0f2f5;
+  background: #fff;
 }
 
 .page-container {
-  background: white;
-  padding: 24px;
+  background: #fff;
+  padding: 20px;
   border-radius: 2px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  min-height: 100%;
 }
 
 .page-title {
+  margin-top: 0 !important;
   margin-bottom: 24px !important;
+  color: rgba(0, 0, 0, 0.85) !important;
 }
 
 /* 覆盖 antd 的一些默认样式 */
@@ -47,6 +68,7 @@
 
 /* 覆盖Ant Design的一些默认样式 */
 .ant-form-item-label > label {
+  color: rgba(0, 0, 0, 0.85);
   font-weight: 500;
 }
 
@@ -104,7 +126,42 @@
   }
 }
 
+/* 表格相关样式 */
+.ant-table-thead > tr > th {
+  background-color: #e6f7ff !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-weight: 600 !important;
+}
+
+.ant-table-row:hover > td {
+  background-color: #e6f7ff !important;
+}
+
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background-color: #e6f7ff !important;
+}
+
+/* 按钮容器样式 */
+.buttons-row {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 搜索表单样式 */
+.search-form {
+  margin-bottom: 24px;
+  padding: 24px;
+  background-color: #fafafa;
+  border-radius: 2px;
+}
+
+/* 响应式调整 */
 @media (max-width: 768px) {
+  .app-header {
+    padding: 0 16px;
+  }
+  
   .app-content {
     padding: 16px;
   }
@@ -112,4 +169,21 @@
   .page-container {
     padding: 16px;
   }
+  
+  .search-form {
+    padding: 16px;
+  }
+}
+
+/* 确保菜单项的高亮颜色一致 */
+.ant-menu-item-selected {
+  background-color: #e6f7ff !important;
+}
+
+.ant-menu-item-selected a {
+  color: #1890ff !important;
+}
+
+.ant-menu-item:hover {
+  color: #1890ff !important;
 }

@@ -15,7 +15,14 @@ const URL_CONS = {
     QUERY_GFAS_ACCOUNT_NAME_URL: '/api/groupCompany/queryGfasAccountName',
     ADD_GROUP_COMPANY_MAPPING_URL: '/api/groupCompany/addGroupCompanyMapping',
     SAVE_GROUP_MAPPING_URL: '/api/groupCompany/saveGroupMapping',
-    REMOVE_GROUP_MAPPING_URL: '/api/groupCompany/removeGroupMapping'
+    REMOVE_GROUP_MAPPING_URL: '/api/groupCompany/removeGroupMapping',
+    
+    // FeeLetterUpload 相关URL
+    FEE_LETTER_SEARCH_URL: '/api/groupCompany/feeLetter/queryFeeLetterByCondition',
+    FEE_LETTER_UPLOAD_URL: '/api/fee-letter/upload',
+    FEE_LETTER_DOWNLOAD_URL: '/api/fee-letter/download',
+    FEE_LETTER_DELETE_URL: '/api/fee-letter/delete',
+    FEE_LETTER_UPDATE_URL: '/api/fee-letter/update'
 }
 
 export default URL_CONS;

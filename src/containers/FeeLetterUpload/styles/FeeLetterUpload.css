@@ -1,0 +1,92 @@
+.fee-letter-container {
+  width: 100%;
+}
+
+.fee-letter-search-form {
+  padding: 24px 0;
+  border-radius: 2px;
+}
+
+.fee-file-table {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.fee-file-table .ant-table-thead > tr > th {
+  background-color: #e6f7ff !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-weight: 600 !important;
+}
+
+/* Action列表头居中 */
+.fee-file-table .ant-table-thead > tr > th:last-child {
+  text-align: center !important;
+}
+
+.fee-file-table .ant-table-row:hover > td {
+  background-color: #e6f7ff !important;
+}
+
+.fee-action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  padding-right: 24px;
+}
+
+/* 表单项布局样式 */
+.form-item-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-left: 17px;
+}
+
+.form-item-label {
+  min-width: 80px;
+  margin-right: 10px;
+  text-align: right;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 600;
+}
+
+.form-item-input {
+  flex: 1;
+}
+
+/* 设置下拉列表和日期选择器的统一宽度 */
+.form-item-input .ant-select {
+  width: 80% !important;
+}
+
+.form-item-input .ant-input {
+  width: 80% !important;
+}
+
+.date-picker-style {
+  width: 81%;
+}
+
+.fee-file-table .ant-btn-link.delete-btn {
+  color: #ff4d4f !important;
+}
+
+.fee-file-table .ant-btn-link.delete-btn:hover {
+  color: #ff7875 !important;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .form-item-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .form-item-label {
+    margin-bottom: 4px;
+  }
+  
+  .form-item-input {
+    width: 80% !important;
+  }
+} 
