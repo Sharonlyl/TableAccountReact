@@ -12,9 +12,16 @@
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   padding: 0 24px;
-  display: flex;
-  align-items: center;
   border-bottom: 1px solid #f0f0f0;
+  height: auto !important;
+  line-height: 1.5 !important;
+}
+
+.header-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
 }
 
 /* 确保header和内容之间有间距 */
@@ -22,25 +29,20 @@
   margin-top: 8px;
 }
 
+/* 水平菜单样式 */
+.app-menu {
+  background: transparent;
+  border-bottom: none !important;
+  margin-left: 0;
+  margin-top: 8px;
+  width: 100%;
+  font-size: 14px;
+}
+
 .app-title {
-  margin: 16px 0 !important;
+  margin: 16px 0 0 0 !important;
   color: rgba(0, 0, 0, 0.85) !important;
-}
-
-.app-sider {
-  background: #fff !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
-  z-index: 10;
-}
-
-/* 修改折叠按钮的样式 */
-.app-sider .ant-layout-sider-trigger {
-  background: #e6f7ff !important;
-  color: #1890ff !important;
-}
-
-.app-sider .ant-layout-sider-trigger:hover {
-  background: #bae7ff !important;
+  white-space: nowrap;
 }
 
 .app-content {
@@ -69,6 +71,24 @@
 
 .ant-table {
   background: white;
+}
+
+/* 菜单项样式 - 使其看起来像标签页 */
+.app-menu .ant-menu-item {
+  margin: 0 16px 0 0 !important;
+  padding: 0 10px !important;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.app-menu .ant-menu-item:hover {
+  color: #1890ff !important;
+  background-color: transparent !important;
+}
+
+.app-menu .ant-menu-item-selected {
+  background-color: transparent !important;
+  font-weight: 600;
 }
 
 /* 覆盖Ant Design的一些默认样式 */
@@ -105,17 +125,6 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
 .App-link {
@@ -181,14 +190,23 @@
 }
 
 /* 确保菜单项的高亮颜色一致 */
-.ant-menu-item-selected {
-  background-color: #e6f7ff !important;
-}
-
 .ant-menu-item-selected a {
   color: #1890ff !important;
 }
 
-.ant-menu-item:hover {
+.ant-menu-item:hover a {
   color: #1890ff !important;
+}
+
+/* 水平菜单项样式 - 标签页效果 */
+.ant-menu-horizontal > .ant-menu-item::after,
+.ant-menu-horizontal > .ant-menu-submenu::after {
+  border-bottom: 2px solid #1890ff !important;
+  bottom: 0 !important;
+}
+
+.ant-menu-horizontal > .ant-menu-item-selected::after,
+.ant-menu-horizontal > .ant-menu-submenu-selected::after {
+  border-bottom: 2px solid #1890ff !important;
+  bottom: 0 !important;
 }

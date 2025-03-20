@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Layout, Typography, Menu } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/Layout.css';
 
-const { Header, Content, Sider } = Layout;
+const { Header, Content } = Layout;
 const { Title } = Typography;
 
 // 创建菜单组件
@@ -30,40 +30,30 @@ const AppMenu = () => {
 
   return (
     <Menu
-      mode="inline"
+      mode="horizontal"
       selectedKeys={[getSelectedKey(location.pathname)]}
       defaultSelectedKeys={['group-company']}
-      style={{ height: '100%', borderRight: 0 }}
+      className="app-menu"
       items={menuItems}
     />
   );
 };
 
 const AppLayout = ({ children, title }) => {
-  const [collapsed, setCollapsed] = useState(false);
-
   return (
     <Layout className="app-layout">
       <Header className="app-header">
-        <Title level={3} className="app-title">Business Management System</Title>
-      </Header>
-      <Layout>
-        <Sider 
-          width={140} 
-          className="app-sider"
-          collapsible
-          collapsed={collapsed}
-          onCollapse={(value) => setCollapsed(value)}
-        >
+        <div className="header-wrapper">
+          <Title level={3} className="app-title">Business Management System</Title>
           <AppMenu />
-        </Sider>
-        <Content className="app-content">
-          <div className="page-container">
-            {title && <Title level={4} className="page-title">{title}</Title>}
-            {children}
-          </div>
-        </Content>
-      </Layout>
+        </div>
+      </Header>
+      <Content className="app-content">
+        <div className="page-container">
+          {title && <Title level={4} className="page-title">{title}</Title>}
+          {children}
+        </div>
+      </Content>
     </Layout>
   );
 };
