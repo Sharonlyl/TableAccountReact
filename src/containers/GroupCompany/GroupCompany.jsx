@@ -14,7 +14,7 @@ const GroupCompanyContent = () => {
 
 const GroupCompany = () => {
   return (
-    <AppLayout title="Account List">
+    <AppLayout title="Group-Company Mapping">
       <GroupCompanyContent />
     </AppLayout>
   );

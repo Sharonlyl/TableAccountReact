@@ -24,7 +24,7 @@ const AppMenu = () => {
     },
     {
       key: 'fee-letter',
-      label: <Link to="/fee-letter">Fee Letter</Link>
+      label: <Link to="/fee-letter">Fee Letter Filling</Link>
     }
   ];
 

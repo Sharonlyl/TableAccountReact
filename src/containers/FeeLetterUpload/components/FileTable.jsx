@@ -7,7 +7,14 @@ import { searchFeeLetter, uploadFeeLetter, downloadFeeLetter, deleteFeeLetter, q
 import '../styles/FeeLetterUpload.css';
 import dayjs from 'dayjs';
 
-const FileTable = () => {
+// 角色常量
+const ROLES = {
+  READ: 'GROUP_COMPANY_READ_ROLE',
+  WRITE: 'GROUP_COMPANY_WRITE_ROLE',
+  ADMIN: 'GROUP_COMPANY_ADMIN_ROLE'
+};
+
+const FileTable = ({ userRole }) => {
   // 状态管理
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
@@ -52,12 +59,51 @@ const FileTable = () => {
     }
   };
 
+  // 检查是否有权限执行某个操作
+  const hasPermission = (action, record = null) => {
+    const { groupCompanyRole, username } = userRole;
+    
+    // 如果角色是管理员，有所有权限
+    if (groupCompanyRole === ROLES.ADMIN) {
+      return true;
+    }
+    
+    // 如果是只读角色，只能搜索
+    if (groupCompanyRole === ROLES.READ) {
+      return action === 'search';
+    }
+    
+    // 如果是写入角色
+    if (groupCompanyRole === ROLES.WRITE) {
+      switch (action) {
+        case 'search':
+        case 'upload':
+          return true;
+        case 'download':
+        case 'update':
+        case 'delete':
+          // 只有当前用户等于记录的创建者时才有权限
+          return record && record.createdBy === username;
+        default:
+          return false;
+      }
+    }
+    
+    return false;
+  };
+
   // 文件上传配置
   const uploadProps = {
     name: 'file',
     action: '', // 实际上传通过自定义函数实现
     showUploadList: false,
+    disabled: !hasPermission('upload'),
     beforeUpload: (file) => {
+      if (!hasPermission('upload')) {
+        messageApi.error('You do not have permission to upload files');
+        return Upload.LIST_IGNORE;
+      }
+      
       const isValidFileType = file.type === 'application/pdf' || 
                              file.type === 'application/msword' || 
                              file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -82,6 +128,10 @@ const FileTable = () => {
 
   // 处理文件上传
   const handleUpload = async (file) => {
+    if (!hasPermission('upload')) {
+      return;
+    }
+    
     try {
       setLoading(true);
       
@@ -106,6 +156,10 @@ const FileTable = () => {
 
   // 处理搜索
   const handleSearch = async () => {
+    if (!hasPermission('search')) {
+      return;
+    }
+    
     try {
       setLoading(true);
       
@@ -147,6 +201,7 @@ const FileTable = () => {
           note: item.comment,
           uploadBy: item.lastUpdatedBy,
           uploadDate: dayjs(item.lastUpdatedDate).format('YYYY/MM/DD'),
+          createdBy: item.createdBy || item.lastUpdatedBy, // 保存createdBy字段用于权限判断
           s3ObjectId: item.s3ObjectId
         }));
         
@@ -171,6 +226,11 @@ const FileTable = () => {
 
   // 处理下载文件
   const handleDownload = async (record) => {
+    if (!hasPermission('download', record)) {
+      messageApi.error('You do not have permission to download this file');
+      return;
+    }
+    
     try {
       setLoading(true);
       
@@ -198,6 +258,11 @@ const FileTable = () => {
 
   // 处理删除文件
   const handleDelete = (record) => {
+    if (!hasPermission('delete', record)) {
+      messageApi.error('You do not have permission to delete this file');
+      return;
+    }
+    
     setFileToDelete(record);
     setDeleteModalVisible(true);
   };
@@ -205,6 +270,12 @@ const FileTable = () => {
   // 确认删除
   const handleConfirmDelete = async () => {
     if (!fileToDelete) return;
+    
+    if (!hasPermission('delete', fileToDelete)) {
+      messageApi.error('You do not have permission to delete this file');
+      setDeleteModalVisible(false);
+      return;
+    }
     
     try {
       setDeleteConfirmLoading(true);
@@ -234,6 +305,11 @@ const FileTable = () => {
 
   // 处理编辑文件
   const handleEdit = (record) => {
+    if (!hasPermission('update', record)) {
+      messageApi.error('You do not have permission to update this file');
+      return;
+    }
+    
     messageApi.info('Update function not available');
   };
 
@@ -278,6 +354,7 @@ const FileTable = () => {
           note: item.comment,
           uploadBy: item.lastUpdatedBy,
           uploadDate: dayjs(item.lastUpdatedDate).format('YYYY/MM/DD'),
+          createdBy: item.createdBy || item.lastUpdatedBy, // 保存createdBy字段用于权限判断
           s3ObjectId: item.s3ObjectId
         }));
         
@@ -338,6 +415,7 @@ const FileTable = () => {
             type="link"
             size="small"
             onClick={() => handleDownload(record)}
+            disabled={!hasPermission('download', record)}
           >
             Download
           </Button>
@@ -345,6 +423,7 @@ const FileTable = () => {
             type="link"
             size="small"
             onClick={() => handleEdit(record)}
+            disabled={!hasPermission('update', record)}
           >
             Update
           </Button>
@@ -353,6 +432,7 @@ const FileTable = () => {
             size="small"
             className="delete-btn"
             onClick={() => handleDelete(record)}
+            disabled={!hasPermission('delete', record)}
           >
             Delete
           </Button>
@@ -393,7 +473,9 @@ const FileTable = () => {
       {/* 操作按钮 */}
       <ActionButtons 
         onSearch={handleSearch} 
-        uploadProps={uploadProps} 
+        uploadProps={uploadProps}
+        canSearch={hasPermission('search')}
+        canUpload={hasPermission('upload')}
       />
       
       {/* 文件表格 */}

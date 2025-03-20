@@ -90,6 +90,12 @@
   color: #ff7875 !important;
 }
 
+/* 禁用状态下的删除按钮 */
+.fee-file-table .ant-btn-link.delete-btn[disabled],
+.fee-file-table .ant-btn-link.delete-btn[disabled]:hover {
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+
 /* 响应式布局 */
 @media (max-width: 768px) {
   .form-item-container {

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Space, Upload } from 'antd';
 import { SearchOutlined, UploadOutlined } from '@ant-design/icons';
 
-const ActionButtons = ({ onSearch, onUpload, uploadProps }) => {
+const ActionButtons = ({ onSearch, uploadProps, canSearch = true, canUpload = true }) => {
   return (
     <div className="fee-action-buttons">
       <Space>
@@ -10,12 +10,18 @@ const ActionButtons = ({ onSearch, onUpload, uploadProps }) => {
           type="primary" 
           icon={<SearchOutlined />} 
           onClick={onSearch}
+          disabled={!canSearch}
         >
           Search
         </Button>
         
         <Upload {...uploadProps}>
-          <Button icon={<UploadOutlined />}>Upload New File</Button>
+          <Button 
+            icon={<UploadOutlined />}
+            disabled={!canUpload || uploadProps.disabled}
+          >
+            Upload New File
+          </Button>
         </Upload>
       </Space>
     </div>
