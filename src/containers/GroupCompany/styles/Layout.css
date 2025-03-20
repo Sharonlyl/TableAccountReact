@@ -17,6 +17,11 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
+/* 确保header和内容之间有间距 */
+.app-layout > .ant-layout {
+  margin-top: 8px;
+}
+
 .app-title {
   margin: 16px 0 !important;
   color: rgba(0, 0, 0, 0.85) !important;
@@ -186,4 +191,4 @@
 
 .ant-menu-item:hover {
   color: #1890ff !important;
-} 
+}

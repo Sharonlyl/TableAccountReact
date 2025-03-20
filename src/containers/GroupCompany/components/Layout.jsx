@@ -45,11 +45,11 @@ const AppLayout = ({ children, title }) => {
   return (
     <Layout className="app-layout">
       <Header className="app-header">
-        <Title level={3} className="app-title">Account Management System</Title>
+        <Title level={3} className="app-title">Business Management System</Title>
       </Header>
       <Layout>
         <Sider 
-          width={200} 
+          width={140} 
           className="app-sider"
           collapsible
           collapsed={collapsed}

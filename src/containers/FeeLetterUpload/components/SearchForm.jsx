@@ -28,7 +28,7 @@ const SearchForm = ({ form, onFormChange, uploadUsers = [] }) => {
   return (
     <div className="fee-letter-search-form">
       <Form form={form} layout="horizontal">
-        <Row gutter={24}>
+        <Row>
           <Col xs={24} md={8}>
             <FormField label="Note" name="note">
               <Input onChange={handleChange} />
@@ -37,7 +37,6 @@ const SearchForm = ({ form, onFormChange, uploadUsers = [] }) => {
           <Col xs={24} md={8}>
             <FormField label="Upload Date" name="uploadDate">
               <DatePicker 
-                className="date-picker-style"
                 onChange={handleChange}
                 format="YYYY/MM/DD"
                 placeholder=""
