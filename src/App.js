@@ -1,89 +1,97 @@
-import React, { useState } from 'react';
-import { ConfigProvider, Layout, Typography, Menu } from 'antd';
-import { BrowserRouter as Router, Route, Routes, Link, Navigate, useLocation } from 'react-router-dom';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import enUS from 'antd/locale/en_US';  // 引入英文语言包
+import React from 'react';
+import { BrowserRouter as Router, useRoutes, Navigate, Outlet } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
+import enUS from 'antd/locale/en_US';
+
+// 原有路由
 import GroupCompany from './containers/GroupCompany/GroupCompany';
 import FeeLetterUpload from './containers/FeeLetterUpload/FeeLetterUpload';
-import './App.css';
 
-const { Header, Content, Sider } = Layout;
-const { Title } = Typography;
-
-// 创建一个包含菜单的组件
-const AppMenu = () => {
-  const location = useLocation();
-  
-  // 根据当前路径确定选中的菜单项
-  const getSelectedKey = (pathname) => {
-    if (pathname === '/' || pathname.includes('group-company')) return 'group-company';
-    if (pathname.includes('fee-letter')) return 'fee-letter';
-    return 'group-company';  // 默认返回 group-company
-  };
-
-  const menuItems = [
+// 路由列表组件
+const RouterList = () => {
+  const routes = useRoutes([
+    // 原有路由
     {
-      key: 'group-company',
-      label: <Link to="/group-company">Group-Company Mapping</Link>
+      path: '/group-company',
+      element: <GroupCompany />
     },
     {
-      key: 'fee-letter',
-      label: <Link to="/fee-letter">Fee Letter</Link>
-    }
-  ];
-
-  return (
-    <Menu
-      mode="inline"
-      selectedKeys={[getSelectedKey(location.pathname)]}
-      defaultSelectedKeys={['group-company']}
-      style={{ height: '100%', borderRight: 0 }}
-      items={menuItems}
-    />
-  );
+      path: '/fee-letter',
+      element: <FeeLetterUpload />
+    },
+    // 重定向
+    {
+      path: '/',
+      element: <Navigate to="/group-company" replace />
+    },
+    
+    // 新增路由
+    // {
+    //   path: '/dealing',
+    //   element: <Outlet />,
+    //   children: [
+    //     {
+    //       path: 'dealExplorer',
+    //       element: <DealExplorer />,
+    //     },
+    //   ],
+    // },
+    // {
+    //   path: '/',
+    //   element: <Outlet />,
+    //   children: [
+    //     {
+    //       path: 'business-management',
+    //       element: <BusinessManagement />,
+    //     },
+    //   ],
+    // },
+  ]);
+  
+  return routes;
 };
 
 function App() {
-  const [collapsed, setCollapsed] = useState(false);
-
   return (
-    <ConfigProvider locale={enUS}>
+    <ConfigProvider
+      locale={enUS}
+      theme={{
+        cssVar: { prefix: 'caffe' },
+        hashed: false,
+        token: {
+          zIndexPopupBase: 1200,
+        },
+        components: {
+          Layout: {
+            headerBg: '#007ccl',
+            headerHeight: 30,
+            bodyBg: 'transparent',
+            footerBg: '#fff',
+          },
+          Select: {
+            zIndexPopup: 1050,
+          },
+          Menu: {
+            itemBorderRadius: 0,
+            darkItemBg: '#007ccl',
+            darkPopupBg: '#fff',
+          },
+          Table: {
+            headerBg: '#DDE3F8',
+            headerBorderRadius: 0,
+            rowHoverBg: '#F5F5F5',
+          },
+          Modal: {
+            titleFontSize: 18,
+          },
+          DatePicker: {
+            zIndexPopup: 1060,
+          },
+        },
+      }}
+    >
       <Router>
-        <Layout className="app-layout">
-          <Header className="app-header">
-            <Title level={3} className="app-title">Account Management System</Title>
-          </Header>
-          <Layout>
-            <Sider 
-              width={200} 
-              className="app-sider"
-              collapsible
-              collapsed={collapsed}
-              onCollapse={(value) => setCollapsed(value)}
-            >
-              <AppMenu />
-            </Sider>
-            <Content className="app-content">
-              <div className="page-container">
-                <Routes>
-                  <Route path="/group-company" element={
-                    <>
-                      <Title level={4} className="page-title">Account List</Title>
-                      <GroupCompany />
-                    </>
-                  } />
-                  <Route path="/fee-letter" element={
-                    <>
-                      <Title level={4} className="page-title">Fee Letter</Title>
-                      <FeeLetterUpload />
-                    </>
-                  } />
-                  <Route path="/" element={<Navigate to="/group-company" replace />} />
-                </Routes>
-              </div>
-            </Content>
-          </Layout>
-        </Layout>
+        <RouterList />
       </Router>
     </ConfigProvider>
   );

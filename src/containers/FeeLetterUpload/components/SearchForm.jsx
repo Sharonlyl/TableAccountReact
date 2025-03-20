@@ -30,7 +30,7 @@ const SearchForm = ({ form, onFormChange, uploadUsers = [] }) => {
       <Form form={form} layout="horizontal">
         <Row gutter={24}>
           <Col xs={24} md={8}>
-            <FormField label="File Name" name="fileName">
+            <FormField label="Note" name="note">
               <Input onChange={handleChange} />
             </FormField>
           </Col>

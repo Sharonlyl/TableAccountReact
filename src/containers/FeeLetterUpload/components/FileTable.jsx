@@ -123,9 +123,9 @@ const FileTable = () => {
         pageSize: pagination.pageSize,
         pageNum: 1,  // 搜索时使用第一页
         letterId: "",
-        comment: formValues.fileName || "",
-        createdDate: formValues.uploadDate ? formValues.uploadDate.format('YYYY-MM-DD') : "",
-        createdBy: formValues.uploadBy || ""
+        comment: formValues.note || "",
+        lastUpdatedDate: formValues.uploadDate ? formValues.uploadDate.format('YYYY-MM-DD') : "",
+        lastUpdatedBy: formValues.uploadBy || ""
       };
       
       // 调用实际接口
@@ -144,9 +144,9 @@ const FileTable = () => {
         // 转换日期格式为YYYY/MM/DD
         const formattedData = list.map(item => ({
           id: item.letterId.toString(),
-          fileName: item.comment,
-          uploadBy: item.createdBy,
-          uploadDate: dayjs(item.createdDate).format('YYYY/MM/DD'),
+          note: item.comment,
+          uploadBy: item.lastUpdatedBy,
+          uploadDate: dayjs(item.lastUpdatedDate).format('YYYY/MM/DD'),
           s3ObjectId: item.s3ObjectId
         }));
         
@@ -181,7 +181,7 @@ const FileTable = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = record.fileName;
+      a.download = record.note;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -255,9 +255,9 @@ const FileTable = () => {
         pageSize: 20,
         pageNum: page,
         letterId: "",
-        comment: formValues.fileName || "",
-        createdDate: formValues.uploadDate ? formValues.uploadDate.format('YYYY-MM-DD') : "",
-        createdBy: formValues.uploadBy || ""
+        comment: formValues.note || "",
+        lastUpdatedDate: formValues.uploadDate ? formValues.uploadDate.format('YYYY-MM-DD') : "",
+        lastUpdatedBy: formValues.uploadBy || ""
       };
       
       // 调用搜索接口
@@ -275,9 +275,9 @@ const FileTable = () => {
         // 转换数据格式
         const formattedData = list.map(item => ({
           id: item.letterId.toString(),
-          fileName: item.comment,
-          uploadBy: item.createdBy,
-          uploadDate: dayjs(item.createdDate).format('YYYY/MM/DD'),
+          note: item.comment,
+          uploadBy: item.lastUpdatedBy,
+          uploadDate: dayjs(item.lastUpdatedDate).format('YYYY/MM/DD'),
           s3ObjectId: item.s3ObjectId
         }));
         
@@ -310,9 +310,9 @@ const FileTable = () => {
   // 表格列定义
   const columns = [
     {
-      title: 'File Name',
-      dataIndex: 'fileName',
-      key: 'fileName',
+      title: 'Note',
+      dataIndex: 'note',
+      key: 'note',
       width: '55%',
       render: (text) => <span style={{ wordBreak: 'break-word' }}>{text}</span>
     },
