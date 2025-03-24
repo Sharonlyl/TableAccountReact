@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, Input, DatePicker, Select, Row, Col } from 'antd';
+import dayjs from 'dayjs';
 
 // 自定义表单项组件
 const FormField = ({ label, name, children }) => {
@@ -24,6 +25,13 @@ const FormField = ({ label, name, children }) => {
 const SearchForm = ({ form, onFormChange, uploadUsers = [] }) => {
   // 统一的onChange处理函数
   const handleChange = () => onFormChange && onFormChange();
+
+  // 在组件挂载时设置默认日期
+  React.useEffect(() => {
+    form.setFieldsValue({
+      uploadDate: dayjs()
+    });
+  }, [form]);
   
   return (
     <div className="fee-letter-search-form">
