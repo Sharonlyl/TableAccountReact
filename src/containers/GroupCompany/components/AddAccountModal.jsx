@@ -377,8 +377,8 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
 
   // 搜索组信息的通用函数
   const searchGroup = async (value, groupType) => {
-    if (!value || value.length < 4) {
-      // 如果输入少于4个字符，清空选项并返回
+    if (!value || value.length < 2) {
+      // 如果输入少于2个字符，清空选项并返回
       switch (groupType) {
         case 'headGroup':
           setHeadGroupOptions([]);
@@ -892,7 +892,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
               >
                 <Select
                   showSearch
-                  placeholder="Type at least 4 characters to search"
+                  placeholder="Type at least 2 characters to search"
                   className={`input-style ${formErrors.headGroup ? 'input-error' : ''}`}
                   filterOption={false}
                   onSearch={(value) => debouncedSearch.headGroup(value)}
@@ -942,7 +942,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
               >
                 <Select
                   showSearch
-                  placeholder="Type at least 4 characters to search"
+                  placeholder="Type at least 2 characters to search"
                   className={`input-style ${formErrors.wiGroup ? 'input-error' : ''}`}
                   filterOption={false}
                   onSearch={(value) => debouncedSearch.wiGroup(value)}
@@ -980,7 +980,7 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
               >
                 <Select
                   showSearch
-                  placeholder="Type at least 4 characters to search"
+                  placeholder="Type at least 2 characters to search"
                   className="input-style"
                   filterOption={false}
                   onSearch={(value) => debouncedSearch.wiCustomizedGroup(value)}

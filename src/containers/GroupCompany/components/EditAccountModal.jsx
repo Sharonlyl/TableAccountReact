@@ -392,8 +392,8 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
 
   // 搜索组
   const searchGroup = async (value, groupType) => {
-    if (!value || value.trim() === '' || value.length < 4) {
-      // 如果输入少于4个字符，不执行搜索
+    if (!value || value.trim() === '' || value.length < 2) {
+      // 如果输入少于2个字符，不执行搜索
       return;
     }
     
@@ -1074,7 +1074,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
               >
                 <Select
                   showSearch
-                  placeholder="Type at least 4 characters to search"
+                  placeholder="Type at least 2 characters to search"
                   className={`input-style ${formErrors.headGroup ? 'input-error' : ''}`}
                   filterOption={false}
                   onSearch={debouncedSearch.headGroup}
@@ -1129,7 +1129,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
               >
                 <Select
                   showSearch
-                  placeholder="Type at least 4 characters to search"
+                  placeholder="Type at least 2 characters to search"
                   className={`input-style ${formErrors.wiGroup ? 'input-error' : ''}`}
                   filterOption={false}
                   onSearch={debouncedSearch.wiGroup}
@@ -1180,7 +1180,7 @@ const EditAccountModal = ({ visible, onCancel, onSave, record }) => {
               >
                 <Select
                   showSearch
-                  placeholder="Type at least 4 characters to search"
+                  placeholder="Type at least 2 characters to search"
                   className="input-style"
                   filterOption={false}
                   onSearch={debouncedSearch.wiCustomizedGroup}

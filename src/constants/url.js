@@ -19,10 +19,9 @@ const URL_CONS = {
     
     // FeeLetterUpload 相关URL
     FEE_LETTER_SEARCH_URL: '/api/groupCompany/feeLetter/queryFeeLetterByCondition',
-    FEE_LETTER_UPLOAD_URL: '/api/fee-letter/upload',
-    FEE_LETTER_DOWNLOAD_URL: '/api/fee-letter/download',
-    FEE_LETTER_DELETE_URL: '/api/fee-letter/delete',
-    FEE_LETTER_UPDATE_URL: '/api/fee-letter/update'
+    FEE_LETTER_UPLOAD_URL: '/api/groupCompany/feeLetter/uploadFeeLetter',
+    FEE_LETTER_DOWNLOAD_URL: '/api/groupCompany/feeLetter/downloadFileByLetterId',
+    FEE_LETTER_DELETE_URL: '/api/groupCompany/feeLetter/removeByLetterId'
 }
 
 export default URL_CONS;

@@ -12,19 +12,19 @@ const AppMenu = () => {
   
   // 根据当前路径确定选中的菜单项
   const getSelectedKey = (pathname) => {
-    if (pathname === '/' || pathname.includes('group-company')) return 'group-company';
-    if (pathname.includes('fee-letter')) return 'fee-letter';
-    return 'group-company';  // 默认返回 group-company
+    if (pathname === '/' || pathname.includes('groupCompany')) return 'groupCompany';
+    if (pathname.includes('feeLetter')) return 'feeLetter';
+    return 'groupCompany';  // 默认返回 groupCompany
   };
 
   const menuItems = [
     {
-      key: 'group-company',
-      label: <Link to="/group-company">Group-Company Mapping</Link>
+      key: 'groupCompany',
+      label: <Link to="/groupCompany">groupCompany Mapping</Link>
     },
     {
-      key: 'fee-letter',
-      label: <Link to="/fee-letter">Fee Letter Filling</Link>
+      key: 'feeLetter',
+      label: <Link to="/feeLetter">Fee Letter Filling</Link>
     }
   ];
 
@@ -32,7 +32,7 @@ const AppMenu = () => {
     <Menu
       mode="horizontal"
       selectedKeys={[getSelectedKey(location.pathname)]}
-      defaultSelectedKeys={['group-company']}
+      defaultSelectedKeys={['groupCompany']}
       className="app-menu"
       items={menuItems}
     />

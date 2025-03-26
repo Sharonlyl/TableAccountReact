@@ -61,7 +61,7 @@ const FileTable = ({ userRole }) => {
 
   // 检查是否有权限执行某个操作
   const hasPermission = (action, record = null) => {
-    const { groupCompanyRole, username } = userRole;
+    const { groupCompanyRole, userId } = userRole;
     
     // 如果角色是管理员，有所有权限
     if (groupCompanyRole === ROLES.ADMIN) {
@@ -83,7 +83,7 @@ const FileTable = ({ userRole }) => {
         case 'update':
         case 'delete':
           // 只有当前用户等于记录的创建者时才有权限
-          return record && record.createdBy === username;
+          return record && record.createdBy === userId;
         default:
           return false;
       }
@@ -199,9 +199,9 @@ const FileTable = ({ userRole }) => {
         const formattedData = list.map(item => ({
           id: item.letterId.toString(),
           note: item.comment,
-          uploadBy: item.lastUpdatedBy,
+          uploadBy: item.uploadUserName,
           uploadDate: dayjs(item.lastUpdatedDate).format('YYYY/MM/DD'),
-          createdBy: item.createdBy || item.lastUpdatedBy, // 保存createdBy字段用于权限判断
+          createdBy: item.createdBy, // 保存createdBy字段用于权限判断
           s3ObjectId: item.s3ObjectId
         }));
         
@@ -352,9 +352,9 @@ const FileTable = ({ userRole }) => {
         const formattedData = list.map(item => ({
           id: item.letterId.toString(),
           note: item.comment,
-          uploadBy: item.lastUpdatedBy,
+          uploadBy: item.uploadUserName,
           uploadDate: dayjs(item.lastUpdatedDate).format('YYYY/MM/DD'),
-          createdBy: item.createdBy || item.lastUpdatedBy, // 保存createdBy字段用于权限判断
+          createdBy: item.createdBy,
           s3ObjectId: item.s3ObjectId
         }));
         

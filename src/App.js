@@ -12,17 +12,17 @@ const RouterList = () => {
   const routes = useRoutes([
     // 原有路由
     {
-      path: '/group-company',
+      path: '/groupCompany',
       element: <GroupCompany />
     },
     {
-      path: '/fee-letter',
+      path: '/feeLetter',
       element: <FeeLetterUpload />
     },
     // 重定向
     {
       path: '/',
-      element: <Navigate to="/group-company" replace />
+      element: <Navigate to="/groupCompany" replace />
     },
     
     // 新增路由
