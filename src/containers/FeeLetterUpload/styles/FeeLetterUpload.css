@@ -27,6 +27,46 @@
   background-color: #e6f7ff !important;
 }
 
+/* Action列中的按钮容器 */
+.fee-file-table .action-buttons-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+/* 确保按钮容器即使在很窄的屏幕上也保持水平排列 */
+.fee-file-table .ant-table-tbody > tr > td:last-child {
+  text-align: center !important;
+  padding: 8px 4px !important;
+  white-space: nowrap;
+}
+
+/* 调整按钮样式 */
+.fee-file-table .action-buttons-container .ant-btn {
+  margin: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 调整按钮图标与文本的间距 */
+.fee-file-table .action-buttons-container .ant-btn .anticon {
+  margin-right: 4px;
+}
+
+/* 响应式调整 */
+@media (max-width: 576px) {
+  .fee-file-table .action-buttons-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .fee-file-table .action-buttons-container .ant-btn {
+    width: 100%;
+  }
+}
+
 .fee-action-buttons {
   display: flex;
   justify-content: flex-end;

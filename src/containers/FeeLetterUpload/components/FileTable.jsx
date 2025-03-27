@@ -83,7 +83,6 @@ const FileTable = ({ userRole }) => {
         case 'upload':
           return true;
         case 'download':
-        case 'update':
         case 'delete':
           // 只有当前用户等于记录的创建者时才有权限
           return record && record.createdBy === userId;
@@ -106,8 +105,14 @@ const FileTable = ({ userRole }) => {
       setLoading(true);
       
       const formData = new FormData();
-      formData.append('comment', comment);  // 直接添加评论
-      formData.append('file', file);  // 直接添加文件对象
+      
+      // 按照API所需格式创建feeLetter对象
+      const feeLetter = {
+        comment: comment
+      };
+      
+      formData.append('feeLetter', JSON.stringify(feeLetter));
+      formData.append('file', file);  // 添加文件对象
       
       const response = await uploadFeeLetter(formData);
       
@@ -213,7 +218,8 @@ const FileTable = ({ userRole }) => {
     try {
       setLoading(true);
       
-      const response = await downloadFeeLetter(record.id);
+      // 传递对象格式的参数，与deleteFeeLetter保持一致
+      const response = await downloadFeeLetter({letterId: record.letterId});
       
       // 处理二进制数据
       const blob = new Blob([response], { type: 'application/octet-stream' });
@@ -280,16 +286,6 @@ const FileTable = ({ userRole }) => {
   const handleCancelDelete = () => {
     setDeleteModalVisible(false);
     setFileToDelete(null);
-  };
-
-  // 处理编辑文件
-  const handleEdit = (record) => {
-    if (!hasPermission('update', record)) {
-      messageApi.error('You do not have permission to update this file');
-      return;
-    }
-    
-    messageApi.info('Update function not available');
   };
 
   // 处理页码变化
@@ -389,30 +385,25 @@ const FileTable = ({ userRole }) => {
       title: 'Action',
       key: 'action',
       width: '15%',
+      align: 'center',
       render: (_, record) => (
-        <Space size={0}>
+        <Space size={8} className="action-buttons-container">
           <Button
-            type="link"
+            type="primary"
             size="small"
             onClick={() => handleDownload(record)}
             disabled={!hasPermission('download', record)}
+            icon={<DownloadOutlined />}
           >
             Download
           </Button>
           <Button
-            type="link"
+            type="primary"
             size="small"
-            onClick={() => handleEdit(record)}
-            disabled={!hasPermission('update', record)}
-          >
-            Update
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            className="delete-btn"
+            danger
             onClick={() => handleDelete(record)}
             disabled={!hasPermission('delete', record)}
+            icon={<DeleteOutlined />}
           >
             Delete
           </Button>

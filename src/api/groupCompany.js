@@ -35,7 +35,7 @@ export const uploadFeeLetter = (formData) => service.post(URL_CONS.FEE_LETTER_UP
   }
 });
 
-export const downloadFeeLetter = (fileId) => service.get(`${URL_CONS.FEE_LETTER_DOWNLOAD_URL}/${fileId}`, {
+export const downloadFeeLetter = (params) => service.get(`${URL_CONS.FEE_LETTER_DOWNLOAD_URL}?letterId=${params.letterId}`, {
   responseType: 'blob'
 });
 
