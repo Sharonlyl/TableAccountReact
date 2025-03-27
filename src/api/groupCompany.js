@@ -39,6 +39,4 @@ export const downloadFeeLetter = (fileId) => service.get(`${URL_CONS.FEE_LETTER_
   responseType: 'blob'
 });
 
-export const deleteFeeLetter = (fileId) => service.delete(`${URL_CONS.FEE_LETTER_DELETE_URL}/${fileId}`);
-
-export const updateFeeLetter = (fileId, params) => service.put(`${URL_CONS.FEE_LETTER_UPDATE_URL}/${fileId}`, params);
+export const deleteFeeLetter = (params) => service.delete(`${URL_CONS.FEE_LETTER_DELETE_URL}?letterId=${params.letterId}`);

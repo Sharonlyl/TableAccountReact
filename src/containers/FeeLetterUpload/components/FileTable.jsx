@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Form, message, Button, Space, Modal, Pagination, Upload, Empty } from 'antd';
-import { DownloadOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Table, Form, message, Button, Space, Modal, Pagination, Upload, Tooltip, Empty } from 'antd';
+import { DownloadOutlined, DeleteOutlined, EditOutlined, FileExclamationOutlined } from '@ant-design/icons';
 import SearchForm from './SearchForm';
 import ActionButtons from './ActionButtons';
 import { searchFeeLetter, uploadFeeLetter, downloadFeeLetter, deleteFeeLetter, queryUserByDepartments } from '../../../api/groupCompany';
 import '../styles/FeeLetterUpload.css';
 import dayjs from 'dayjs';
+import UploadModal from './UploadModal';
 
 // 角色常量
 const ROLES = {
@@ -24,11 +25,13 @@ const FileTable = ({ userRole }) => {
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 20,
-    total: 0
+    total: 0,
+    showSizeChanger: true
   });
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
   const [deleteConfirmLoading, setDeleteConfirmLoading] = useState(false);
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   // 初始化获取上传者列表
   useEffect(() => {
@@ -92,51 +95,19 @@ const FileTable = ({ userRole }) => {
     return false;
   };
 
-  // 文件上传配置
-  const uploadProps = {
-    name: 'file',
-    action: '', // 实际上传通过自定义函数实现
-    showUploadList: false,
-    disabled: !hasPermission('upload'),
-    beforeUpload: (file) => {
-      if (!hasPermission('upload')) {
-        messageApi.error('You do not have permission to upload files');
-        return Upload.LIST_IGNORE;
-      }
-      
-      const isValidFileType = file.type === 'application/pdf' || 
-                             file.type === 'application/msword' || 
-                             file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-                             file.type === 'application/vnd.ms-excel' ||
-                             file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-      
-      if (!isValidFileType) {
-        messageApi.error('You can only upload PDF, Word or Excel files');
-        return Upload.LIST_IGNORE;
-      }
-      
-      const isLt10M = file.size / 1024 / 1024 < 10;
-      if (!isLt10M) {
-        messageApi.error('File must be smaller than 10MB');
-        return Upload.LIST_IGNORE;
-      }
-      
-      handleUpload(file);
-      return false; // 阻止默认上传行为
-    }
+  // 上传按钮点击
+  const handleUploadButtonClick = () => {
+    setUploadModalVisible(true);
   };
 
   // 处理文件上传
-  const handleUpload = async (file) => {
-    if (!hasPermission('upload')) {
-      return;
-    }
-    
+  const handleFileUpload = async (file, comment) => {
     try {
       setLoading(true);
       
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('comment', comment);  // 直接添加评论
+      formData.append('file', file);  // 直接添加文件对象
       
       const response = await uploadFeeLetter(formData);
       
@@ -154,12 +125,19 @@ const FileTable = ({ userRole }) => {
     }
   };
 
+  // 文件上传配置
+  const uploadProps = {
+    name: 'file',
+    showUploadList: false,
+    disabled: !hasPermission('upload'),
+    beforeUpload: () => false, // 禁用默认上传行为
+    onClick: () => {
+        handleUploadButtonClick();
+    }
+  };
+
   // 处理搜索
   const handleSearch = async () => {
-    if (!hasPermission('search')) {
-      return;
-    }
-    
     try {
       setLoading(true);
       
@@ -198,6 +176,7 @@ const FileTable = ({ userRole }) => {
         // 转换日期格式为YYYY/MM/DD
         const formattedData = list.map(item => ({
           id: item.letterId.toString(),
+          letterId: item.letterId,
           note: item.comment,
           uploadBy: item.uploadUserName,
           uploadDate: dayjs(item.lastUpdatedDate).format('YYYY/MM/DD'),
@@ -280,7 +259,7 @@ const FileTable = ({ userRole }) => {
     try {
       setDeleteConfirmLoading(true);
       
-      const response = await deleteFeeLetter(fileToDelete.id);
+      const response = await deleteFeeLetter({letterId: fileToDelete.letterId});
       
       if (response && response.success) {
         messageApi.success('Delete successful');
@@ -351,6 +330,7 @@ const FileTable = ({ userRole }) => {
         // 转换数据格式
         const formattedData = list.map(item => ({
           id: item.letterId.toString(),
+          letterId: item.letterId,
           note: item.comment,
           uploadBy: item.uploadUserName,
           uploadDate: dayjs(item.lastUpdatedDate).format('YYYY/MM/DD'),
@@ -494,6 +474,13 @@ const FileTable = ({ userRole }) => {
       {/* 删除确认对话框 */}
       <Modal
         {...modalConfig}
+      />
+
+      {/* 上传文件对话框 */}
+      <UploadModal
+        visible={uploadModalVisible}
+        onCancel={() => setUploadModalVisible(false)}
+        onUpload={handleFileUpload}
       />
     </div>
   );

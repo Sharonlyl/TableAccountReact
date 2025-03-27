@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Space, Upload } from 'antd';
+import { Button, Space } from 'antd';
 import { SearchOutlined, UploadOutlined } from '@ant-design/icons';
 
 const ActionButtons = ({ onSearch, uploadProps, canSearch = true, canUpload = true }) => {
@@ -15,14 +15,13 @@ const ActionButtons = ({ onSearch, uploadProps, canSearch = true, canUpload = tr
           Search
         </Button>
         
-        <Upload {...uploadProps}>
-          <Button 
-            icon={<UploadOutlined />}
-            disabled={!canUpload || uploadProps.disabled}
-          >
-            Upload New File
-          </Button>
-        </Upload>
+        <Button 
+          icon={<UploadOutlined />}
+          disabled={!canUpload || uploadProps.disabled}
+          onClick={uploadProps.onClick}
+        >
+          Upload New File
+        </Button>
       </Space>
     </div>
   );
