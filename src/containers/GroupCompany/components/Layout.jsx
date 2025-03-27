@@ -20,11 +20,11 @@ const AppMenu = () => {
   const menuItems = [
     {
       key: 'groupCompany',
-      label: <Link to="/groupCompany">groupCompany Mapping</Link>
+      label: <Link to="/groupCompany">Group-Company Mapping</Link>
     },
     {
       key: 'feeLetter',
-      label: <Link to="/feeLetter">Fee Letter Filling</Link>
+      label: <Link to="/feeLetter">Fee Letter Filing</Link>
     }
   ];
 
@@ -35,6 +35,10 @@ const AppMenu = () => {
       defaultSelectedKeys={['groupCompany']}
       className="app-menu"
       items={menuItems}
+      style={{
+        fontSize: '16px', 
+        fontWeight: 'medium'
+      }}
     />
   );
 };

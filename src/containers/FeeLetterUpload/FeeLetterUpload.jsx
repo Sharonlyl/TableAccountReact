@@ -49,7 +49,7 @@ const FeeLetterUploadContent = () => {
 
 const FeeLetterUpload = () => {
   return (
-    <AppLayout title="Fee Letter Filling">
+    <AppLayout title="Fee Letter Filing">
       <FeeLetterUploadContent />
     </AppLayout>
   );

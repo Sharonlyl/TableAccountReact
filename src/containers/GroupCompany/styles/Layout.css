@@ -36,7 +36,7 @@
   margin-left: 0;
   margin-top: 8px;
   width: 100%;
-  font-size: 14px;
+  line-height: 46px;  /* 增加行高以适应更大的字体 */
 }
 
 .app-title {
@@ -75,8 +75,8 @@
 
 /* 菜单项样式 - 使其看起来像标签页 */
 .app-menu .ant-menu-item {
-  margin: 0 16px 0 0 !important;
-  padding: 0 10px !important;
+  margin: 0 24px 0 0 !important; /* 增加间距 */
+  padding: 0 0 !important; /* 移除内边距以保持下划线与文字等宽 */
   font-weight: 500;
   transition: all 0.3s;
 }
@@ -192,6 +192,7 @@
 /* 确保菜单项的高亮颜色一致 */
 .ant-menu-item-selected a {
   color: #1890ff !important;
+  font-weight: 600; /* 选中时加粗 */
 }
 
 .ant-menu-item:hover a {
@@ -201,12 +202,22 @@
 /* 水平菜单项样式 - 标签页效果 */
 .ant-menu-horizontal > .ant-menu-item::after,
 .ant-menu-horizontal > .ant-menu-submenu::after {
+  position: absolute;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
   border-bottom: 2px solid #1890ff !important;
   bottom: 0 !important;
+  transform: none !important;
 }
 
 .ant-menu-horizontal > .ant-menu-item-selected::after,
 .ant-menu-horizontal > .ant-menu-submenu-selected::after {
+  position: absolute;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
   border-bottom: 2px solid #1890ff !important;
   bottom: 0 !important;
+  transform: none !important;
 }
