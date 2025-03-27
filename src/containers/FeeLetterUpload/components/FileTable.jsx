@@ -112,7 +112,31 @@ const FileTable = ({ userRole }) => {
       };
       
       formData.append('feeLetter', JSON.stringify(feeLetter));
-      formData.append('file', file);  // 添加文件对象
+      
+      // 检查是否是.msg文件
+      if (file.name.toLowerCase().endsWith('.msg')) {
+        console.log('Processing .msg file...');
+        try {
+          // 读取文件内容为ArrayBuffer
+          const fileContent = await readFileAsArrayBuffer(file);
+          
+          // 创建新的Blob对象，并设置正确的类型
+          const fileBlob = new Blob([fileContent], { type: 'multipart/form-data' });
+          
+          const newFile = new File([fileBlob], file.name, { type: 'multipart/form-data' });
+          
+          // 添加处理后的文件到FormData
+          formData.append('file', newFile);
+        } catch (error) {
+          console.error('Error processing .msg file:', error);
+          messageApi.error('Error processing .msg file');
+          setLoading(false);
+          return;
+        }
+      } else {
+        // 其他类型的文件直接添加
+        formData.append('file', file);
+      }
       
       const response = await uploadFeeLetter(formData);
       
@@ -128,6 +152,16 @@ const FileTable = ({ userRole }) => {
     } finally {
       setLoading(false);
     }
+  };
+  
+  // 读取文件为ArrayBuffer的辅助函数
+  const readFileAsArrayBuffer = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+      reader.readAsArrayBuffer(file);
+    });
   };
 
   // 文件上传配置

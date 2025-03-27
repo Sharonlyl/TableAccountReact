@@ -4,12 +4,12 @@ import { UploadOutlined } from '@ant-design/icons';
 
 const UploadModal = ({ visible, onCancel, onUpload }) => {
   const [form] = Form.useForm();
-  const [fileList, setFileList] = useState([]);
+  const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
   // 文件类型验证
   const isValidFileType = (file) => {
-    const acceptedTypes = ['.msg', '.pdf', '.xlsx'];
+    const acceptedTypes = ['.msg', '.pdf', '.xlsx', '.xls'];
     const fileName = file.name.toLowerCase();
     return acceptedTypes.some(type => fileName.endsWith(type));
   };
@@ -20,14 +20,18 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
   };
 
   // 处理文件选择
-  const handleFileChange = ({ fileList }) => {
-    setFileList(fileList.slice(-1)); // 只保留最新选择的文件
+  const handleFileChange = (info) => {
+    if (info.file) {
+      setFile(info.file.originFileObj || info.file);
+    } else {
+      setFile(null);
+    }
   };
 
   // 处理文件上传前的验证
   const beforeUpload = (file) => {
     if (!isValidFileType(file)) {
-      message.error('Only .msg, .pdf, .xlsx files are allowed');
+      message.error('The uploaded file format is incorrect');
       return Upload.LIST_IGNORE;
     }
     
@@ -42,7 +46,7 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
   // 处理表单提交
   const handleSubmit = async () => {
     try {
-      if (fileList.length === 0) {
+      if (!file) {
         message.error('Please select a file to upload');
         return;
       }
@@ -53,16 +57,15 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
       // 如果没有填写备注，使用文件名作为备注
       let comment = values.note || '';
       if (!comment.trim()) {
-        comment = fileList[0].name;
+        comment = file.name;
       }
 
       // 调用父组件的上传方法
-      const file = fileList[0].originFileObj;
       await onUpload(file, comment);
 
-      // 重置表单和文件列表
+      // 重置表单和文件
       form.resetFields();
-      setFileList([]);
+      setFile(null);
       setUploading(false);
 
     } catch (error) {
@@ -74,7 +77,7 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
   // 关闭并重置
   const handleCancel = () => {
     form.resetFields();
-    setFileList([]);
+    setFile(null);
     onCancel();
   };
 
@@ -90,7 +93,7 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
       <div className="upload-file-container">
         <div className="upload-file-info">
           <div className="upload-file-name">
-            {fileList.length > 0 ? fileList[0].name : 'No file selected'}
+            {file ? file.name : 'No file selected'}
           </div>
           <Upload
             beforeUpload={beforeUpload}
@@ -101,6 +104,9 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
           >
             <Button icon={<UploadOutlined />}>Upload file</Button>
           </Upload>
+        </div>
+        <div className="file-type-hint" style={{ fontSize: '12px', color: '#999', marginBottom: '15px' , marginLeft: '2px'}}>
+          Only .msg, .pdf, .xlsx, .xls files are allowed
         </div>
 
         <Form form={form} layout="vertical" className="upload-note-container">

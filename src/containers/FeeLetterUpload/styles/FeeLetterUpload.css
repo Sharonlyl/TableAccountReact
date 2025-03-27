@@ -168,7 +168,6 @@
 .upload-file-info {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
   gap: 8px;
 }
 
