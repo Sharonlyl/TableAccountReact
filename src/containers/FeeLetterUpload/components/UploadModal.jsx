@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Input, Upload, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Modal, Button, Form, Input, Upload, message, Space, Typography, Divider } from 'antd';
+import { UploadOutlined, FileOutlined, InfoCircleOutlined } from '@ant-design/icons';
+
+const { Text, Title } = Typography;
 
 const UploadModal = ({ visible, onCancel, onUpload }) => {
   const [form] = Form.useForm();
@@ -21,10 +23,11 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
 
   // 处理文件选择
   const handleFileChange = (info) => {
-    if (info.file) {
+    if (info.file.status !== 'uploading') {
       setFile(info.file.originFileObj || info.file);
-    } else {
-      setFile(null);
+    }
+    if (info.file.status === 'error') {
+      message.error(`${info.file.name} file upload failed`);
     }
   };
 
@@ -83,57 +86,120 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
 
   return (
     <Modal
-      title="Upload New File"
+      title={null}
       open={visible}
       onCancel={handleCancel}
       footer={null}
-      className="upload-file-modal"
       destroyOnClose
+      width={520}
+      bodyStyle={{ padding: '24px 24px 16px' }}
+      className="file-upload-modal"
     >
-      <div className="upload-file-container">
-        <div className="upload-file-info">
-          <div className="upload-file-name">
-            {file ? file.name : 'No file selected'}
-          </div>
-          <Upload
-            beforeUpload={beforeUpload}
-            onChange={handleFileChange}
-            showUploadList={false}
-            maxCount={1}
-            className="upload-file-btn"
-          >
-            <Button icon={<UploadOutlined />}>Upload file</Button>
-          </Upload>
-        </div>
-        <div className="file-type-hint" style={{ fontSize: '12px', color: '#999', marginBottom: '15px' , marginLeft: '2px'}}>
-          Only .msg, .pdf, .xlsx, .xls files are allowed
-        </div>
-
-        <Form form={form} layout="vertical" className="upload-note-container">
-          <Form.Item
-            label="Note"
-            name="note"
-            rules={[{ max: 40, message: 'Note cannot exceed 40 characters!' }]}
-          >
-            <Input.TextArea 
-              placeholder="input description for your upload file" 
-              className="upload-note-textarea"
-              maxLength={40}
-            />
-          </Form.Item>
-        </Form>
+      <div style={{ marginBottom: 24 }}>
+        <Title level={4} style={{ margin: 0, marginBottom: 20 }}>Upload New File</Title>
       </div>
 
-      <div className="upload-modal-footer">
-        <Button 
-          type="primary" 
-          onClick={handleSubmit} 
-          loading={uploading}
+      <Form form={form} layout="vertical">
+        <div 
+          style={{ 
+            padding: '20px', 
+            background: '#f9f9f9', 
+            borderRadius: '8px',
+            border: '1px dashed #d9d9d9',
+            marginBottom: 16,
+            textAlign: 'center'
+          }}
         >
-          Upload
-        </Button>
-        <Button onClick={handleCancel}>Cancel</Button>
-      </div>
+          {!file ? (
+            <>
+              <Upload
+                beforeUpload={beforeUpload}
+                onChange={handleFileChange}
+                showUploadList={false}
+                maxCount={1}
+              >
+                <Button 
+                  icon={<UploadOutlined />} 
+                  type="primary" 
+                  size="large"
+                  style={{ height: '48px', padding: '0 24px' }}
+                >
+                  Select File
+                </Button>
+              </Upload>
+              <div style={{ marginTop: 16 }}>
+                <Text type="secondary">
+                  Drag and drop or click to select
+                </Text>
+              </div>
+            </>
+          ) : (
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                padding: '12px 16px',
+                background: 'white',
+                borderRadius: '4px',
+                border: '1px solid #e8e8e8'
+              }}>
+                <FileOutlined style={{ fontSize: 20, color: '#1890ff', marginRight: 12 }} />
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <Text ellipsis style={{ width: '100%' }} strong>{file.name}</Text>
+                </div>
+                <Button 
+                  type="text" 
+                  size="small"
+                  onClick={() => setFile(null)}
+                  style={{ color: '#ff4d4f' }}
+                >
+                  Remove
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={{ marginBottom: 24 }}>
+          <Text type="secondary">
+            <Space align="center">
+              <InfoCircleOutlined style={{ fontSize: 14, color: '#1890ff' }} />
+              Supported Formats: .msg .pdf .xlsx .xls | Max size: 10MB
+            </Space>
+          </Text>
+        </div>
+
+        <Form.Item
+          label="Note"
+          name="note"
+          rules={[{ max: 40, message: 'Note cannot exceed 40 characters!' }]}
+        >
+          <Input.TextArea 
+            placeholder="Please enter file description (optional)" 
+            maxLength={40}
+            showCount
+            autoSize={{ minRows: 2, maxRows: 4 }}
+            style={{ resize: 'none' }}
+          />
+        </Form.Item>
+
+        <Divider style={{ margin: '24px 0 16px' }} />
+
+        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+          <Space size="middle">
+            <Button onClick={handleCancel}>Cancel</Button>
+            <Button 
+              type="primary" 
+              onClick={handleSubmit} 
+              loading={uploading}
+              disabled={!file}
+              size="middle"
+            >
+              Upload
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
     </Modal>
   );
 };
