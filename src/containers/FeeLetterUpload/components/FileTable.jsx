@@ -38,6 +38,17 @@ const FileTable = ({ userRole }) => {
     fetchUploadUsers();
   }, []);
 
+  // 添加初始化加载时的搜索
+  useEffect(() => {
+    // 设置默认的上传日期
+    form.setFieldsValue({
+      uploadDate: dayjs()
+    });
+    
+    // 初始化加载数据
+    handleSearch();
+  }, []);
+
   // 获取上传者列表
   const fetchUploadUsers = async () => {
     try {
@@ -189,6 +200,11 @@ const FileTable = ({ userRole }) => {
       // 获取表单数据
       const formValues = form.getFieldsValue();
       
+      // 如果uploadDate为空，则使用当前日期
+      if (!formValues.uploadDate) {
+        formValues.uploadDate = dayjs();
+      }
+      
       // 构建请求参数（按照实际接口格式）
       const params = {
         pageSize: pagination.pageSize,
@@ -335,6 +351,11 @@ const FileTable = ({ userRole }) => {
       // 获取表单数据
       const formValues = form.getFieldsValue();
       
+      // 如果uploadDate为空，则使用当前日期
+      if (!formValues.uploadDate) {
+        formValues.uploadDate = dayjs();
+      }
+      
       // 构建请求参数
       const params = {
         pageSize: 20,
@@ -479,7 +500,7 @@ const FileTable = ({ userRole }) => {
       <ActionButtons 
         onSearch={handleSearch} 
         uploadProps={uploadProps}
-        canSearch={hasPermission('search')}
+        canSearch={true}
         canUpload={hasPermission('upload')}
       />
       
