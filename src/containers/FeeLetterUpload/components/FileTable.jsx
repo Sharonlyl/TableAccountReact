@@ -122,7 +122,13 @@ const FileTable = ({ userRole }) => {
         comment: comment
       };
       
-      formData.append('feeLetter', JSON.stringify(feeLetter));
+      // 将feeLetter转换为Blob，并指定content-type为application/json
+      const feeLetterBlob = new Blob([JSON.stringify(feeLetter)], {
+        type: 'application/json'
+      });
+      
+      // 添加带有content-type的feeLetter
+      formData.append('feeLetter', feeLetterBlob);
       
       // 检查是否是.msg文件
       if (file.name.toLowerCase().endsWith('.msg')) {
@@ -131,10 +137,8 @@ const FileTable = ({ userRole }) => {
           // 读取文件内容为ArrayBuffer
           const fileContent = await readFileAsArrayBuffer(file);
           
-          // 创建新的Blob对象，并设置正确的类型
-          const fileBlob = new Blob([fileContent], { type: 'multipart/form-data' });
-          
-          const newFile = new File([fileBlob], file.name, { type: 'multipart/form-data' });
+          // 创建新的File对象，不指定content-type
+          const newFile = new File([fileContent], file.name);
           
           // 添加处理后的文件到FormData
           formData.append('file', newFile);

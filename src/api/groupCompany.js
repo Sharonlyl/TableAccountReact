@@ -29,11 +29,7 @@ export const removeGroupMapping = (mappingId) => service.delete(`${URL_CONS.REMO
 // FeeLetterUpload 相关API
 export const searchFeeLetter = (params) => service.post(URL_CONS.FEE_LETTER_SEARCH_URL, params);
 
-export const uploadFeeLetter = (formData) => service.post(URL_CONS.FEE_LETTER_UPLOAD_URL, formData, {
-  headers: {
-    'Content-Type': 'multipart/form-data'
-  }
-});
+export const uploadFeeLetter = (formData) => service.post(URL_CONS.FEE_LETTER_UPLOAD_URL, formData);
 
 export const downloadFeeLetter = (params) => service.get(`${URL_CONS.FEE_LETTER_DOWNLOAD_URL}?letterId=${params.letterId}`, {
   responseType: 'blob'

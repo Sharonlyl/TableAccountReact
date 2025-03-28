@@ -1078,7 +1078,6 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
             <div className="form-item">
               <div className="label">
                 GFAS Account Name
-                <span className="required-mark">*</span>
               </div>
               <Input 
                 value={accountName} 
