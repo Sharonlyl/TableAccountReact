@@ -92,7 +92,7 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
       footer={null}
       destroyOnClose
       width={520}
-      bodyStyle={{ padding: '24px 24px 16px' }}
+      style={{ padding: '24px 24px 16px' }}
       className="file-upload-modal"
     >
       <div style={{ marginBottom: 24 }}>
