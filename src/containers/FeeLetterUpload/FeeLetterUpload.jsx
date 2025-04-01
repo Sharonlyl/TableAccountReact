@@ -15,6 +15,7 @@ const FeeLetterUploadContent = () => {
 
   useEffect(() => {
     fetchUserRole();
+    document.title = 'Employer Data Maintenance'
   }, []);
 
   // 获取用户角色信息

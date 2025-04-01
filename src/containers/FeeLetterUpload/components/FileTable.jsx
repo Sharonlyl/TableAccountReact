@@ -132,7 +132,6 @@ const FileTable = ({ userRole }) => {
       
       // 检查是否是.msg文件
       if (file.name.toLowerCase().endsWith('.msg')) {
-        console.log('Processing .msg file...');
         try {
           // 读取文件内容为ArrayBuffer
           const fileContent = await readFileAsArrayBuffer(file);
@@ -158,6 +157,7 @@ const FileTable = ({ userRole }) => {
       if (response && response.success) {
         messageApi.success('Upload successful');
         handleSearch();
+        setUploadModalVisible(false);
       } else {
         messageApi.error('Upload failed');
       }
@@ -487,7 +487,7 @@ const FileTable = ({ userRole }) => {
     onOk: handleConfirmDelete,
     confirmLoading: deleteConfirmLoading,
     onCancel: handleCancelDelete,
-    children: <p>Are you sure you want to delete this file?</p>
+    children: <p>Are you sure to delete this record?</p>
   };
 
   return (
@@ -514,7 +514,7 @@ const FileTable = ({ userRole }) => {
         columns={columns}
         dataSource={tableData}
         rowKey="id"
-        loading={loading}
+        loading={{ spinning : loading, tip: 'Loading...'}}
         pagination={paginationConfig}
         locale={{ emptyText: customEmpty() }}
         size="small"

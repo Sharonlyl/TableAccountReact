@@ -2,6 +2,8 @@ import React from 'react';
 import { Layout, Typography, Menu } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/Layout.css';
+import Footer from './Footer';
+import DeafFooter from './Footer';
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -44,20 +46,51 @@ const AppMenu = () => {
 };
 
 const AppLayout = ({ children, title }) => {
+  const items = [
+    {
+      key: '1',
+      label: (
+        <a rel="noopener noreferrer" href="/caffe-web/j_spring_security_logout">
+          Logout
+        </a>
+      ),
+    },
+  ];
+
   return (
     <Layout className="app-layout">
-      <Header className="app-header">
-        <div className="header-wrapper">
-          <Title level={3} className="app-title">Business Management System</Title>
-          <AppMenu />
+      <Header className="navbar-header">
+        <div>
+          <div>
+            <a href="/">
+              <div className="logo">
+                CSS
+                  <b>DEV</b>
+              </div>
+            </a>
+            {/* headerProfile.env !== '' ? <PageHeader headerData={headerProfile}></PageHeader> : null */}
+          </div>
+          {/* <div className="userInfo">
+            <Dropdown menu={{ items }} trigger={['hover']}>
+              <span>{props.headerData.profileName}</span>
+            </Dropdown>
+          </div> */}
         </div>
       </Header>
       <Content className="app-content">
+        <AppMenu />
         <div className="page-container">
-          {title && <Title level={4} className="page-title">{title}</Title>}
+          {title && (
+            <Title level={4} className="page-title">
+              {title}
+            </Title>
+          )}
           {children}
         </div>
       </Content>
+      <Footer>
+        <DeafFooter />
+      </Footer>
     </Layout>
   );
 };

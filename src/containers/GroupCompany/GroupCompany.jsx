@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppLayout from './components/Layout';
 import AccountTable from './components/AccountTable';
 import './styles/GroupCompany.css';
@@ -13,6 +13,9 @@ const GroupCompanyContent = () => {
 };
 
 const GroupCompany = () => {
+  useEffect(() => {
+    document.title = 'Employer Data Maintenance'
+  }, [])
   return (
     <AppLayout title="Group-Company Mapping">
       <GroupCompanyContent />

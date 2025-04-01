@@ -221,3 +221,35 @@
   bottom: 0 !important;
   transform: none !important;
 }
+.navbar-header {
+  display: flex;
+  .logo {
+    padding: 0 15px 0 0;
+    flex: 0 0 84px;
+    color: var(--caffe-color-white);
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    b {
+      position: relative;
+      right: -3px;
+      top: -6px;
+      font-size: 12px;
+      color: red;
+    }
+}
+
+.menuList {
+  flex: 1;
+  overflow: hidden;
+}
+
+.userInfo {
+  margin-left: auto;
+  flex: 0 0 100px;
+  color: var(--caffe-color-white);
+  span {
+    cursor: pointer;
+   }
+ }
+}

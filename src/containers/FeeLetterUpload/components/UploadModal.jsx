@@ -96,7 +96,9 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
       className="file-upload-modal"
     >
       <div style={{ marginBottom: 24 }}>
-        <Title level={4} style={{ margin: 0, marginBottom: 20 }}>Upload New File</Title>
+         <div style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, marginBottom: 20 }}>
+           Upload New File
+         </div>
       </div>
 
       <Form form={form} layout="vertical">
