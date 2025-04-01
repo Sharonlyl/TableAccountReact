@@ -9,7 +9,7 @@ import AccountDataTable from "./AccountDataTable";
 import AddAccountModal from "./AddAccountModal";
 import EditAccountModal from "./EditAccountModal";
 import URL_CONS from '../../../constants/url';
-import { queryUserByDepartments, queryUserRole, searchGroupCompany, removeGroupMapping } from '../../../api/groupCompany';
+import { queryUserByDepartments, searchGroupCompany, removeGroupMapping } from '../../../api/groupCompany';
 
 // 防抖函数
 const debounce = (func, delay) => {
@@ -22,7 +22,7 @@ const debounce = (func, delay) => {
   };
 };
 
-const AccountTable = () => {
+const AccountTable = ({ userRoleInfo }) => {
   // 状态管理
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [form] = Form.useForm();
@@ -30,7 +30,6 @@ const AccountTable = () => {
   const [loading, setLoading] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [rmUsers, setRmUsers] = useState([]);
-  const [userRoleInfo, setUserRoleInfo] = useState(null);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 20,
@@ -62,34 +61,8 @@ const AccountTable = () => {
 
   // 在组件挂载时获取用户角色信息
   useEffect(() => {
-    fetchUserRole();
     fetchRmUsers();
   }, []);
-
-  // 获取用户角色信息
-  const fetchUserRole = async () => {
-    try {
-      setLoading(true);
-      
-      const response = await queryUserRole();
-      
-      if (response && response.success) {
-        setUserRoleInfo(response.data);
-        
-      } else {
-        console.error('Failed to fetch user role:', response?.errMessage);
-        messageApi.warning({
-          content: "Failed to fetch user role: ",
-          duration: 3
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching user role:', error);
-      messageApi.error('Error fetching user role');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // 获取RM用户列表
   const fetchRmUsers = async () => {

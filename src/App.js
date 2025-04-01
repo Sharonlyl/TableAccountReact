@@ -3,49 +3,34 @@ import { BrowserRouter as Router, useRoutes, Navigate, Outlet } from 'react-rout
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/locale/en_US';
 
-// 原有路由
-import GroupCompany from './containers/GroupCompany/GroupCompany';
-import FeeLetterUpload from './containers/FeeLetterUpload/FeeLetterUpload';
+// 布局组件
+import AppLayout from './containers/GroupCompany/components/Layout';
+
+// 内容组件
+import GroupCompanyContent from './containers/GroupCompany/GroupCompany';
+import FeeLetterUploadContent from './containers/FeeLetterUpload/FeeLetterUpload';
 
 // 路由列表组件
 const RouterList = () => {
   const routes = useRoutes([
-    // 原有路由
-    {
-      path: '/groupCompany',
-      element: <GroupCompany />
-    },
-    {
-      path: '/feeLetter',
-      element: <FeeLetterUpload />
-    },
-    // 重定向
     {
       path: '/',
-      element: <Navigate to="/groupCompany" replace />
-    },
-    
-    // 新增路由
-    // {
-    //   path: '/dealing',
-    //   element: <Outlet />,
-    //   children: [
-    //     {
-    //       path: 'dealExplorer',
-    //       element: <DealExplorer />,
-    //     },
-    //   ],
-    // },
-    // {
-    //   path: '/',
-    //   element: <Outlet />,
-    //   children: [
-    //     {
-    //       path: 'business-management',
-    //       element: <BusinessManagement />,
-    //     },
-    //   ],
-    // },
+      element: <AppLayout />,
+      children: [
+        {
+          path: 'groupCompany',
+          element: <GroupCompanyContent />
+        },
+        {
+          path: 'feeLetter',
+          element: <FeeLetterUploadContent />
+        },
+        {
+          path: '',
+          element: <Navigate to="/groupCompany" replace />
+        }
+      ]
+    }
   ]);
   
   return routes;

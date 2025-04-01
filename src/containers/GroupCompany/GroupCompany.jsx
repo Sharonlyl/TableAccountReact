@@ -1,26 +1,21 @@
 import React, { useEffect } from 'react';
-import AppLayout from './components/Layout';
+import { useOutletContext } from 'react-router-dom';
 import AccountTable from './components/AccountTable';
 import './styles/GroupCompany.css';
 
-// 假设这里是 GroupCompany 的原始内容
+// GroupCompany 内容组件，不再包含布局
 const GroupCompanyContent = () => {
+  const [groupCompanyRole, userId] = useOutletContext();
+  
+  useEffect(() => {
+    document.title = 'Employer Data Maintenance'
+  }, []);
+
   return (
     <div className="group-company-container">
-      <AccountTable />
+      <AccountTable userRoleInfo={{ groupCompanyRole, userId }} />
     </div>
   );
 };
 
-const GroupCompany = () => {
-  useEffect(() => {
-    document.title = 'Employer Data Maintenance'
-  }, [])
-  return (
-    <AppLayout title="Group-Company Mapping">
-      <GroupCompanyContent />
-    </AppLayout>
-  );
-};
-
-export default GroupCompany; 
+export default GroupCompanyContent; 

@@ -1,9 +1,10 @@
-import React from 'react';
-import { Layout, Typography, Menu } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Layout, Typography, Menu, Dropdown } from 'antd';
+import { Link, useLocation, Outlet, useOutletContext } from 'react-router-dom';
 import '../styles/Layout.css';
 import Footer from './Footer';
 import DeafFooter from './Footer';
+import { queryUserRole } from '../../../api/groupCompany';
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -46,6 +47,49 @@ const AppMenu = () => {
 };
 
 const AppLayout = ({ children, title }) => {
+  const [userInfo, setUserInfo] = useState({
+    env: 'DEV',
+    userId: '',
+    groupCompanyRole: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  
+  // 根据路由路径确定页面标题
+  const getPageTitle = () => {
+    const pathname = location.pathname;
+    if (pathname.includes('groupCompany')) return 'Group-Company Mapping';
+    if (pathname.includes('feeLetter')) return 'Fee Letter Filing';
+    return title || '';
+  };
+  
+  useEffect(() => {
+    fetchUserRole();
+  }, []);
+  
+  // 获取用户角色信息
+  const fetchUserRole = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await queryUserRole();
+      
+      if (response && response.success) {
+        setUserInfo({
+          env: response.data?.env || 'DEV',
+          userId: response.data?.userId || '',
+          groupCompanyRole: response.data?.groupCompanyRole || '',
+        });
+      } else {
+        console.error('Failed to fetch user role:', response?.errMessage);
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const items = [
     {
       key: '1',
@@ -65,27 +109,27 @@ const AppLayout = ({ children, title }) => {
             <a href="/">
               <div className="logo">
                 CSS
-                  <b>DEV</b>
+                  <b>{userInfo.env}</b>
               </div>
             </a>
             {/* headerProfile.env !== '' ? <PageHeader headerData={headerProfile}></PageHeader> : null */}
           </div>
-          {/* <div className="userInfo">
+          <div className="userInfo">
             <Dropdown menu={{ items }} trigger={['hover']}>
-              <span>{props.headerData.profileName}</span>
+              <span>{userInfo.userId?.toUpperCase()}</span>
             </Dropdown>
-          </div> */}
+          </div>
         </div>
       </Header>
       <Content className="app-content">
         <AppMenu />
         <div className="page-container">
-          {title && (
+          {getPageTitle() && (
             <Title level={4} className="page-title">
-              {title}
+              {getPageTitle()}
             </Title>
           )}
-          {children}
+          {children ? children : <Outlet context={[userInfo.groupCompanyRole, userInfo.userId]} />}
         </div>
       </Content>
       <Footer>
