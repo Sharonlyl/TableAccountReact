@@ -115,7 +115,7 @@ const FileTable = ({ userRoleInfo }) => {
       
       // 按照API所需格式创建feeLetter对象
       const feeLetter = {
-        comment: comment
+        comment
       };
       
       // 将feeLetter转换为Blob，并指定content-type为application/json
@@ -275,8 +275,8 @@ const FileTable = ({ userRoleInfo }) => {
       
       // 从Content-Disposition头中提取文件名
       let fileName = '';
-      if (contentDisposition && contentDisposition.includes('fileName=')) {
-        const fileNameMatch = contentDisposition.match(/fileName="(.+)"/);
+      if (contentDisposition && contentDisposition.includes('filename=')) {
+        const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
         if (fileNameMatch && fileNameMatch[1]) {
           ;[, fileName] = fileNameMatch;
         }

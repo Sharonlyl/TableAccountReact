@@ -46,10 +46,11 @@ const AppMenu = () => {
   );
 };
 
-const AppLayout = ({ children, title }) => {
+const AppLayout = ({ title }) => {
   const [userInfo, setUserInfo] = useState({
     env: '',
     userId: '',
+    userName: '',
     groupCompanyRole: '',
   });
   // const [loading, setLoading] = useState(true);
@@ -57,7 +58,7 @@ const AppLayout = ({ children, title }) => {
 
   // 根据路由路径确定页面标题
   const getPageTitle = () => {
-    const pathname = location.pathname;
+    const {pathname} = location;
     if (pathname.includes('groupCompany')) return 'Group-Company Mapping';
     if (pathname.includes('feeLetter')) return 'Fee Letter Filing';
     return title || '';

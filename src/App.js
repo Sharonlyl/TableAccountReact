@@ -1,16 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, useRoutes, Navigate, Outlet } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
-import enUS from 'antd/locale/en_US';
-
-// 布局组件
-import AppLayout from './containers/GroupCompany/components/Layout';
-
-// 内容组件
 import GroupCompanyContent from './containers/GroupCompany/GroupCompany';
 import FeeLetterUploadContent from './containers/FeeLetterUpload/FeeLetterUpload';
+import AppLayout from './containers/GroupCompany/components/Layout';
 
-// 路由列表组件
 const RouterList = () => {
   const routes = useRoutes([
     // {
@@ -46,10 +40,9 @@ const RouterList = () => {
   return routes;
 };
 
-function App() {
+const App = () => {
   return (
     <ConfigProvider
-      locale={enUS}
       theme={{
         cssVar: { prefix: 'caffe' },
         hashed: false,
@@ -58,7 +51,7 @@ function App() {
         },
         components: {
           Layout: {
-            headerBg: '#007ccl',
+            headerBg: '#007cc1',
             headerHeight: 30,
             bodyBg: 'transparent',
             footerBg: '#fff',
@@ -68,13 +61,14 @@ function App() {
           },
           Menu: {
             itemBorderRadius: 0,
-            darkItemBg: '#007ccl',
-            darkPopupBg: '#fff',
+            darkItemBg: '#007cc1',
+            darkItemColor: '#fff',
+            darkPopupBg: '#007cc1',
           },
           Table: {
             headerBg: '#DDE3F8',
             headerBorderRadius: 0,
-            rowHoverBg: '#F5F5F5',
+            rowHoverBg: '#f5f5f5',
           },
           Modal: {
             titleFontSize: 18,
