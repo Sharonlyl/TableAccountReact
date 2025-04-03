@@ -31,8 +31,13 @@ export const searchFeeLetter = (params) => service.post(URL_CONS.FEE_LETTER_SEAR
 
 export const uploadFeeLetter = (formData) => service.post(URL_CONS.FEE_LETTER_UPLOAD_URL, formData);
 
-export const downloadFeeLetter = (params) => service.get(`${URL_CONS.FEE_LETTER_DOWNLOAD_URL}?letterId=${params.letterId}`, {
-  responseType: 'blob'
-});
+export const downloadFeeLetter = (params) => {
+  return axios({
+    url: `${URL_CONS.FEE_LETTER_DOWNLOAD_URL}?letterId=${params.letterId}`,
+    method: 'GET',
+    responseType: 'blob',
+    withCredentials: true
+  });
+};
 
 export const deleteFeeLetter = (params) => service.delete(`${URL_CONS.FEE_LETTER_DELETE_URL}?letterId=${params.letterId}`);

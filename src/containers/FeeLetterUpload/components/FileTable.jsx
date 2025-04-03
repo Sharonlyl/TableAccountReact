@@ -272,15 +272,32 @@ const FileTable = ({ userRole }) => {
     try {
       setLoading(true);
       
-      // 传递对象格式的参数，与deleteFeeLetter保持一致
+      // 直接使用axios获取响应，以便访问headers
       const response = await downloadFeeLetter({letterId: record.letterId});
       
-      // 处理二进制数据
-      const blob = new Blob([response], { type: 'application/octet-stream' });
+      // 提取Content-Disposition头
+      const contentDisposition = response.headers['content-disposition'];
+      
+      // 从Content-Disposition头中提取文件名
+      let filename = '';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename=["']?([^"']+)["']?/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      // 如果没有从headers中获取到文件名，则使用记录的note作为备选
+      if (!filename) {
+        filename = record.note || `file_${record.letterId}`;
+      }
+      
+      // 创建Blob URL并下载
+      const blob = new Blob([response.data]);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = record.note;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
