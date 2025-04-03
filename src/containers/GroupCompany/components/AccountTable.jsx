@@ -8,7 +8,6 @@ import ActionButtons from "./ActionButtons";
 import AccountDataTable from "./AccountDataTable";
 import AddAccountModal from "./AddAccountModal";
 import EditAccountModal from "./EditAccountModal";
-import URL_CONS from '../../../constants/url';
 import { queryUserByDepartments, searchGroupCompany, removeGroupMapping } from '../../../api/groupCompany';
 
 // 防抖函数

@@ -221,6 +221,13 @@
   bottom: 0 !important;
   transform: none !important;
 }
+.group-container {
+  width: 100%;
+}
+.group-container > div {
+  display: flex;
+  justify-content: space-between;
+}
 .navbar-header {
   display: flex;
   .logo {
@@ -247,9 +254,9 @@
 .userInfo {
   margin-left: auto;
   flex: 0 0 100px;
-  color: var(--caffe-color-white);
   span {
     cursor: pointer;
+    color: #fff;
    }
  }
 }

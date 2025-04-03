@@ -15,7 +15,7 @@ const ROLES = {
   ADMIN: 'GROUP_COMPANY_ADMIN_ROLE'
 };
 
-const FileTable = ({ userRole }) => {
+const FileTable = ({ userRoleInfo }) => {
   // 状态管理
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
@@ -52,11 +52,8 @@ const FileTable = ({ userRole }) => {
   // 获取上传者列表
   const fetchUploadUsers = async () => {
     try {
-      setLoading(true);
-      
-      // 使用与GroupCompany相同的接口获取用户列表
       const response = await queryUserByDepartments({
-        departments: 'RM' // 与GroupCompany保持一致，使用RM部门
+        departments: 'RM' 
       });
       
       if (response && response.success) {
@@ -68,14 +65,12 @@ const FileTable = ({ userRole }) => {
     } catch (error) {
       console.error('Error fetching users:', error);
       messageApi.error('Error fetching users');
-    } finally {
-      setLoading(false);
     }
   };
 
   // 检查是否有权限执行某个操作
   const hasPermission = (action, record = null) => {
-    const { groupCompanyRole, userId } = userRole;
+    const { groupCompanyRole, userId } = userRoleInfo;
     
     // 如果角色是管理员，有所有权限
     if (groupCompanyRole === ROLES.ADMIN) {
@@ -84,7 +79,7 @@ const FileTable = ({ userRole }) => {
     
     // 如果是只读角色，只能搜索
     if (groupCompanyRole === ROLES.READ) {
-      return action === 'search';
+      return action === 'search' || action ==='download';
     }
     
     // 如果是写入角色
@@ -94,6 +89,7 @@ const FileTable = ({ userRole }) => {
         case 'upload':
           return true;
         case 'download':
+          return true
         case 'delete':
           // 只有当前用户等于记录的创建者时才有权限
           return record && record.createdBy === userId;
@@ -156,8 +152,8 @@ const FileTable = ({ userRole }) => {
       
       if (response && response.success) {
         messageApi.success('Upload successful');
-        handleSearch();
         setUploadModalVisible(false);
+        await handleSearch();
       } else {
         messageApi.error('Upload failed');
       }
@@ -216,7 +212,7 @@ const FileTable = ({ userRole }) => {
         letterId: "",
         comment: formValues.note || "",
         lastUpdatedDate: formValues.uploadDate ? formValues.uploadDate.format('YYYY-MM-DD') : "",
-        lastUpdatedBy: formValues.uploadBy || ""
+        uploadUserName: formValues.uploadBy || ""
       };
       
       // 调用实际接口
@@ -272,32 +268,31 @@ const FileTable = ({ userRole }) => {
     try {
       setLoading(true);
       
-      // 直接使用axios获取响应，以便访问headers
       const response = await downloadFeeLetter({letterId: record.letterId});
       
       // 提取Content-Disposition头
       const contentDisposition = response.headers['content-disposition'];
       
       // 从Content-Disposition头中提取文件名
-      let filename = '';
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename=["']?([^"']+)["']?/);
-        if (filenameMatch && filenameMatch[1]) {
-          filename = filenameMatch[1];
+      let fileName = '';
+      if (contentDisposition && contentDisposition.includes('fileName=')) {
+        const fileNameMatch = contentDisposition.match(/fileName="(.+)"/);
+        if (fileNameMatch && fileNameMatch[1]) {
+          ;[, fileName] = fileNameMatch;
         }
       }
       
       // 如果没有从headers中获取到文件名，则使用记录的note作为备选
-      if (!filename) {
-        filename = record.note || `file_${record.letterId}`;
+      if (!fileName) {
+        fileName = record.note
       }
       
       // 创建Blob URL并下载
-      const blob = new Blob([response.data]);
+      const blob = new Blob([response.data], { type: 'application/octet-stream' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = filename;
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -384,7 +379,7 @@ const FileTable = ({ userRole }) => {
         letterId: "",
         comment: formValues.note || "",
         lastUpdatedDate: formValues.uploadDate ? formValues.uploadDate.format('YYYY-MM-DD') : "",
-        lastUpdatedBy: formValues.uploadBy || ""
+        uploadUserName: formValues.uploadBy || ""
       };
       
       // 调用搜索接口

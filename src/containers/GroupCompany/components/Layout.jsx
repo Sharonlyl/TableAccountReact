@@ -12,7 +12,7 @@ const { Title } = Typography;
 // 创建菜单组件
 const AppMenu = () => {
   const location = useLocation();
-  
+
   // 根据当前路径确定选中的菜单项
   const getSelectedKey = (pathname) => {
     if (pathname === '/' || pathname.includes('groupCompany')) return 'groupCompany';
@@ -48,13 +48,13 @@ const AppMenu = () => {
 
 const AppLayout = ({ children, title }) => {
   const [userInfo, setUserInfo] = useState({
-    env: 'DEV',
+    env: '',
     userId: '',
     groupCompanyRole: '',
   });
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const location = useLocation();
-  
+
   // 根据路由路径确定页面标题
   const getPageTitle = () => {
     const pathname = location.pathname;
@@ -62,31 +62,32 @@ const AppLayout = ({ children, title }) => {
     if (pathname.includes('feeLetter')) return 'Fee Letter Filing';
     return title || '';
   };
-  
+
   useEffect(() => {
     fetchUserRole();
   }, []);
-  
+
   // 获取用户角色信息
   const fetchUserRole = async () => {
     try {
-      setLoading(true);
-      
+      // setLoading(true);
+
       const response = await queryUserRole();
-      
+
       if (response && response.success) {
         setUserInfo({
-          env: response.data?.env || 'DEV',
+          env: response.data?.env || '',
           userId: response.data?.userId || '',
+          userName: response.data?.userName || '',
           groupCompanyRole: response.data?.groupCompanyRole || '',
         });
       } else {
-        console.error('Failed to fetch user role:', response?.errMessage);
+        console.error('Failed to fetch user role');
       }
     } catch (error) {
-      console.error('Error fetching user role:', error);
+      console.error('Error fetching user role');
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -104,20 +105,22 @@ const AppLayout = ({ children, title }) => {
   return (
     <Layout className="app-layout">
       <Header className="navbar-header">
-        <div>
+        <div className="group-container">
           <div>
-            <a href="/">
-              <div className="logo">
-                CSS
+            <div>
+              <a href="/">
+                <div className="logo">
+                  CSS
                   <b>{userInfo.env}</b>
-              </div>
-            </a>
-            {/* headerProfile.env !== '' ? <PageHeader headerData={headerProfile}></PageHeader> : null */}
-          </div>
-          <div className="userInfo">
-            <Dropdown menu={{ items }} trigger={['hover']}>
-              <span>{userInfo.userId?.toUpperCase()}</span>
-            </Dropdown>
+                </div>
+              </a>
+              {/* headerProfile.env !== '' ? <PageHeader headerData={headerProfile}></PageHeader> : null */}
+            </div>
+            <div className="userInfo">
+              <Dropdown menu={{ items }} trigger={['hover']}>
+                <span>{userInfo.userId?.toUpperCase()}</span>
+              </Dropdown>
+            </div>
           </div>
         </div>
       </Header>
@@ -129,7 +132,13 @@ const AppLayout = ({ children, title }) => {
               {getPageTitle()}
             </Title>
           )}
-          {children ? children : <Outlet context={[userInfo.groupCompanyRole, userInfo.userId]} />}
+          <Outlet
+            context={{
+              groupCompanyRole: userInfo.groupCompanyRole,
+              userId: userInfo.userId,
+              userName: userInfo.userName,
+            }}
+          />
         </div>
       </Content>
       <Footer>
@@ -139,4 +148,4 @@ const AppLayout = ({ children, title }) => {
   );
 };
 
-export default AppLayout; 
+export default AppLayout;

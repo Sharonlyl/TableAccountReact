@@ -5,7 +5,7 @@ import './styles/FeeLetterUpload.css';
 
 // FeeLetterUpload 内容组件，不再包含布局和queryUserRole调用
 const FeeLetterUploadContent = () => {
-  const [groupCompanyRole, userId] = useOutletContext();
+  const {groupCompanyRole, userId} = useOutletContext();
 
   useEffect(() => {
     document.title = 'Employer Data Maintenance'
@@ -13,7 +13,7 @@ const FeeLetterUploadContent = () => {
 
   return (
     <div className="fee-letter-container">
-      <FileTable userRole={{ groupCompanyRole, username: userId }} />
+      <FileTable userRoleInfo={{ groupCompanyRole, userId }} />
     </div>
   );
 };
