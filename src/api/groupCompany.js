@@ -26,6 +26,13 @@ export const saveGroupMapping = (params) => service.put(URL_CONS.SAVE_GROUP_MAPP
 
 export const removeGroupMapping = (mappingId) => service.delete(`${URL_CONS.REMOVE_GROUP_MAPPING_URL}?mappingId=${mappingId}`);
 
+// Head Group管理相关API
+export const addHeadGroup = (params) => service.post(URL_CONS.ADD_HEAD_GROUP_URL, params);
+
+export const saveHeadGroup = (params) => service.post(URL_CONS.SAVE_HEAD_GROUP_URL, params);
+
+export const removeHeadGroup = (headGroupId) => service.delete(`${URL_CONS.REMOVE_HEAD_GROUP_URL}?headGroupId=${headGroupId}`);
+
 // FeeLetterUpload 相关API
 export const searchFeeLetter = (params) => service.post(URL_CONS.FEE_LETTER_SEARCH_URL, params);
 

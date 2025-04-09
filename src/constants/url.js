@@ -17,11 +17,17 @@ const URL_CONS = {
     SAVE_GROUP_MAPPING_URL: '/api/groupCompany/saveGroupMapping',
     REMOVE_GROUP_MAPPING_URL: '/api/groupCompany/removeGroupMapping',
     
+    // Head Group管理相关URL
+    ADD_HEAD_GROUP_URL: '/api/groupCompany/headGroup/addHeadGroup',
+    SAVE_HEAD_GROUP_URL: '/api/groupCompany/headGroup/saveHeadGroup',
+    REMOVE_HEAD_GROUP_URL: '/api/groupCompany/headGroup/removeHeadGroup',
+    
     // FeeLetterUpload 相关URL
     FEE_LETTER_SEARCH_URL: '/api/groupCompany/feeLetter/queryFeeLetterByCondition',
     FEE_LETTER_UPLOAD_URL: '/api/groupCompany/feeLetter/uploadFeeLetter',
     FEE_LETTER_DOWNLOAD_URL: '/api/groupCompany/feeLetter/downloadFileByLetterId',
     FEE_LETTER_DELETE_URL: '/api/groupCompany/feeLetter/removeByLetterId'
+
 }
 
 export default URL_CONS;

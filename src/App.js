@@ -4,6 +4,7 @@ import { ConfigProvider } from 'antd';
 import GroupCompanyContent from './containers/GroupCompany/GroupCompany';
 import FeeLetterUploadContent from './containers/FeeLetterUpload/FeeLetterUpload';
 import AppLayout from './containers/GroupCompany/components/Layout';
+import HeadGroupManagement from './containers/GroupCompany/components/HeadGroupManagement';
 
 const RouterList = () => {
   const routes = useRoutes([
@@ -24,6 +25,10 @@ const RouterList = () => {
         {
           path: 'groupCompany',
           element: <GroupCompanyContent />
+        },
+        {
+          path: 'groupCompany/headGroup',
+          element: <HeadGroupManagement visible={true} onBack={() => window.close()} />
         },
         {
           path: 'feeLetter',

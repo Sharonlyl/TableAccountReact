@@ -4,6 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { queryImrReferenceByCategory, queryUserByDepartments, queryHeadGroup, queryWIGroup, queryWICustomizedGroup, queryGfasAccountName, addGroupCompanyMapping } from '../../../api/groupCompany';
 import axios from 'axios';
 import '../styles/AddAccountModal.css';
+import HeadGroupManagement from './HeadGroupManagement';
 
 const AddAccountModal = ({ visible, onCancel, onSave }) => {
   const [form] = Form.useForm();
@@ -49,6 +50,9 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
 
   // 添加一个状态来跟踪是否已经尝试过查询账户名称
   const [hasAttemptedNameLookup, setHasAttemptedNameLookup] = useState(false);
+
+  // 添加Head Group管理页面的显示状态
+  const [headGroupManagementVisible, setHeadGroupManagementVisible] = useState(false);
 
   // 在组件挂载和visible变化时获取下拉框选项数据
   useEffect(() => {
@@ -757,10 +761,14 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
     onCancel();
   };
 
-  // 处理跳转到其他页面的按钮点击（暂未实现）
+  // 处理跳转到其他页面的按钮点击
   const handleNavigate = (type) => {
-
-    // 这里将来会实现跳转功能
+    if (type === 'headGroup') {
+      // 使用window.open在新窗口/标签中打开页面
+      const headGroupUrl = '/groupCompany/headGroup';
+      window.open(headGroupUrl, '_blank');
+    }
+    // 这里将来可以实现其他跳转功能
   };
 
   // 处理确认对话框的确认按钮点击
@@ -862,428 +870,435 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
 
   return (
     <>
-      <Modal
-        title="Add Group Company Mapping"
-        open={visible}
-        onCancel={handleCancel}
-        footer={null}
-        width={600}
-      >
-        {contextHolder}
-        <div className="form-container" style={{ marginTop: '20px' }}>
-          <Form
-            form={form}
-            layout="vertical"
-            initialValues={{
-              altId: '',
-              isGlobalClient: undefined
-            }}
-          >
-            {/* Head Group */}
-            <div className="form-item">
-              <div className="label">
-                Head Group
-                <span className="required-mark">*</span>
-              </div>
-              <Form.Item
-                name="headGroup"
-                noStyle
-                rules={[{ required: true }]}
-              >
-                <Select
-                  showSearch
-                  placeholder="Type at least 2 characters to search"
-                  className={`input-style ${formErrors.headGroup ? 'input-error' : ''}`}
-                  filterOption={false}
-                  onSearch={(value) => debouncedSearch.headGroup(value)}
-                  onSelect={(value, option) => handleGroupSelect(value, option, 'headGroup')}
-                  onFocus={() => {
-                    // 如果没有选中值，则清除搜索结果
-                    if (!form.getFieldValue('headGroup')) {
-                      setHeadGroupOptions([]);
-                    }
-                  }}
-                  notFoundContent={isSearching.headGroup ? 'Searching...' : 'No matching Head Groups found'}
-                  allowClear
-                  onClear={() => handleClear('headGroup')}
-                  autoClearSearchValue={true}
-                  defaultOpen={false}
-                  suffixIcon={
-                    <Button 
-                      type="text" 
-                      icon={<PlusOutlined />} 
-                      className="add-button"
-                      onClick={() => handleNavigate('headGroup')}
-                    />
-                  }
-                >
-                  {headGroupOptions.map((option, index) => (
-                    <Select.Option 
-                      key={option.key || `head-group-${index}`} 
-                      value={option.value}
-                    >
-                      {option.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-
-            {/* WI Group */}
-            <div className="form-item">
-              <div className="label">
-                WI Group
-                <span className="required-mark">*</span>
-              </div>
-              <Form.Item
-                name="wiGroup"
-                noStyle
-                rules={[{ required: true }]}
-              >
-                <Select
-                  showSearch
-                  placeholder="Type at least 2 characters to search"
-                  className={`input-style ${formErrors.wiGroup ? 'input-error' : ''}`}
-                  filterOption={false}
-                  onSearch={(value) => debouncedSearch.wiGroup(value)}
-                  onSelect={(value, option) => handleGroupSelect(value, option, 'wiGroup')}
-                  onFocus={() => {
-                    // 如果没有选中值，则清除搜索结果
-                    if (!form.getFieldValue('wiGroup')) {
-                      setWiGroupOptions([]);
-                    }
-                  }}
-                  notFoundContent={isSearching.wiGroup ? 'Searching...' : 'No matching WI Groups found'}
-                  options={wiGroupOptions}
-                  allowClear
-                  onClear={() => handleClear('wiGroup')}
-                  autoClearSearchValue={true}
-                  defaultOpen={false}
-                  suffixIcon={
-                    <Button 
-                      type="text" 
-                      icon={<PlusOutlined />} 
-                      className="add-button"
-                      onClick={() => handleNavigate('wiGroup')}
-                    />
-                  }
-                />
-              </Form.Item>
-            </div>
-
-            {/* WI Customized Group */}
-            <div className="form-item">
-              <div className="label">WI Customized Group</div>
-              <Form.Item
-                name="wiCustomizedGroup"
-                noStyle
-              >
-                <Select
-                  showSearch
-                  placeholder="Type at least 2 characters to search"
-                  className="input-style"
-                  filterOption={false}
-                  onSearch={(value) => debouncedSearch.wiCustomizedGroup(value)}
-                  onSelect={(value, option) => handleGroupSelect(value, option, 'wiCustomizedGroup')}
-                  onFocus={() => {
-                    // 如果没有选中值，则清除搜索结果
-                    if (!form.getFieldValue('wiCustomizedGroup')) {
-                      setWiCustomizedGroupOptions([]);
-                    }
-                  }}
-                  notFoundContent={isSearching.wiCustomizedGroup ? 'Searching...' : 'No matching WI Customized Groups found'}
-                  options={wiCustomizedGroupOptions}
-                  allowClear
-                  onClear={() => handleClear('wiCustomizedGroup')}
-                  autoClearSearchValue={true}
-                  defaultOpen={false}
-                  suffixIcon={
-                    <Button 
-                      type="text" 
-                      icon={<PlusOutlined />} 
-                      className="add-button"
-                      onClick={() => handleNavigate('wiCustomizedGroup')}
-                    />
-                  }
-                />
-              </Form.Item>
-            </div>
-
-            {/* GFAS Account No */}
-            <div className="form-item">
-              <div className="label">
-                GFAS Account No
-                <span className="required-mark">*</span>
-              </div>
-              <Form.Item
-                name="gfasAccountNo"
-                noStyle
-                rules={[
-                  { required: true },
-                  { 
-                    pattern: /^[a-zA-Z0-9\s]*$/, 
-                    message: 'Only letters, numbers and spaces' 
-                  }
-                ]}
-                className={formErrors.gfasAccountNo ? 'has-error' : ''}
-              >
-                <Input 
-                  placeholder="Letters, numbers and spaces only" 
-                  className={`input-style ${formErrors.gfasAccountNo && (!form.getFieldValue('gfasAccountNo') || form.getFieldValue('gfasAccountNo').trim() === '') ? 'input-error' : ''}`}
-                  onBlur={(e) => handleAccountNoChange(e.target.value)}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    // 如果有值，清除错误状态
-                    if (value && value.trim() !== '') {
-                      setFormErrors(prev => ({
-                        ...prev,
-                        gfasAccountNo: false
-                      }));
-                    }
-                  }}
-                  onKeyPress={handleAlphanumericInput}
-                />
-              </Form.Item>
-            </div>
-
-            {/* Alt Id */}
-            {showAltId && (
+      {headGroupManagementVisible ? (
+        <HeadGroupManagement 
+          visible={headGroupManagementVisible} 
+          onBack={handleHeadGroupManagementBack} 
+        />
+      ) : (
+        <Modal
+          title="Add Group Company Mapping"
+          open={visible}
+          onCancel={handleCancel}
+          footer={null}
+          width={600}
+        >
+          {contextHolder}
+          <div className="form-container" style={{ marginTop: '20px' }}>
+            <Form
+              form={form}
+              layout="vertical"
+              initialValues={{
+                altId: '',
+                isGlobalClient: undefined
+              }}
+            >
+              {/* Head Group */}
               <div className="form-item">
                 <div className="label">
-                  Alt Id
+                  Head Group
                   <span className="required-mark">*</span>
                 </div>
                 <Form.Item
-                  name="altId"
+                  name="headGroup"
+                  noStyle
+                  rules={[{ required: true }]}
+                >
+                  <Select
+                    showSearch
+                    placeholder="Type at least 2 characters to search"
+                    className={`input-style ${formErrors.headGroup ? 'input-error' : ''}`}
+                    filterOption={false}
+                    onSearch={(value) => debouncedSearch.headGroup(value)}
+                    onSelect={(value, option) => handleGroupSelect(value, option, 'headGroup')}
+                    onFocus={() => {
+                      // 如果没有选中值，则清除搜索结果
+                      if (!form.getFieldValue('headGroup')) {
+                        setHeadGroupOptions([]);
+                      }
+                    }}
+                    notFoundContent={isSearching.headGroup ? 'Searching...' : 'No matching Head Groups found'}
+                    allowClear
+                    onClear={() => handleClear('headGroup')}
+                    autoClearSearchValue={true}
+                    defaultOpen={false}
+                    suffixIcon={
+                      <Button 
+                        type="text" 
+                        icon={<PlusOutlined />} 
+                        className="add-button"
+                        onClick={() => handleNavigate('headGroup')}
+                      />
+                    }
+                  >
+                    {headGroupOptions.map((option, index) => (
+                      <Select.Option 
+                        key={option.key || `head-group-${index}`} 
+                        value={option.value}
+                      >
+                        {option.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+
+              {/* WI Group */}
+              <div className="form-item">
+                <div className="label">
+                  WI Group
+                  <span className="required-mark">*</span>
+                </div>
+                <Form.Item
+                  name="wiGroup"
+                  noStyle
+                  rules={[{ required: true }]}
+                >
+                  <Select
+                    showSearch
+                    placeholder="Type at least 2 characters to search"
+                    className={`input-style ${formErrors.wiGroup ? 'input-error' : ''}`}
+                    filterOption={false}
+                    onSearch={(value) => debouncedSearch.wiGroup(value)}
+                    onSelect={(value, option) => handleGroupSelect(value, option, 'wiGroup')}
+                    onFocus={() => {
+                      // 如果没有选中值，则清除搜索结果
+                      if (!form.getFieldValue('wiGroup')) {
+                        setWiGroupOptions([]);
+                      }
+                    }}
+                    notFoundContent={isSearching.wiGroup ? 'Searching...' : 'No matching WI Groups found'}
+                    options={wiGroupOptions}
+                    allowClear
+                    onClear={() => handleClear('wiGroup')}
+                    autoClearSearchValue={true}
+                    defaultOpen={false}
+                    suffixIcon={
+                      <Button 
+                        type="text" 
+                        icon={<PlusOutlined />} 
+                        className="add-button"
+                        onClick={() => handleNavigate('wiGroup')}
+                      />
+                    }
+                  />
+                </Form.Item>
+              </div>
+
+              {/* WI Customized Group */}
+              <div className="form-item">
+                <div className="label">WI Customized Group</div>
+                <Form.Item
+                  name="wiCustomizedGroup"
+                  noStyle
+                >
+                  <Select
+                    showSearch
+                    placeholder="Type at least 2 characters to search"
+                    className="input-style"
+                    filterOption={false}
+                    onSearch={(value) => debouncedSearch.wiCustomizedGroup(value)}
+                    onSelect={(value, option) => handleGroupSelect(value, option, 'wiCustomizedGroup')}
+                    onFocus={() => {
+                      // 如果没有选中值，则清除搜索结果
+                      if (!form.getFieldValue('wiCustomizedGroup')) {
+                        setWiCustomizedGroupOptions([]);
+                      }
+                    }}
+                    notFoundContent={isSearching.wiCustomizedGroup ? 'Searching...' : 'No matching WI Customized Groups found'}
+                    options={wiCustomizedGroupOptions}
+                    allowClear
+                    onClear={() => handleClear('wiCustomizedGroup')}
+                    autoClearSearchValue={true}
+                    defaultOpen={false}
+                    suffixIcon={
+                      <Button 
+                        type="text" 
+                        icon={<PlusOutlined />} 
+                        className="add-button"
+                        onClick={() => handleNavigate('wiCustomizedGroup')}
+                      />
+                    }
+                  />
+                </Form.Item>
+              </div>
+
+              {/* GFAS Account No */}
+              <div className="form-item">
+                <div className="label">
+                  GFAS Account No
+                  <span className="required-mark">*</span>
+                </div>
+                <Form.Item
+                  name="gfasAccountNo"
                   noStyle
                   rules={[
-                    { required: true, message: 'Please input Alt Id' },
+                    { required: true },
                     { 
                       pattern: /^[a-zA-Z0-9\s]*$/, 
                       message: 'Only letters, numbers and spaces' 
                     }
                   ]}
+                  className={formErrors.gfasAccountNo ? 'has-error' : ''}
                 >
                   <Input 
                     placeholder="Letters, numbers and spaces only" 
-                    className={`input-style ${formErrors.altId ? 'input-error' : ''}`}
-                    onBlur={(e) => handleAltIdChange(e.target.value)}
+                    className={`input-style ${formErrors.gfasAccountNo && (!form.getFieldValue('gfasAccountNo') || form.getFieldValue('gfasAccountNo').trim() === '') ? 'input-error' : ''}`}
+                    onBlur={(e) => handleAccountNoChange(e.target.value)}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      // 如果有值，清除错误状态
+                      if (value && value.trim() !== '') {
+                        setFormErrors(prev => ({
+                          ...prev,
+                          gfasAccountNo: false
+                        }));
+                      }
+                    }}
                     onKeyPress={handleAlphanumericInput}
                   />
                 </Form.Item>
               </div>
-            )}
 
-            {/* GFAS Account Name */}
-            <div className="form-item">
-              <div className="label">
-                GFAS Account Name
-              </div>
-              <Input 
-                value={accountName} 
-                disabled 
-                placeholder={hasAttemptedNameLookup && !accountName ? "" : "Auto display based on Account No."}
-                className={`input-style ${formErrors.gfasAccountName && !accountName ? 'input-error' : ''}`}
-                onChange={(e) => {
-                  // 虽然这是一个禁用的输入框，但仍然添加onChange处理程序以保持一致性
-                  const { value } = e.target
-                  if (value && value.trim() !== '') {
-                    setFormErrors(prev => ({
-                      ...prev,
-                      gfasAccountName: false
-                    }));
-                  }
-                }}
-              />
-            </div>
+              {/* Alt Id */}
+              {showAltId && (
+                <div className="form-item">
+                  <div className="label">
+                    Alt Id
+                    <span className="required-mark">*</span>
+                  </div>
+                  <Form.Item
+                    name="altId"
+                    noStyle
+                    rules={[
+                      { required: true, message: 'Please input Alt Id' },
+                      { 
+                        pattern: /^[a-zA-Z0-9\s]*$/, 
+                        message: 'Only letters, numbers and spaces' 
+                      }
+                    ]}
+                  >
+                    <Input 
+                      placeholder="Letters, numbers and spaces only" 
+                      className={`input-style ${formErrors.altId ? 'input-error' : ''}`}
+                      onBlur={(e) => handleAltIdChange(e.target.value)}
+                      onKeyPress={handleAlphanumericInput}
+                    />
+                  </Form.Item>
+                </div>
+              )}
 
-            {/* Fund Class */}
-            <div className="form-item">
-              <div className="label">
-                Fund Class
-                <span className="required-mark">*</span>
-              </div>
-              <Form.Item
-                name="fundClass"
-                noStyle
-                rules={[{ required: true }]}
-              >
-                <Select 
-                  placeholder="Please select Fund Class"
-                  className={`input-style ${formErrors.fundClass ? 'input-error' : ''}`}
-                  onChange={handleFundClassChange}
-                >
-                  {options.FUND_CLASS.map(option => (
-                    <Select.Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-
-            {/* Pension Category */}
-            <div className="form-item">
-              <div className="label">
-                Pension Category
-                <span className="required-mark">*</span>
-              </div>
-              <Form.Item
-                name="pensionCategory"
-                noStyle
-                rules={[{ required: true }]}
-              >
-                <Select 
-                  placeholder="Please select Pension Category"
-                  className={`input-style ${formErrors.pensionCategory ? 'input-error' : ''}`}
-                >
-                  {options.PENSION_CATEGORY.map(option => (
-                    <Select.Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-
-            {/* Portfolio Nature */}
-            <div className="form-item">
-              <div className="label">
-                Portfolio Nature
-                <span className="required-mark">*</span>
-              </div>
-              <Form.Item
-                name="portfolioNature"
-                noStyle
-                rules={[{ required: true }]}
-              >
-                <Select 
-                  placeholder="Please select Portfolio Nature"
-                  className={`input-style ${formErrors.portfolioNature ? 'input-error' : ''}`}
-                >
-                  {options.PORTOFOLIO_NATURE.map(option => (
-                    <Select.Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-
-            {/* Member Choice */}
-            <div className="form-item">
-              <div className="label">
-                Member Choice
-                <span className="required-mark">*</span>
-              </div>
-              <Form.Item
-                name="memberChoice"
-                noStyle
-                rules={[{ required: true }]}
-              >
-                <Select 
-                  placeholder="Please select Member Choice"
-                  className={`input-style ${formErrors.memberChoice ? 'input-error' : ''}`}
-                >
-                  {options.MEMBER_CHOICE.map(option => (
-                    <Select.Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-
-            {/* RM */}
-            <div className="form-item">
-              <div className="label">RM</div>
-              <Form.Item
-                name="rm"
-                noStyle
-              >
-                <Select 
-                  placeholder="Please select RM"
-                  className="input-style"
-                >
-                  {rmOptions.map(option => (
-                    <Select.Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-
-            {/* Agent */}
-            <div className="form-item">
-              <div className="label">
-                Agent
-                <span className="required-mark">*</span>
-              </div>
-              <Form.Item
-                name="agent"
-                noStyle
-                rules={[{ required: true }]}
-              >
+              {/* GFAS Account Name */}
+              <div className="form-item">
+                <div className="label">
+                  GFAS Account Name
+                </div>
                 <Input 
-                  placeholder="Please input Agent" 
-                  className={`input-style ${formErrors.agent && (!form.getFieldValue('agent') || form.getFieldValue('agent').trim() === '') ? 'input-error' : ''}`}
+                  value={accountName} 
+                  disabled 
+                  placeholder={hasAttemptedNameLookup && !accountName ? "" : "Auto display based on Account No."}
+                  className={`input-style ${formErrors.gfasAccountName && !accountName ? 'input-error' : ''}`}
                   onChange={(e) => {
-                    const { value } = e.target;
-                    // 如果有值，清除错误状态
+                    // 虽然这是一个禁用的输入框，但仍然添加onChange处理程序以保持一致性
+                    const { value } = e.target
                     if (value && value.trim() !== '') {
                       setFormErrors(prev => ({
                         ...prev,
-                        agent: false
+                        gfasAccountName: false
                       }));
                     }
                   }}
                 />
-              </Form.Item>
-            </div>
-
-            {/* Global Client */}
-            <div className="form-item">
-              <div className="label">
-                Global Client
-                <span className="required-mark">*</span>
               </div>
-              <Form.Item
-                name="isGlobalClient"
-                noStyle
-                rules={[{ required: true, message: 'Please select Global Client' }]}
-                className={formErrors.isGlobalClient ? 'has-error' : ''}
-              >
-                <Radio.Group 
-                  className={formErrors.isGlobalClient ? 'radio-error' : ''}
-                  onChange={(e) => {
-                    // 当用户选择了一个选项，清除错误状态
-                    if (e.target.value) {
-                      setFormErrors(prev => ({
-                        ...prev,
-                        isGlobalClient: false
-                      }));
-                    }
-                  }}
-                >
-                  <Radio value="Y">Y</Radio>
-                  <Radio value="N">N</Radio>
-                </Radio.Group>
-              </Form.Item>
-            </div>
 
-            {/* 按钮区域 */}
-            <div className="button-container">
-              <Button type="primary" onClick={handleSave} className="button">
-                Save
-              </Button>
-              <Button onClick={handleCancel} className="button">
-                Cancel
-              </Button>
-            </div>
-          </Form>
-        </div>
-      </Modal>
+              {/* Fund Class */}
+              <div className="form-item">
+                <div className="label">
+                  Fund Class
+                  <span className="required-mark">*</span>
+                </div>
+                <Form.Item
+                  name="fundClass"
+                  noStyle
+                  rules={[{ required: true }]}
+                >
+                  <Select 
+                    placeholder="Please select Fund Class"
+                    className={`input-style ${formErrors.fundClass ? 'input-error' : ''}`}
+                    onChange={handleFundClassChange}
+                  >
+                    {options.FUND_CLASS.map(option => (
+                      <Select.Option key={option.value} value={option.value}>
+                        {option.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+
+              {/* Pension Category */}
+              <div className="form-item">
+                <div className="label">
+                  Pension Category
+                  <span className="required-mark">*</span>
+                </div>
+                <Form.Item
+                  name="pensionCategory"
+                  noStyle
+                  rules={[{ required: true }]}
+                >
+                  <Select 
+                    placeholder="Please select Pension Category"
+                    className={`input-style ${formErrors.pensionCategory ? 'input-error' : ''}`}
+                  >
+                    {options.PENSION_CATEGORY.map(option => (
+                      <Select.Option key={option.value} value={option.value}>
+                        {option.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+
+              {/* Portfolio Nature */}
+              <div className="form-item">
+                <div className="label">
+                  Portfolio Nature
+                  <span className="required-mark">*</span>
+                </div>
+                <Form.Item
+                  name="portfolioNature"
+                  noStyle
+                  rules={[{ required: true }]}
+                >
+                  <Select 
+                    placeholder="Please select Portfolio Nature"
+                    className={`input-style ${formErrors.portfolioNature ? 'input-error' : ''}`}
+                  >
+                    {options.PORTOFOLIO_NATURE.map(option => (
+                      <Select.Option key={option.value} value={option.value}>
+                        {option.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+
+              {/* Member Choice */}
+              <div className="form-item">
+                <div className="label">
+                  Member Choice
+                  <span className="required-mark">*</span>
+                </div>
+                <Form.Item
+                  name="memberChoice"
+                  noStyle
+                  rules={[{ required: true }]}
+                >
+                  <Select 
+                    placeholder="Please select Member Choice"
+                    className={`input-style ${formErrors.memberChoice ? 'input-error' : ''}`}
+                  >
+                    {options.MEMBER_CHOICE.map(option => (
+                      <Select.Option key={option.value} value={option.value}>
+                        {option.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+
+              {/* RM */}
+              <div className="form-item">
+                <div className="label">RM</div>
+                <Form.Item
+                  name="rm"
+                  noStyle
+                >
+                  <Select 
+                    placeholder="Please select RM"
+                    className="input-style"
+                  >
+                    {rmOptions.map(option => (
+                      <Select.Option key={option.value} value={option.value}>
+                        {option.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+
+              {/* Agent */}
+              <div className="form-item">
+                <div className="label">
+                  Agent
+                  <span className="required-mark">*</span>
+                </div>
+                <Form.Item
+                  name="agent"
+                  noStyle
+                  rules={[{ required: true }]}
+                >
+                  <Input 
+                    placeholder="Please input Agent" 
+                    className={`input-style ${formErrors.agent && (!form.getFieldValue('agent') || form.getFieldValue('agent').trim() === '') ? 'input-error' : ''}`}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      // 如果有值，清除错误状态
+                      if (value && value.trim() !== '') {
+                        setFormErrors(prev => ({
+                          ...prev,
+                          agent: false
+                        }));
+                      }
+                    }}
+                  />
+                </Form.Item>
+              </div>
+
+              {/* Global Client */}
+              <div className="form-item">
+                <div className="label">
+                  Global Client
+                  <span className="required-mark">*</span>
+                </div>
+                <Form.Item
+                  name="isGlobalClient"
+                  noStyle
+                  rules={[{ required: true, message: 'Please select Global Client' }]}
+                  className={formErrors.isGlobalClient ? 'has-error' : ''}
+                >
+                  <Radio.Group 
+                    className={formErrors.isGlobalClient ? 'radio-error' : ''}
+                    onChange={(e) => {
+                      // 当用户选择了一个选项，清除错误状态
+                      if (e.target.value) {
+                        setFormErrors(prev => ({
+                          ...prev,
+                          isGlobalClient: false
+                        }));
+                      }
+                    }}
+                  >
+                    <Radio value="Y">Y</Radio>
+                    <Radio value="N">N</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </div>
+
+              {/* 按钮区域 */}
+              <div className="button-container">
+                <Button type="primary" onClick={handleSave} className="button">
+                  Save
+                </Button>
+                <Button onClick={handleCancel} className="button">
+                  Cancel
+                </Button>
+              </div>
+            </Form>
+          </div>
+        </Modal>
+      )}
 
       {/* 确认对话框 */}
       <Modal

@@ -47,6 +47,7 @@
 
 .app-content {
   padding: 24px;
+  padding-top: 0;
   background: #fff;
 }
 
@@ -222,11 +223,11 @@
   transform: none !important;
 }
 .group-container {
-  width: 100%;
+  width:100%;
 }
 .group-container > div {
-  display: flex;
-  justify-content: space-between;
+  display:flex;
+  justify-content:space-between;
 }
 .navbar-header {
   display: flex;
