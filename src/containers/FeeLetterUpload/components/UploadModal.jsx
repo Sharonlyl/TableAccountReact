@@ -180,8 +180,12 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
             placeholder="Please enter file description (optional)" 
             maxLength={200}
             showCount
-            autoSize={{ minRows: 2, maxRows: 4 }}
-            style={{ resize: 'vertical' }}
+            rows={3}
+            style={{ 
+              resize: 'vertical',
+              minHeight: '60px',
+              maxHeight: '250px'
+            }}
           />
         </Form.Item>
 
