@@ -29,7 +29,7 @@ export const removeGroupMapping = (mappingId) => service.delete(`${URL_CONS.REMO
 // Head Group管理相关API
 export const addHeadGroup = (params) => service.post(URL_CONS.ADD_HEAD_GROUP_URL, params);
 
-export const saveHeadGroup = (params) => service.post(URL_CONS.SAVE_HEAD_GROUP_URL, params);
+export const saveHeadGroup = (params) => service.put(URL_CONS.SAVE_HEAD_GROUP_URL, params);
 
 export const removeHeadGroup = (headGroupId) => service.delete(`${URL_CONS.REMOVE_HEAD_GROUP_URL}?headGroupId=${headGroupId}`);
 

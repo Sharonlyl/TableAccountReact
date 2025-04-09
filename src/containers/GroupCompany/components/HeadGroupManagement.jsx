@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Button, message, Card, Checkbox, Table, Space, Row, Col, Empty } from 'antd';
 import { PlusOutlined, SearchOutlined, ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { queryHeadGroup, addHeadGroup, saveHeadGroup, removeHeadGroup } from '../../../api/groupCompany';
+import dayjs from 'dayjs';
 import '../styles/AddAccountModal.css';
 
 // 新增/更新弹窗组件
@@ -12,17 +13,25 @@ const HeadGroupFormModal = ({
   title = 'Head Group', 
   buttonText = 'Save',
   initialValues = {}, 
-  confirmLoading = false 
+  confirmLoading = false,
+  modalType // 新增modalType参数以明确区分是新建还是更新
 }) => {
   const [form] = Form.useForm();
+  const formRef = React.useRef(null);
   const [messageApi, contextHolder] = message.useMessage();
 
-  // 当Modal显示或initialValues变化时，重置表单
+  // 当Modal打开或类型/初始值变化时重置表单
   useEffect(() => {
     if (visible) {
-      form.setFieldsValue(initialValues);
+      // 先重置表单，清除所有字段值
+      form.resetFields();
+      
+      // 如果是更新模式且有初始值，则设置表单值
+      if (modalType === 'update' && initialValues && initialValues.groupName) {
+        form.setFieldsValue(initialValues);
+      }
     }
-  }, [visible, initialValues, form]);
+  }, [visible, modalType, initialValues, form]);
 
   // 处理保存按钮点击
   const handleSave = () => {
@@ -46,6 +55,7 @@ const HeadGroupFormModal = ({
       title={title}
       open={visible}
       onCancel={handleCancel}
+      destroyOnClose={true} // 确保关闭时完全销毁Modal内容
       footer={[
         <Button key="cancel" onClick={handleCancel} disabled={confirmLoading}>
           Cancel
@@ -55,13 +65,13 @@ const HeadGroupFormModal = ({
         </Button>
       ]}
       maskClosable={false}
-      destroyOnClose
     >
       {contextHolder}
       <Form
         form={form}
+        ref={formRef}
         layout="vertical"
-        initialValues={initialValues}
+        // 不在这里设置initialValues，而是通过useEffect处理
       >
         <Form.Item
           name="groupName"
@@ -130,7 +140,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     const params = {
       groupName: groupName || '',
       pageNum: 1,
-      pageSize: pagination.pageSize
+      pageSize: 20 // 强制设置为20
     };
     
     // 根据选择决定是否添加orphanGroup参数及其值
@@ -166,12 +176,12 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     const params = {
       ...searchParams,
       pageNum: pagi.current,
-      pageSize: pagi.pageSize,
+      pageSize: 20 // 强制设置为20
     };
     setPagination({
       ...pagination,
       current: pagi.current,
-      pageSize: pagi.pageSize
+      pageSize: 20 // 强制设置为20
     });
     fetchData(params);
   };
@@ -180,9 +190,15 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
   const fetchData = async (params) => {
     if (!params) return;
     
+    // 确保pageSize始终为20
+    const requestParams = {
+      ...params,
+      pageSize: 20
+    };
+    
     setLoading(true);
     try {
-      const response = await queryHeadGroup(params);
+      const response = await queryHeadGroup(requestParams);
       if (response.success) {
         const { pageInfoData } = response;
         setData(pageInfoData.list.map(item => ({
@@ -192,7 +208,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         setPagination({
           ...pagination,
           current: pageInfoData.pageNum,
-          pageSize: pageInfoData.pageSize,
+          pageSize: 20, // 强制保持pageSize为20
           total: pageInfoData.total
         });
       } else {
@@ -208,8 +224,9 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
 
   // 处理打开新建Modal
   const handleOpenNewModal = () => {
-    setModalType('new');
+    // 先清空当前记录，然后再设置模态类型和显示状态
     setCurrentRecord(null);
+    setModalType('new');
     setModalVisible(true);
   };
 
@@ -223,6 +240,12 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
   // 处理关闭Modal
   const handleCloseModal = () => {
     setModalVisible(false);
+    // 延迟清空当前记录，避免闪烁
+    setTimeout(() => {
+      if (modalType === 'update') {
+        setCurrentRecord(null);
+      }
+    }, 100);
   };
 
   // 处理保存Modal
@@ -246,7 +269,13 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         setModalVisible(false);
         // 重新加载数据
         if (searchParams) {
-          fetchData(searchParams);
+          // 确保使用pageSize为20的搜索参数
+          const updatedParams = {
+            ...searchParams,
+            pageSize: 20
+          };
+          setSearchParams(updatedParams);
+          fetchData(updatedParams);
         }
       } else {
         messageApi.error(response.errMessage || 'Failed to add Head Group');
@@ -272,7 +301,13 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         setModalVisible(false);
         // 重新加载数据
         if (searchParams) {
-          fetchData(searchParams);
+          // 确保使用pageSize为20的搜索参数
+          const updatedParams = {
+            ...searchParams,
+            pageSize: 20
+          };
+          setSearchParams(updatedParams);
+          fetchData(updatedParams);
         }
       } else {
         messageApi.error(response.errMessage || 'Failed to update Head Group');
@@ -310,7 +345,13 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         setRecordToDelete(null);
         // 重新加载数据
         if (searchParams) {
-          fetchData(searchParams);
+          // 确保使用pageSize为20的搜索参数
+          const updatedParams = {
+            ...searchParams,
+            pageSize: 20
+          };
+          setSearchParams(updatedParams);
+          fetchData(updatedParams);
         }
       } else {
         messageApi.error(response.errMessage || 'Failed to delete Head Group');
@@ -364,7 +405,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       key: 'lastUpdatedDate',
       ellipsis: true,
       width: 150,
-      render: (text) => text ? new Date(text).toLocaleDateString() : '-'
+      render: (text) => text ? dayjs(text).format('YYYY/MM/DD') : '-'
     },
     {
       title: 'Action',
@@ -465,8 +506,9 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         onSave={handleSaveModal}
         title={modalType === 'new' ? 'New Head Group' : 'Update Head Group'}
         buttonText={modalType === 'new' ? 'Save' : 'Update'}
-        initialValues={currentRecord ? { groupName: currentRecord.groupName } : {}}
+        initialValues={modalType === 'update' && currentRecord ? { groupName: currentRecord.groupName } : {}}
         confirmLoading={confirmLoading}
+        modalType={modalType} // 传递modalType到Modal组件
       />
 
       {/* 删除确认对话框 */}
