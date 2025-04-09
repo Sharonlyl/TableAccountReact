@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Modal, Form, Input, Button, message, Card, Checkbox, Table, Space, Row, Col, Empty } from 'antd';
 import { PlusOutlined, SearchOutlined, ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { queryHeadGroup, addHeadGroup, saveHeadGroup, removeHeadGroup } from '../../../api/groupCompany';
 import dayjs from 'dayjs';
 import '../styles/AddAccountModal.css';
+
+// 页面大小常量，避免魔法数字
+const PAGE_SIZE = 20;
 
 // 新增/更新弹窗组件
 const HeadGroupFormModal = ({ 
@@ -34,14 +37,13 @@ const HeadGroupFormModal = ({
   }, [visible, modalType, initialValues, form]);
 
   // 处理保存按钮点击
-  const handleSave = () => {
-    form.validateFields()
-      .then(values => {
-        onSave(values);
-      })
-      .catch(info => {
-        console.log('Validate Failed:', info);
-      });
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      onSave(values);
+    } catch (info) {
+      console.log('Validate Failed:', info);
+    }
   };
 
   // 处理取消按钮点击
@@ -99,7 +101,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 20,
+    pageSize: PAGE_SIZE,
     total: 0,
     showSizeChanger: false,
     showQuickJumper: false
@@ -126,74 +128,20 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       // 重置数据
       setData([]);
       // 重置页码
-      setPagination({ ...pagination, current: 1 });
+      setPagination(prev => ({ ...prev, current: 1 }));
       // 重置搜索参数
       setSearchParams(null);
     }
-  }, [visible]);
+  }, [visible, form]);
 
-  // 处理搜索操作
-  const handleSearch = (values) => {
-    const { groupName, orphanGroupY, orphanGroupN } = values;
-    
-    // 构建基础参数
-    const params = {
-      groupName: groupName || '',
-      pageNum: 1,
-      pageSize: 20 // 强制设置为20
-    };
-    
-    // 根据选择决定是否添加orphanGroup参数及其值
-    if (orphanGroupY) {
-      params.orphanGroup = true;
-    } else if (orphanGroupN) {
-      params.orphanGroup = false;
-    }
-    // 如果都未选择，则不添加orphanGroup参数
-    
-    setSearchParams(params);
-    fetchData(params);
-  };
-
-  // 处理Orphan Group Y选项变化
-  const handleOrphanGroupYChange = (e) => {
-    // 如果选中Y，则取消选中N
-    if (e.target.checked) {
-      form.setFieldsValue({ orphanGroupN: false });
-    }
-  };
-  
-  // 处理Orphan Group N选项变化
-  const handleOrphanGroupNChange = (e) => {
-    // 如果选中N，则取消选中Y
-    if (e.target.checked) {
-      form.setFieldsValue({ orphanGroupY: false });
-    }
-  };
-
-  // 处理表格分页、排序等变化
-  const handleTableChange = (pagi) => {
-    const params = {
-      ...searchParams,
-      pageNum: pagi.current,
-      pageSize: 20 // 强制设置为20
-    };
-    setPagination({
-      ...pagination,
-      current: pagi.current,
-      pageSize: 20 // 强制设置为20
-    });
-    fetchData(params);
-  };
-
-  // 获取数据
-  const fetchData = async (params) => {
+  // 获取数据 - 使用useCallback包装以避免不必要的重新创建
+  const fetchData = useCallback(async (params) => {
     if (!params) return;
     
-    // 确保pageSize始终为20
+    // 确保pageSize始终为定义的常量值
     const requestParams = {
       ...params,
-      pageSize: 20
+      pageSize: PAGE_SIZE
     };
     
     setLoading(true);
@@ -205,12 +153,12 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
           ...item,
           key: item.headGroupId
         })));
-        setPagination({
-          ...pagination,
+        setPagination(prev => ({
+          ...prev,
           current: pageInfoData.pageNum,
-          pageSize: 20, // 强制保持pageSize为20
+          pageSize: PAGE_SIZE, // 强制保持pageSize为常量值
           total: pageInfoData.total
-        });
+        }));
       } else {
         messageApi.error(response.errMessage || 'Failed to fetch data');
       }
@@ -219,26 +167,87 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       messageApi.error('Failed to fetch data');
     } finally {
       setLoading(false);
+      // 确保所有搜索相关的loading消息都被关闭
+      messageApi.destroy('searchLoading');
     }
-  };
+  }, [messageApi]);
+
+  // 处理搜索操作
+  const handleSearch = useCallback((values) => {
+    const { groupName, orphanGroupY, orphanGroupN } = values;
+    
+    // 构建基础参数
+    const params = {
+      groupName: groupName || '',
+      pageNum: 1,
+      pageSize: PAGE_SIZE // 强制设置为常量值
+    };
+    
+    // 根据选择决定是否添加orphanGroup参数及其值
+    if (orphanGroupY) {
+      params.orphanGroup = true;
+    } else if (orphanGroupN) {
+      params.orphanGroup = false;
+    }
+    // 如果都未选择，则不添加orphanGroup参数
+    
+    // 显示Loading消息
+    messageApi.loading({ content: 'Searching...', key: 'searchLoading', duration: 0 });
+    setSearchParams(params);
+    fetchData(params).then(() => {
+      // 搜索完成后关闭Loading消息
+      messageApi.destroy('searchLoading');
+    });
+  }, [fetchData, messageApi]);
+
+  // 处理Orphan Group Y选项变化
+  const handleOrphanGroupYChange = useCallback((e) => {
+    // 如果选中Y，则取消选中N
+    if (e.target.checked) {
+      form.setFieldsValue({ orphanGroupN: false });
+    }
+  }, [form]);
+  
+  // 处理Orphan Group N选项变化
+  const handleOrphanGroupNChange = useCallback((e) => {
+    // 如果选中N，则取消选中Y
+    if (e.target.checked) {
+      form.setFieldsValue({ orphanGroupY: false });
+    }
+  }, [form]);
+
+  // 处理表格分页、排序等变化
+  const handleTableChange = useCallback((pagi) => {
+    const params = {
+      ...searchParams,
+      pageNum: pagi.current,
+      pageSize: PAGE_SIZE // 强制设置为常量值
+    };
+    setPagination(prev => ({
+      ...prev,
+      current: pagi.current,
+      pageSize: PAGE_SIZE // 强制设置为常量值
+    }));
+    fetchData(params);
+  }, [searchParams, fetchData]);
 
   // 处理打开新建Modal
-  const handleOpenNewModal = () => {
+  const handleOpenNewModal = useCallback(() => {
     // 先清空当前记录，然后再设置模态类型和显示状态
     setCurrentRecord(null);
     setModalType('new');
     setModalVisible(true);
-  };
+  }, []);
 
   // 处理打开更新Modal
-  const handleOpenUpdateModal = (record) => {
+  const handleOpenUpdateModal = useCallback((record) => {
     setModalType('update');
     setCurrentRecord(record);
     setModalVisible(true);
-  };
+  }, []);
 
   // 处理关闭Modal
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setModalVisible(false);
     // 延迟清空当前记录，避免闪烁
     setTimeout(() => {
@@ -246,19 +255,25 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         setCurrentRecord(null);
       }
     }, 100);
-  };
+  }, [modalType]);
 
-  // 处理保存Modal
-  const handleSaveModal = (values) => {
-    if (modalType === 'new') {
-      handleAddHeadGroup(values);
-    } else {
-      handleUpdateHeadGroup(values);
+  // 刷新数据的通用函数
+  const refreshData = useCallback(() => {
+    if (searchParams) {
+      // 确保使用pageSize为常量值的搜索参数
+      const updatedParams = {
+        ...searchParams,
+        pageSize: PAGE_SIZE
+      };
+      // 显示Loading消息
+      messageApi.loading({ content: 'Loading...', key: 'searchLoading', duration: 0 });
+      setSearchParams(updatedParams);
+      fetchData(updatedParams);
     }
-  };
+  }, [searchParams, fetchData, messageApi]);
 
   // 处理新增Head Group
-  const handleAddHeadGroup = async (values) => {
+  const handleAddHeadGroup = useCallback(async (values) => {
     setConfirmLoading(true);
     try {
       const response = await addHeadGroup({
@@ -267,16 +282,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       if (response.success) {
         messageApi.success('Head Group added successfully');
         setModalVisible(false);
-        // 重新加载数据
-        if (searchParams) {
-          // 确保使用pageSize为20的搜索参数
-          const updatedParams = {
-            ...searchParams,
-            pageSize: 20
-          };
-          setSearchParams(updatedParams);
-          fetchData(updatedParams);
-        }
+        refreshData();
       } else {
         messageApi.error(response.errMessage || 'Failed to add Head Group');
       }
@@ -286,10 +292,12 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     } finally {
       setConfirmLoading(false);
     }
-  };
+  }, [messageApi, refreshData]);
 
   // 处理更新Head Group
-  const handleUpdateHeadGroup = async (values) => {
+  const handleUpdateHeadGroup = useCallback(async (values) => {
+    if (!currentRecord) return;
+    
     setConfirmLoading(true);
     try {
       const response = await saveHeadGroup({
@@ -299,16 +307,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       if (response.success) {
         messageApi.success('Head Group updated successfully');
         setModalVisible(false);
-        // 重新加载数据
-        if (searchParams) {
-          // 确保使用pageSize为20的搜索参数
-          const updatedParams = {
-            ...searchParams,
-            pageSize: 20
-          };
-          setSearchParams(updatedParams);
-          fetchData(updatedParams);
-        }
+        refreshData();
       } else {
         messageApi.error(response.errMessage || 'Failed to update Head Group');
       }
@@ -318,22 +317,31 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     } finally {
       setConfirmLoading(false);
     }
-  };
+  }, [currentRecord, messageApi, refreshData]);
+
+  // 处理保存Modal
+  const handleSaveModal = useCallback((values) => {
+    if (modalType === 'new') {
+      handleAddHeadGroup(values);
+    } else {
+      handleUpdateHeadGroup(values);
+    }
+  }, [modalType, handleAddHeadGroup, handleUpdateHeadGroup]);
 
   // 处理打开删除确认对话框
-  const handleOpenDeleteConfirm = (record) => {
+  const handleOpenDeleteConfirm = useCallback((record) => {
     setRecordToDelete(record);
     setDeleteConfirmVisible(true);
-  };
+  }, []);
 
   // 处理关闭删除确认对话框
-  const handleCloseDeleteConfirm = () => {
+  const handleCloseDeleteConfirm = useCallback(() => {
     setDeleteConfirmVisible(false);
     setRecordToDelete(null);
-  };
+  }, []);
 
   // 处理删除Head Group
-  const handleDeleteHeadGroup = async () => {
+  const handleDeleteHeadGroup = useCallback(async () => {
     if (!recordToDelete) return;
     
     setConfirmLoading(true);
@@ -343,16 +351,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         messageApi.success('Head Group deleted successfully');
         setDeleteConfirmVisible(false);
         setRecordToDelete(null);
-        // 重新加载数据
-        if (searchParams) {
-          // 确保使用pageSize为20的搜索参数
-          const updatedParams = {
-            ...searchParams,
-            pageSize: 20
-          };
-          setSearchParams(updatedParams);
-          fetchData(updatedParams);
-        }
+        refreshData();
       } else {
         messageApi.error(response.errMessage || 'Failed to delete Head Group');
       }
@@ -362,10 +361,10 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     } finally {
       setConfirmLoading(false);
     }
-  };
+  }, [recordToDelete, messageApi, refreshData]);
 
   // 返回上一页 - 当在新窗口中时，关闭窗口
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (window.opener) {
       // 如果是通过window.open打开的，则关闭窗口
       window.close();
@@ -373,18 +372,18 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       // 如果有传入onBack回调函数，则调用它
       onBack();
     }
-  };
+  }, [onBack]);
 
   // 自定义空状态展示
-  const customEmpty = () => (
+  const customEmpty = useMemo(() => (
     <Empty 
       image={Empty.PRESENTED_IMAGE_SIMPLE}
       description="No Data" 
     />
-  );
+  ), []);
 
-  // 表格列定义
-  const columns = [
+  // 表格列定义 - 使用useMemo避免不必要的重新渲染
+  const columns = useMemo(() => [
     {
       title: 'Head Group Name',
       dataIndex: 'groupName',
@@ -394,7 +393,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     },
     {
       title: 'Last Update By',
-      dataIndex: 'lastUpdatedBy',
+      dataIndex: 'lastUpdatedUserName',
       key: 'lastUpdatedBy',
       ellipsis: true,
       width: 150
@@ -435,7 +434,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         </Space>
       ),
     }
-  ];
+  ], [handleOpenUpdateModal, handleOpenDeleteConfirm]);
   
   return (
     <div>
@@ -494,7 +493,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
           onChange={handleTableChange}
           size="small"
           rowKey="headGroupId"
-          locale={{ emptyText: customEmpty() }}
+          locale={{ emptyText: customEmpty }}
           bordered
         />
       </Card>
