@@ -114,6 +114,7 @@ const ActionButtons = ({
         <Button 
           icon={<PlusOutlined />} 
           onClick={onAdd}
+          type='primary'
           disabled={isReadOnly}
         >
           Add

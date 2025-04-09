@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Button, message, Card, Checkbox, Table, Space, Row, Col, Empty } from 'antd';
-import { PlusOutlined, SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { queryHeadGroup, addHeadGroup, saveHeadGroup, removeHeadGroup } from '../../../api/groupCompany';
 import '../styles/AddAccountModal.css';
 
@@ -349,18 +349,21 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       dataIndex: 'groupName',
       key: 'groupName',
       ellipsis: true,
+      width: 300,
     },
     {
       title: 'Last Update By',
       dataIndex: 'lastUpdatedBy',
       key: 'lastUpdatedBy',
       ellipsis: true,
+      width: 150
     },
     {
       title: 'Last Update Date',
       dataIndex: 'lastUpdatedDate',
       key: 'lastUpdatedDate',
       ellipsis: true,
+      width: 150,
       render: (text) => text ? new Date(text).toLocaleDateString() : '-'
     },
     {
@@ -369,10 +372,11 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       width: 200,
       align: 'center',
       render: (_, record) => (
-        <Space size="small">
+        <Space size="small" style={{gap: 16}}>
           <Button 
             type="primary" 
             size="small" 
+            icon={<EditOutlined />}
             onClick={() => handleOpenUpdateModal(record)}
           >
             Update
@@ -381,6 +385,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
             danger 
             type="primary" 
             size="small" 
+            icon={<DeleteOutlined />}
             onClick={() => handleOpenDeleteConfirm(record)}
             disabled={!record.orphanGroup}
           >
