@@ -174,14 +174,14 @@ const UploadModal = ({ visible, onCancel, onUpload }) => {
         <Form.Item
           label="Note"
           name="note"
-          rules={[{ max: 40, message: 'Note cannot exceed 40 characters!' }]}
+          rules={[{ max: 200, message: 'Note cannot exceed 200 characters!' }]}
         >
           <Input.TextArea 
             placeholder="Please enter file description (optional)" 
-            maxLength={40}
+            maxLength={200}
             showCount
             autoSize={{ minRows: 2, maxRows: 4 }}
-            style={{ resize: 'none' }}
+            style={{ resize: 'vertical' }}
           />
         </Form.Item>
 
