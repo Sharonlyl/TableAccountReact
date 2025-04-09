@@ -167,8 +167,6 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       messageApi.error('Failed to fetch data');
     } finally {
       setLoading(false);
-      // 确保所有搜索相关的loading消息都被关闭
-      messageApi.destroy('searchLoading');
     }
   }, [messageApi]);
 
@@ -191,14 +189,9 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     }
     // 如果都未选择，则不添加orphanGroup参数
     
-    // 显示Loading消息
-    messageApi.loading({ content: 'Searching...', key: 'searchLoading', duration: 0 });
     setSearchParams(params);
-    fetchData(params).then(() => {
-      // 搜索完成后关闭Loading消息
-      messageApi.destroy('searchLoading');
-    });
-  }, [fetchData, messageApi]);
+    fetchData(params);
+  }, [fetchData]);
 
   // 处理Orphan Group Y选项变化
   const handleOrphanGroupYChange = useCallback((e) => {
@@ -265,12 +258,10 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         ...searchParams,
         pageSize: PAGE_SIZE
       };
-      // 显示Loading消息
-      messageApi.loading({ content: 'Loading...', key: 'searchLoading', duration: 0 });
       setSearchParams(updatedParams);
       fetchData(updatedParams);
     }
-  }, [searchParams, fetchData, messageApi]);
+  }, [searchParams, fetchData]);
 
   // 处理新增Head Group
   const handleAddHeadGroup = useCallback(async (values) => {
@@ -489,7 +480,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
           columns={columns}
           dataSource={data}
           pagination={pagination}
-          loading={loading}
+          loading={{ spinning: loading, tip: 'Loading...' }}
           onChange={handleTableChange}
           size="small"
           rowKey="headGroupId"
