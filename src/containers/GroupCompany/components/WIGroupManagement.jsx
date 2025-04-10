@@ -22,10 +22,16 @@ const WIGroupFormModal = ({
   const [form] = Form.useForm();
   const formRef = React.useRef(null);
   const [messageApi, contextHolder] = message.useMessage();
+  // 保存上一次的visible状态
+  const prevVisibleRef = React.useRef(visible);
 
   // 当Modal打开或类型/初始值变化时重置表单
   useEffect(() => {
-    if (visible) {
+    // 只在模态框从关闭变为打开的状态时重置表单
+    const prevVisible = prevVisibleRef.current;
+    prevVisibleRef.current = visible;
+    
+    if (visible && !prevVisible) {
       // 先重置表单，清除所有字段值
       form.resetFields();
       
