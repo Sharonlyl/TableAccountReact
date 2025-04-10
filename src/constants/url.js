@@ -22,6 +22,16 @@ const URL_CONS = {
     SAVE_HEAD_GROUP_URL: '/api/groupCompany/headGroup/saveHeadGroup',
     REMOVE_HEAD_GROUP_URL: '/api/groupCompany/headGroup/removeHeadGroup',
     
+    // WI Group管理相关URL
+    ADD_WI_GROUP_URL: '/api/groupCompany/wiGroup/addWIGroup',
+    SAVE_WI_GROUP_URL: '/api/groupCompany/wiGroup/saveWIGroup',
+    REMOVE_WI_GROUP_URL: '/api/groupCompany/wiGroup/removeWIGroup',
+    
+    // WI Customized Group管理相关URL
+    ADD_WI_CUSTOMIZED_GROUP_URL: '/api/groupCompany/wiCustomizedGroup/addWICustomizedGroup',
+    SAVE_WI_CUSTOMIZED_GROUP_URL: '/api/groupCompany/wiCustomizedGroup/saveWICustomizedGroup',
+    REMOVE_WI_CUSTOMIZED_GROUP_URL: '/api/groupCompany/wiCustomizedGroup/removeWICustomizedGroup',
+    
     // FeeLetterUpload 相关URL
     FEE_LETTER_SEARCH_URL: '/api/groupCompany/feeLetter/queryFeeLetterByCondition',
     FEE_LETTER_UPLOAD_URL: '/api/groupCompany/feeLetter/uploadFeeLetter',

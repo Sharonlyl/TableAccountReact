@@ -48,3 +48,17 @@ export const downloadFeeLetter = (params) => {
 };
 
 export const deleteFeeLetter = (params) => service.delete(`${URL_CONS.FEE_LETTER_DELETE_URL}?letterId=${params.letterId}`);
+
+// WI Group APIs
+export const addWIGroup = (params = {}) => service.post(URL_CONS.ADD_WI_GROUP_URL, params);
+
+export const saveWIGroup = (params = {}) => service.put(URL_CONS.SAVE_WI_GROUP_URL, params);
+
+export const removeWIGroup = (wiGroupId) => service.delete(`${URL_CONS.REMOVE_WI_GROUP_URL}?wiGroupId=${wiGroupId}`);
+
+// WI Customized Group APIs
+export const addWICustomizedGroup = (params = {}) => service.post(URL_CONS.ADD_WI_CUSTOMIZED_GROUP_URL, params);
+
+export const saveWICustomizedGroup = (params = {}) => service.put(URL_CONS.SAVE_WI_CUSTOMIZED_GROUP_URL, params);
+
+export const removeWICustomizedGroup = (wiCustomizedGroupId) => service.delete(`${URL_CONS.REMOVE_WI_CUSTOMIZED_GROUP_URL}?wiCustomizedGroupId=${wiCustomizedGroupId}`);

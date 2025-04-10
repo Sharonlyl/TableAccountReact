@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Modal, Form, Input, Button, message, Card, Checkbox, Table, Space, Row, Col, Empty } from 'antd';
 import { PlusOutlined, SearchOutlined, ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { queryHeadGroup, addHeadGroup, saveHeadGroup, removeHeadGroup } from '../../../api/groupCompany';
+import { queryWICustomizedGroup, addWICustomizedGroup, saveWICustomizedGroup, removeWICustomizedGroup } from '../../../api/groupCompany';
 import dayjs from 'dayjs';
 import '../styles/AddAccountModal.css';
 
@@ -9,11 +9,11 @@ import '../styles/AddAccountModal.css';
 const PAGE_SIZE = 20;
 
 // 新增/更新弹窗组件
-const HeadGroupFormModal = ({ 
+const WICustomizedGroupFormModal = ({ 
   visible, 
   onCancel, 
   onSave, 
-  title = 'Head Group', 
+  title = 'WI Customized Group', 
   buttonText = 'Save',
   initialValues = {}, 
   confirmLoading = false,
@@ -77,14 +77,14 @@ const HeadGroupFormModal = ({
       >
         <Form.Item
           name="groupName"
-          label="Head Group Name"
+          label="WI Customized Group Name"
           rules={[
-            { required: true, message: 'Please enter Head Group Name' },
-            { max: 110, message: 'Head Group Name cannot exceed 110 characters' }
+            { required: true, message: 'Please enter WI Customized Group Name' },
+            { max: 110, message: 'WI Customized Group Name cannot exceed 110 characters' }
           ]}
         >
           <Input 
-            placeholder="Input the new Head Group name here" 
+            placeholder="Input the new WI Customized Group name here" 
             maxLength={110}
             autoFocus
           />
@@ -94,8 +94,8 @@ const HeadGroupFormModal = ({
   );
 };
 
-// 主要的Head Group管理组件
-const HeadGroupManagement = ({ visible = true, onBack }) => {
+// 主要的WI Customized Group管理组件
+const WICustomizedGroupManagement = ({ visible = true, onBack }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -117,7 +117,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
 
   // 设置页面标题
   useEffect(() => {
-    document.title = 'Head Group Management';
+    document.title = 'WI Customized Group Management';
   }, []);
 
   // 当组件加载时，只进行初始化但不进行搜索
@@ -146,12 +146,12 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     
     setLoading(true);
     try {
-      const response = await queryHeadGroup(requestParams);
+      const response = await queryWICustomizedGroup(requestParams);
       if (response.success) {
         const { pageInfoData } = response;
         setData(pageInfoData.list.map(item => ({
           ...item,
-          key: item.headGroupId
+          key: item.wiCustomizedGroupId
         })));
         setPagination(prev => ({
           ...prev,
@@ -163,7 +163,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         messageApi.error(response.errMessage || 'Failed to fetch data');
       }
     } catch (error) {
-      console.error('Error fetching head group data:', error);
+      console.error('Error fetching WI Customized group data:', error);
       messageApi.error('Failed to fetch data');
     } finally {
       setLoading(false);
@@ -263,48 +263,48 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     }
   }, [searchParams, fetchData]);
 
-  // 处理新增Head Group
-  const handleAddHeadGroup = useCallback(async (values) => {
+  // 处理新增WI Customized Group
+  const handleAddWICustomizedGroup = useCallback(async (values) => {
     setConfirmLoading(true);
     try {
-      const response = await addHeadGroup({
+      const response = await addWICustomizedGroup({
         groupName: values.groupName
       });
       if (response.success) {
-        messageApi.success('Head Group added successfully');
+        messageApi.success('WI Customized Group added successfully');
         setModalVisible(false);
         refreshData();
       } else {
-        messageApi.error(response.errMessage || 'Failed to add Head Group');
+        messageApi.error(response.errMessage || 'Failed to add WI Customized Group');
       }
     } catch (error) {
-      console.error('Error adding head group:', error);
-      messageApi.error('Failed to add Head Group');
+      console.error('Error adding WI Customized group:', error);
+      messageApi.error('Failed to add WI Customized Group');
     } finally {
       setConfirmLoading(false);
     }
   }, [messageApi, refreshData]);
 
-  // 处理更新Head Group
-  const handleUpdateHeadGroup = useCallback(async (values) => {
+  // 处理更新WI Customized Group
+  const handleUpdateWICustomizedGroup = useCallback(async (values) => {
     if (!currentRecord) return;
     
     setConfirmLoading(true);
     try {
-      const response = await saveHeadGroup({
-        headGroupId: currentRecord.headGroupId,
+      const response = await saveWICustomizedGroup({
+        wiCustomizedGroupId: currentRecord.wiCustomizedGroupId,
         groupName: values.groupName
       });
       if (response.success) {
-        messageApi.success('Head Group updated successfully');
+        messageApi.success('WI Customized Group updated successfully');
         setModalVisible(false);
         refreshData();
       } else {
-        messageApi.error(response.errMessage || 'Failed to update Head Group');
+        messageApi.error(response.errMessage || 'Failed to update WI Customized Group');
       }
     } catch (error) {
-      console.error('Error updating head group:', error);
-      messageApi.error('Failed to update Head Group');
+      console.error('Error updating WI Customized group:', error);
+      messageApi.error('Failed to update WI Customized Group');
     } finally {
       setConfirmLoading(false);
     }
@@ -313,11 +313,11 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
   // 处理保存Modal
   const handleSaveModal = useCallback((values) => {
     if (modalType === 'new') {
-      handleAddHeadGroup(values);
+      handleAddWICustomizedGroup(values);
     } else {
-      handleUpdateHeadGroup(values);
+      handleUpdateWICustomizedGroup(values);
     }
-  }, [modalType, handleAddHeadGroup, handleUpdateHeadGroup]);
+  }, [modalType, handleAddWICustomizedGroup, handleUpdateWICustomizedGroup]);
 
   // 处理打开删除确认对话框
   const handleOpenDeleteConfirm = useCallback((record) => {
@@ -331,24 +331,24 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
     setRecordToDelete(null);
   }, []);
 
-  // 处理删除Head Group
-  const handleDeleteHeadGroup = useCallback(async () => {
+  // 处理删除WI Customized Group
+  const handleDeleteWICustomizedGroup = useCallback(async () => {
     if (!recordToDelete) return;
     
     setConfirmLoading(true);
     try {
-      const response = await removeHeadGroup(recordToDelete.headGroupId);
+      const response = await removeWICustomizedGroup(recordToDelete.wiCustomizedGroupId);
       if (response.success) {
-        messageApi.success('Head Group deleted successfully');
+        messageApi.success('WI Customized Group deleted successfully');
         setDeleteConfirmVisible(false);
         setRecordToDelete(null);
         refreshData();
       } else {
-        messageApi.error(response.errMessage || 'Failed to delete Head Group');
+        messageApi.error(response.errMessage || 'Failed to delete WI Customized Group');
       }
     } catch (error) {
-      console.error('Error deleting head group:', error);
-      messageApi.error('Failed to delete Head Group');
+      console.error('Error deleting WI Customized group:', error);
+      messageApi.error('Failed to delete WI Customized Group');
     } finally {
       setConfirmLoading(false);
     }
@@ -376,7 +376,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
   // 表格列定义 - 使用useMemo避免不必要的重新渲染
   const columns = useMemo(() => [
     {
-      title: 'Head Group Name',
+      title: 'WI Customized Group Name',
       dataIndex: 'groupName',
       key: 'groupName',
       ellipsis: true,
@@ -430,11 +430,11 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
   return (
     <div>
       {contextHolder}
-      <Card title="Head Group Management" extra={<Button icon={<ArrowLeftOutlined />} onClick={handleBack}>Back</Button>}>
+      <Card title="WI Customized Group Management" extra={<Button icon={<ArrowLeftOutlined />} onClick={handleBack}>Back</Button>}>
         {/* 搜索表单 */}
         <Form
           form={form}
-          name="headGroupSearch"
+          name="wiCustomizedGroupSearch"
           layout="inline"
           onFinish={handleSearch}
           style={{ marginBottom: 16 }}
@@ -443,7 +443,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
           <Row style={{ width: '100%' }}>
             <Col flex="auto">
               <Space>
-                <Form.Item name="groupName" label="Head Group Name">
+                <Form.Item name="groupName" label="WI Customized Group Name">
                   <Input style={{ width: 300 }} />
                 </Form.Item>
                 <Form.Item label="Orphan Group" style={{ marginLeft: 8, marginBottom: 0 }}>
@@ -483,18 +483,18 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
           loading={{ spinning: loading, tip: 'Loading...' }}
           onChange={handleTableChange}
           size="small"
-          rowKey="headGroupId"
+          rowKey="wiCustomizedGroupId"
           locale={{ emptyText: customEmpty }}
           bordered
         />
       </Card>
 
       {/* 新增/更新Modal */}
-      <HeadGroupFormModal
+      <WICustomizedGroupFormModal
         visible={modalVisible}
         onCancel={handleCloseModal}
         onSave={handleSaveModal}
-        title={modalType === 'new' ? 'New Head Group' : 'Update Head Group'}
+        title={modalType === 'new' ? 'New WI Customized Group' : 'Update WI Customized Group'}
         buttonText={modalType === 'new' ? 'Save' : 'Update'}
         initialValues={modalType === 'update' && currentRecord ? { groupName: currentRecord.groupName } : {}}
         confirmLoading={confirmLoading}
@@ -505,7 +505,7 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
       <Modal
         title="Confirm Delete"
         open={deleteConfirmVisible}
-        onOk={handleDeleteHeadGroup}
+        onOk={handleDeleteWICustomizedGroup}
         onCancel={handleCloseDeleteConfirm}
         confirmLoading={confirmLoading}
       >
@@ -516,4 +516,4 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
 };
 
 // 导出公共组件
-export default HeadGroupManagement; 
+export default WICustomizedGroupManagement; 

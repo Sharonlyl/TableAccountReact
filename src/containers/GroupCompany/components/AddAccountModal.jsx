@@ -5,6 +5,8 @@ import { queryImrReferenceByCategory, queryUserByDepartments, queryHeadGroup, qu
 import axios from 'axios';
 import '../styles/AddAccountModal.css';
 import HeadGroupManagement from './HeadGroupManagement';
+import WIGroupManagement from './WIGroupManagement';
+import WICustomizedGroupManagement from './WICustomizedGroupManagement';
 
 const AddAccountModal = ({ visible, onCancel, onSave }) => {
   const [form] = Form.useForm();
@@ -53,6 +55,10 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
 
   // 添加Head Group管理页面的显示状态
   const [headGroupManagementVisible, setHeadGroupManagementVisible] = useState(false);
+  // 添加WI Group管理页面的显示状态
+  const [wiGroupManagementVisible, setWiGroupManagementVisible] = useState(false);
+  // 添加WI Customized Group管理页面的显示状态
+  const [wiCustomizedGroupManagementVisible, setWiCustomizedGroupManagementVisible] = useState(false);
 
   // 在组件挂载和visible变化时获取下拉框选项数据
   useEffect(() => {
@@ -767,8 +773,31 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
       // 使用window.open在新窗口/标签中打开页面
       const headGroupUrl = '/groupCompany/headGroup';
       window.open(headGroupUrl, '_blank');
+    } else if (type === 'wiGroup') {
+      // 使用window.open在新窗口/标签中打开WI Group页面
+      const wiGroupUrl = '/groupCompany/wiGroup';
+      window.open(wiGroupUrl, '_blank');
+    } else if (type === 'wiCustomizedGroup') {
+      // 使用window.open在新窗口/标签中打开WI Customized Group页面
+      const wiCustomizedGroupUrl = '/groupCompany/wiCustomizedGroup';
+      window.open(wiCustomizedGroupUrl, '_blank');
     }
     // 这里将来可以实现其他跳转功能
+  };
+
+  // 处理Head Group管理页面的返回按钮点击
+  const handleHeadGroupManagementBack = () => {
+    setHeadGroupManagementVisible(false);
+  };
+
+  // 处理WI Group管理页面的返回按钮点击
+  const handleWiGroupManagementBack = () => {
+    setWiGroupManagementVisible(false);
+  };
+
+  // 处理WI Customized Group管理页面的返回按钮点击
+  const handleWiCustomizedGroupManagementBack = () => {
+    setWiCustomizedGroupManagementVisible(false);
   };
 
   // 处理确认对话框的确认按钮点击
@@ -874,6 +903,16 @@ const AddAccountModal = ({ visible, onCancel, onSave }) => {
         <HeadGroupManagement 
           visible={headGroupManagementVisible} 
           onBack={handleHeadGroupManagementBack} 
+        />
+      ) : wiGroupManagementVisible ? (
+        <WIGroupManagement
+          visible={wiGroupManagementVisible}
+          onBack={handleWiGroupManagementBack}
+        />
+      ) : wiCustomizedGroupManagementVisible ? (
+        <WICustomizedGroupManagement
+          visible={wiCustomizedGroupManagementVisible}
+          onBack={handleWiCustomizedGroupManagementBack}
         />
       ) : (
         <Modal

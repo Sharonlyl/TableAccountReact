@@ -5,6 +5,8 @@ import GroupCompanyContent from './containers/GroupCompany/GroupCompany';
 import FeeLetterUploadContent from './containers/FeeLetterUpload/FeeLetterUpload';
 import AppLayout from './containers/GroupCompany/components/Layout';
 import HeadGroupManagement from './containers/GroupCompany/components/HeadGroupManagement';
+import WIGroupManagement from './containers/GroupCompany/components/WIGroupManagement';
+import WICustomizedGroupManagement from './containers/GroupCompany/components/WICustomizedGroupManagement';
 
 const RouterList = () => {
   const routes = useRoutes([
@@ -29,6 +31,14 @@ const RouterList = () => {
         {
           path: 'groupCompany/headGroup',
           element: <HeadGroupManagement visible={true} onBack={() => window.close()} />
+        },
+        {
+          path: 'groupCompany/wiGroup',
+          element: <WIGroupManagement visible={true} onBack={() => window.close()} />
+        },
+        {
+          path: 'groupCompany/wiCustomizedGroup',
+          element: <WICustomizedGroupManagement visible={true} onBack={() => window.close()} />
         },
         {
           path: 'feeLetter',
