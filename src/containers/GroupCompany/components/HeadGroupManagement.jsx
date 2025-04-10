@@ -296,6 +296,11 @@ const HeadGroupManagement = ({ visible = true, onBack }) => {
         groupName: values.groupName
       });
       if (response.success) {
+        // 更新当前记录的groupName，确保值不会丢失
+        setCurrentRecord(prev => ({
+          ...prev,
+          groupName: values.groupName
+        }));
         messageApi.success('Head Group updated successfully');
         setModalVisible(false);
         refreshData();

@@ -296,11 +296,18 @@ const WICustomizedGroupManagement = ({ visible = true, onBack }) => {
         groupName: values.groupName
       });
       if (response.success) {
+        // 更新当前记录的groupName，确保值不会丢失
+        setCurrentRecord(prev => ({
+          ...prev,
+          groupName: values.groupName
+        }));
         messageApi.success('WI Customized Group updated successfully');
         setModalVisible(false);
         refreshData();
       } else {
-        messageApi.error(response.errMessage || 'Failed to update WI Customized Group');
+        // 翻译错误消息
+        const translatedMessage = translateErrorMessage(response.errMessage);
+        messageApi.error(translatedMessage || 'Failed to update WI Customized Group');
       }
     } catch (error) {
       console.error('Error updating WI Customized group:', error);
