@@ -7,6 +7,7 @@ import AppLayout from './containers/GroupCompany/components/Layout';
 import HeadGroupManagement from './containers/GroupCompany/components/HeadGroupManagement';
 import WIGroupManagement from './containers/GroupCompany/components/WIGroupManagement';
 import WICustomizedGroupManagement from './containers/GroupCompany/components/WICustomizedGroupManagement';
+import AuditLogContent from './containers/AuditLog/AuditLog';
 
 const RouterList = () => {
   const routes = useRoutes([
@@ -43,6 +44,10 @@ const RouterList = () => {
         {
           path: 'feeLetter',
           element: <FeeLetterUploadContent />
+        },
+        {
+          path: 'auditLog',
+          element: <AuditLogContent />
         },
         {
           path: '',

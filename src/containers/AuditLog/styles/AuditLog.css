@@ -1,0 +1,132 @@
+.audit-log-container {
+  width: 100%;
+}
+
+.audit-log-search-form {
+  padding: 24px 0;
+  padding-left: 24px;
+  padding-right: 24px;
+  border-radius: 2px;
+}
+
+.audit-log-search-form .ant-row {
+  display: flex;
+  margin: 0 !important;
+}
+
+.audit-log-search-form .ant-col {
+  padding: 0 !important;
+  flex: 1;
+  margin-right: 20px;
+}
+
+.audit-log-search-form .ant-col:last-child {
+  margin-right: 0;
+}
+
+.form-item-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.form-item-label {
+  margin-right: 10px;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.form-item-input {
+  flex: 1;
+  width: 100%;
+}
+
+.form-item-input .ant-select,
+.form-item-input .ant-input,
+.form-item-input .ant-picker {
+  width: 100% !important;
+}
+
+.audit-log-table {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.audit-log-table .ant-table {
+  border: 1px solid #e8e8e8;
+}
+
+.audit-log-table .ant-table-thead > tr > th {
+  background-color: #e6f7ff !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-weight: 600 !important;
+}
+
+.audit-log-table .ant-table-row:hover > td {
+  background-color: #e6f7ff !important;
+}
+
+.audit-log-pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 24px;
+}
+
+.audit-log-changes-content {
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.audit-log-change-item {
+  margin-bottom: 8px;
+  display: block;
+}
+
+.audit-log-changes-tag {
+  margin-right: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+  width: 100%;
+  white-space: normal;
+}
+
+.audit-log-empty {
+  margin: 32px 0;
+}
+
+.audit-log-loading {
+  text-align: center;
+  margin: 50px 0;
+  width: 100%;
+}
+
+.audit-log-badge-add {
+  background-color: #52c41a;
+}
+
+.audit-log-badge-delete {
+  background-color: #f5222d;
+}
+
+.audit-log-badge-update {
+  background-color: #1890ff;
+}
+
+@media (max-width: 768px) {
+  .form-item-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .form-item-label {
+    margin-bottom: 8px;
+  }
+  
+  .audit-log-search-form .ant-col {
+    margin-right: 0;
+    margin-bottom: 16px;
+  }
+} 

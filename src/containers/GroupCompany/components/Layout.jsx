@@ -9,18 +9,32 @@ import { queryUserRole } from '../../../api/groupCompany';
 const { Header, Content } = Layout;
 const { Title } = Typography;
 
+// 角色常量
+const ROLES = {
+  READ: 'GROUP_COMPANY_READ_ROLE',
+  WRITE: 'GROUP_COMPANY_WRITE_ROLE',
+  ADMIN: 'GROUP_COMPANY_ADMIN_ROLE'
+};
+
 // 创建菜单组件
-const AppMenu = () => {
+const AppMenu = ({ userRole }) => {
   const location = useLocation();
 
   // 根据当前路径确定选中的菜单项
   const getSelectedKey = (pathname) => {
     if (pathname === '/' || pathname.includes('groupCompany')) return 'groupCompany';
     if (pathname.includes('feeLetter')) return 'feeLetter';
+    if (pathname.includes('auditLog')) return 'auditLog';
     return 'groupCompany';  // 默认返回 groupCompany
   };
 
-  const menuItems = [
+  // 检查是否有访问审计日志的权限
+  const hasAuditLogPermission = () => {
+    return userRole === ROLES.ADMIN || userRole === ROLES.WRITE;
+  };
+
+  // 基础菜单项
+  const baseMenuItems = [
     {
       key: 'groupCompany',
       label: <Link to="/groupCompany">Group-Company Mapping</Link>
@@ -30,6 +44,17 @@ const AppMenu = () => {
       label: <Link to="/feeLetter">Fee Letter Filing</Link>
     }
   ];
+  
+  // 根据权限添加审计日志菜单
+  const menuItems = hasAuditLogPermission() 
+    ? [
+        ...baseMenuItems,
+        {
+          key: 'auditLog',
+          label: <Link to="/auditLog">Audit Log</Link>
+        }
+      ] 
+    : baseMenuItems;
 
   return (
     <Menu
@@ -61,6 +86,7 @@ const AppLayout = ({ title }) => {
     const {pathname} = location;
     if (pathname.includes('groupCompany')) return 'Group-Company Mapping';
     if (pathname.includes('feeLetter')) return 'Fee Letter Filing';
+    if (pathname.includes('auditLog')) return 'Audit Log';
     return title || '';
   };
 
@@ -126,7 +152,7 @@ const AppLayout = ({ title }) => {
         </div>
       </Header>
       <Content className="app-content">
-        <AppMenu />
+        <AppMenu userRole={userInfo.groupCompanyRole} />
         <div className="page-container">
           {getPageTitle() && (
             <Title level={4} className="page-title">

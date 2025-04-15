@@ -62,3 +62,6 @@ export const addWICustomizedGroup = (params = {}) => service.post(URL_CONS.ADD_W
 export const saveWICustomizedGroup = (params = {}) => service.put(URL_CONS.SAVE_WI_CUSTOMIZED_GROUP_URL, params);
 
 export const removeWICustomizedGroup = (wiCustomizedGroupId) => service.delete(`${URL_CONS.REMOVE_WI_CUSTOMIZED_GROUP_URL}?wiCustomizedGroupId=${wiCustomizedGroupId}`);
+
+// AuditLog 相关API
+export const searchAuditLog = (params) => service.post(URL_CONS.AUDIT_LOG_SEARCH_URL, params);

@@ -36,8 +36,10 @@ const URL_CONS = {
     FEE_LETTER_SEARCH_URL: '/api/groupCompany/feeLetter/queryFeeLetterByCondition',
     FEE_LETTER_UPLOAD_URL: '/api/groupCompany/feeLetter/uploadFeeLetter',
     FEE_LETTER_DOWNLOAD_URL: '/api/groupCompany/feeLetter/downloadFileByLetterId',
-    FEE_LETTER_DELETE_URL: '/api/groupCompany/feeLetter/removeByLetterId'
-
+    FEE_LETTER_DELETE_URL: '/api/groupCompany/feeLetter/removeByLetterId',
+    
+    // AuditLog 相关URL
+    AUDIT_LOG_SEARCH_URL: '/api/groupCompany/auditLog/mappingAuditLog'
 }
 
 export default URL_CONS;
