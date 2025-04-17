@@ -72,32 +72,36 @@ const AuditLogTable = ({ userRoleInfo }) => {
     const changes = [];
     
     // 检查新的值并添加到changes数组
-    if (record.newFundClass) {
-      changes.push(`Fund Class: ${record.newFundClass}`);
+    if (record.newFundClass !== undefined) {
+      changes.push(`Fund Class: ${record.newFundClass || '-'}`);
     }
-    if (record.newHeadGroup) {
-      changes.push(`Head Group: ${record.newHeadGroup}`);
+    if (record.newHeadGroup !== undefined) {
+      changes.push(`Head Group: ${record.newHeadGroup || '-'}`);
     }
-    if (record.newWiGroup) {
-      changes.push(`WI Group: ${record.newWiGroup}`);
+    if (record.newWiGroup !== undefined) {
+      changes.push(`WI Group: ${record.newWiGroup || '-'}`);
     }
-    if (record.newWiCustomizedGroup) {
-      changes.push(`WI Customized Group: ${record.newWiCustomizedGroup}`);
+    if (record.newWiCustomizedGroup !== undefined) {
+      changes.push(`WI Customized Group: ${record.newWiCustomizedGroup || '-'}`);
     }
-    if (record.newPensionCategory) {
-      changes.push(`Pension Category: ${record.newPensionCategory}`);
+    if (record.newPensionCategory !== undefined) {
+      changes.push(`Pension Category: ${record.newPensionCategory || '-'}`);
     }
-    if (record.newPortfolioNature) {
-      changes.push(`Portfolio Nature: ${record.newPortfolioNature}`);
+    if (record.newPortfolioNature !== undefined) {
+      changes.push(`Portfolio Nature: ${record.newPortfolioNature || '-'}`);
     }
-    if (record.newRmName) {
-      changes.push(`RM: ${record.newRmName}`);
+    if (record.newRmName !== undefined) {
+      changes.push(`RM: ${record.newRmName || '-'}`);
     }
-    if (record.newIsGlobalClient) {
-      changes.push(`Is Global Client: ${record.newIsGlobalClient}`);
+    if (record.newIsGlobalClient !== undefined) {
+      changes.push(`Is Global Client: ${record.newIsGlobalClient || '-'}`);
     }
-    if (record.newAgent) {
-      changes.push(`Agent: ${record.newAgent}`);
+    if (record.newAgent !== undefined) {
+      changes.push(`Agent: ${record.newAgent || '-'}`);
+    }
+    // 处理特殊字段 memberChoice
+    if (record.memberChoice !== undefined) {
+      changes.push(`Member Choice: ${record.memberChoice || '-'}`);
     }
     
     return changes.length > 0 
@@ -120,32 +124,36 @@ const AuditLogTable = ({ userRoleInfo }) => {
     const changes = [];
     
     // 检查旧的值并添加到changes数组
-    if (record.oldFundClass) {
-      changes.push(`Fund Class: ${record.oldFundClass}`);
+    if (record.oldFundClass !== undefined) {
+      changes.push(`Fund Class: ${record.oldFundClass || '-'}`);
     }
-    if (record.oldHeadGroup) {
-      changes.push(`Head Group: ${record.oldHeadGroup}`);
+    if (record.oldHeadGroup !== undefined) {
+      changes.push(`Head Group: ${record.oldHeadGroup || '-'}`);
     }
-    if (record.oldWiGroup) {
-      changes.push(`WI Group: ${record.oldWiGroup}`);
+    if (record.oldWiGroup !== undefined) {
+      changes.push(`WI Group: ${record.oldWiGroup || '-'}`);
     }
-    if (record.oldWiCustomizedGroup) {
-      changes.push(`WI Customized Group: ${record.oldWiCustomizedGroup}`);
+    if (record.oldWiCustomizedGroup !== undefined) {
+      changes.push(`WI Customized Group: ${record.oldWiCustomizedGroup || '-'}`);
     }
-    if (record.oldPensionCategory) {
-      changes.push(`Pension Category: ${record.oldPensionCategory}`);
+    if (record.oldPensionCategory !== undefined) {
+      changes.push(`Pension Category: ${record.oldPensionCategory || '-'}`);
     }
-    if (record.oldPortfolioNature) {
-      changes.push(`Portfolio Nature: ${record.oldPortfolioNature}`);
+    if (record.oldPortfolioNature !== undefined) {
+      changes.push(`Portfolio Nature: ${record.oldPortfolioNature || '-'}`);
     }
-    if (record.oldRmName) {
-      changes.push(`RM: ${record.oldRmName}`);
+    if (record.oldRmName !== undefined) {
+      changes.push(`RM: ${record.oldRmName || '-'}`);
     }
-    if (record.oldIsGlobalClient) {
-      changes.push(`Is Global Client: ${record.oldIsGlobalClient}`);
+    if (record.oldIsGlobalClient !== undefined) {
+      changes.push(`Is Global Client: ${record.oldIsGlobalClient || '-'}`);
     }
-    if (record.oldAgent) {
-      changes.push(`Agent: ${record.oldAgent}`);
+    if (record.oldAgent !== undefined) {
+      changes.push(`Agent: ${record.oldAgent || '-'}`);
+    }
+    // 处理特殊字段 oldMemberChoice
+    if (record.oldMemberChoice !== undefined) {
+      changes.push(`Member Choice: ${record.oldMemberChoice || '-'}`);
     }
     
     return changes.length > 0 
@@ -167,33 +175,38 @@ const AuditLogTable = ({ userRoleInfo }) => {
   const formatUpdateChanges = (record) => {
     const changes = [];
     
-    // 比较旧值和新值，记录变更的字段
-    if (record.oldFundClass !== record.newFundClass && record.newFundClass) {
-      changes.push(`Fund Class: ${record.oldFundClass || '-'} => ${record.newFundClass}`);
+    // 比较旧值和新值，记录变更的字段，只要新值存在就显示变更
+    if (record.newFundClass !== undefined) {
+      changes.push(`Fund Class: ${record.oldFundClass || '-'} => ${record.newFundClass || '-'}`);
     }
-    if (record.oldHeadGroup !== record.newHeadGroup && record.newHeadGroup) {
-      changes.push(`Head Group: ${record.oldHeadGroup || '-'} => ${record.newHeadGroup}`);
+    if (record.newHeadGroup !== undefined) {
+      changes.push(`Head Group: ${record.oldHeadGroup || '-'} => ${record.newHeadGroup || '-'}`);
     }
-    if (record.oldWiGroup !== record.newWiGroup && record.newWiGroup) {
-      changes.push(`WI Group: ${record.oldWiGroup || '-'} => ${record.newWiGroup}`);
+    if (record.newWiGroup !== undefined) {
+      changes.push(`WI Group: ${record.oldWiGroup || '-'} => ${record.newWiGroup || '-'}`);
     }
-    if (record.oldWiCustomizedGroup !== record.newWiCustomizedGroup && record.newWiCustomizedGroup) {
-      changes.push(`WI Customized Group: ${record.oldWiCustomizedGroup || '-'} => ${record.newWiCustomizedGroup}`);
+    if (record.newWiCustomizedGroup !== undefined) {
+      changes.push(`WI Customized Group: ${record.oldWiCustomizedGroup || '-'} => ${record.newWiCustomizedGroup || '-'}`);
     }
-    if (record.oldPensionCategory !== record.newPensionCategory && record.newPensionCategory) {
-      changes.push(`Pension Category: ${record.oldPensionCategory || '-'} => ${record.newPensionCategory}`);
+    if (record.newPensionCategory !== undefined) {
+      changes.push(`Pension Category: ${record.oldPensionCategory || '-'} => ${record.newPensionCategory || '-'}`);
     }
-    if (record.oldPortfolioNature !== record.newPortfolioNature && record.newPortfolioNature) {
-      changes.push(`Portfolio Nature: ${record.oldPortfolioNature || '-'} => ${record.newPortfolioNature}`);
+    if (record.newPortfolioNature !== undefined) {
+      changes.push(`Portfolio Nature: ${record.oldPortfolioNature || '-'} => ${record.newPortfolioNature || '-'}`);
     }
-    if (record.oldRmName !== record.newRmName && record.newRmName) {
-      changes.push(`RM: ${record.oldRmName || '-'} => ${record.newRmName}`);
+    if (record.newRmName !== undefined) {
+      changes.push(`RM: ${record.oldRmName || '-'} => ${record.newRmName || '-'}`);
     }
-    if (record.oldIsGlobalClient !== record.newIsGlobalClient && record.newIsGlobalClient) {
-      changes.push(`Is Global Client: ${record.oldIsGlobalClient || '-'} => ${record.newIsGlobalClient}`);
+    if (record.newIsGlobalClient !== undefined) {
+      changes.push(`Is Global Client: ${record.oldIsGlobalClient || '-'} => ${record.newIsGlobalClient || '-'}`);
     }
-    if (record.oldAgent !== record.newAgent && record.newAgent) {
-      changes.push(`Agent: ${record.oldAgent || '-'} => ${record.newAgent}`);
+    if (record.newAgent !== undefined) {
+      changes.push(`Agent: ${record.oldAgent || '-'} => ${record.newAgent || '-'}`);
+    }
+    
+    // 处理特殊字段 memberChoice
+    if (record.memberChoice !== undefined) {
+      changes.push(`Member Choice: ${record.oldMemberChoice || '-'} => ${record.memberChoice || '-'}`);
     }
     
     return changes.length > 0 
@@ -401,6 +414,7 @@ const AuditLogTable = ({ userRoleInfo }) => {
                   total={pagination.total}
                   onChange={handlePageChange}
                   showSizeChanger={false}
+                  showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
                 />
               </div>
             )}
