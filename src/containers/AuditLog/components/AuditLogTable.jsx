@@ -78,11 +78,11 @@ const AuditLogTable = ({ userRoleInfo }) => {
     if (record.newHeadGroup) {
       changes.push(`Head Group: ${record.newHeadGroup}`);
     }
-    if (record.newWIGroup) {
-      changes.push(`WI Group: ${record.newWIGroup}`);
+    if (record.newWiGroup) {
+      changes.push(`WI Group: ${record.newWiGroup}`);
     }
-    if (record.newWICustomizedGroup) {
-      changes.push(`WI Customized Group: ${record.newWICustomizedGroup}`);
+    if (record.newWiCustomizedGroup) {
+      changes.push(`WI Customized Group: ${record.newWiCustomizedGroup}`);
     }
     if (record.newPensionCategory) {
       changes.push(`Pension Category: ${record.newPensionCategory}`);
@@ -126,11 +126,11 @@ const AuditLogTable = ({ userRoleInfo }) => {
     if (record.oldHeadGroup) {
       changes.push(`Head Group: ${record.oldHeadGroup}`);
     }
-    if (record.oldWIGroup) {
-      changes.push(`WI Group: ${record.oldWIGroup}`);
+    if (record.oldWiGroup) {
+      changes.push(`WI Group: ${record.oldWiGroup}`);
     }
-    if (record.oldWICustomizedGroup) {
-      changes.push(`WI Customized Group: ${record.oldWICustomizedGroup}`);
+    if (record.oldWiCustomizedGroup) {
+      changes.push(`WI Customized Group: ${record.oldWiCustomizedGroup}`);
     }
     if (record.oldPensionCategory) {
       changes.push(`Pension Category: ${record.oldPensionCategory}`);
@@ -174,11 +174,11 @@ const AuditLogTable = ({ userRoleInfo }) => {
     if (record.oldHeadGroup !== record.newHeadGroup && record.newHeadGroup) {
       changes.push(`Head Group: ${record.oldHeadGroup || '-'} => ${record.newHeadGroup}`);
     }
-    if (record.oldWIGroup !== record.newWIGroup && record.newWIGroup) {
-      changes.push(`WI Group: ${record.oldWIGroup || '-'} => ${record.newWIGroup}`);
+    if (record.oldWiGroup !== record.newWiGroup && record.newWiGroup) {
+      changes.push(`WI Group: ${record.oldWiGroup || '-'} => ${record.newWiGroup}`);
     }
-    if (record.oldWICustomizedGroup !== record.newWICustomizedGroup && record.newWICustomizedGroup) {
-      changes.push(`WI Customized Group: ${record.oldWICustomizedGroup || '-'} => ${record.newWICustomizedGroup}`);
+    if (record.oldWiCustomizedGroup !== record.newWiCustomizedGroup && record.newWiCustomizedGroup) {
+      changes.push(`WI Customized Group: ${record.oldWiCustomizedGroup || '-'} => ${record.newWiCustomizedGroup}`);
     }
     if (record.oldPensionCategory !== record.newPensionCategory && record.newPensionCategory) {
       changes.push(`Pension Category: ${record.oldPensionCategory || '-'} => ${record.newPensionCategory}`);
